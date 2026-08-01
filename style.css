@@ -1,0 +1,109 @@
+body {
+    background-color: rgb(104, 26, 12);
+    color:rgb(255, 255, 255);
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin:0;
+    animation-fill-mode: forwards;
+    overflow-x:hidden;
+}
+#pagetitle {
+    font-size:50px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: underline wavy;
+}
+
+#startbutton {
+    display:flex;
+    font-size:40px;
+    align-items: center;
+    justify-content: center;
+    margin-top:20%;
+    padding:10px;
+    border:8px solid rgb(134, 45, 45);
+    background-color: rgb(100, 22, 22);
+    width:200px;
+    justify-self: center;
+    transition:transform 300ms ease;
+}
+#startbutton:hover {
+    transform:scale(1.2);
+    cursor:pointer;
+}
+
+@keyframes wipeleft {
+    to {
+        transform:scaleX(2) translateX(-500px)
+    }
+}
+
+.molespawn {
+    width:200px;
+    height:200px;
+    background-color: rgb(102, 74, 37);
+    border:4px solid white;
+    background-size:contain;
+}
+#molecontainer {
+    padding:10px;
+    width:fit-content;
+    border:4px solid white;
+    background-color:rgb(66, 47, 18);
+    display:flex;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    display:none;
+}
+#molegrid {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:10px;
+}
+@keyframes fadein {
+    from {
+        opacity:0;
+        filter:blur(25px)
+    } to {
+        opacity:1;
+        filter:blur(0px);
+    }
+}
+
+@keyframes wigglex {
+    0% {
+        background-position:0px 0px
+    }
+    25% {
+        background-position:-10px 0px
+    }
+    50% {
+        background-position:0px 0px
+    }
+    75% {
+        background-position:10px 0px
+    }
+    100% {
+        background-position:0px 0px
+    }
+}
+
+@keyframes wiggley {
+    0% {
+        background-position:0px 0px
+    }
+    25% {
+        background-position:0px -10px
+    }
+    50% {
+        background-position:0px 0px
+    }
+    75% {
+        background-position:0px 10px
+    }
+    100% {
+        background-position:0px 0px
+    }
+}

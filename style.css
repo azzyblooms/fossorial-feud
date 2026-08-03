@@ -6,8 +6,10 @@ body {
     animation-fill-mode: forwards;
     overflow-x:hidden;
     user-select:none;
-    -webkit-user-drag: none;
+}
+html {
     cursor:none;
+    -webkit-user-drag: none;
 }
 #pagetitle {
     font-size:50px;
@@ -40,6 +42,11 @@ body {
     }
 }
 
+@keyframes debugflicker {
+    0% {border:10px solid rgb(0, 238, 255); width:7px; height:7px}
+    100% {border: 4px solid white; width:20px; height:20px;}
+}
+
 .molespawn {
     width:200px;
     height:200px;
@@ -47,6 +54,13 @@ body {
     border:4px solid white;
     object-fit:contain;
     background-size:contain;
+    justify-content: center;
+    align-items: center;
+    display:flex;
+}
+.molespawn img {
+    transition: transform ease 2s;
+    
 }
 #molecontainer {
     padding:10px;
@@ -67,7 +81,7 @@ body {
 }
 .moleimg {
     opacity:0;
-    width:200px;
+    width:150px;
     transition:opacity 200ms ease;
 }
 @keyframes fadein {
@@ -121,6 +135,18 @@ body {
     z-index:200;
 }
 
+#cursorhb {
+    pointer-events: none;
+    position:fixed;
+    z-index:200;
+    width:20px;
+    height:20px;
+    transform:translate(-50%, -50%);
+
+    border:4px solid white;
+}
+
+
 @keyframes swing {
     from {
         transform:rotate(-80deg)
@@ -130,12 +156,52 @@ body {
 }
 
 @keyframes redfilter {
-    /*from {
-        filter: sepia(100%) saturate(300%) hue-rotate(320deg);
-    } to {
-        filter: none;
-    }*/
     0% {filter: sepia(100%) saturate(300%) hue-rotate(320deg);}
     99% {filter: sepia(0%) saturate(100%) hue-rotate(360deg);}
-    1000% {filter: none;}
+    100% {filter: none;}
+}
+
+@keyframes fuming {
+    from {
+        filter: sepia(100%) saturate(300%) hue-rotate(0deg);
+    }
+    to {
+        filter: sepia(100%) saturate(300%) hue-rotate(320deg);
+    }
+}
+
+#gamestartwrap {
+    border:4px solid white;
+    padding:10px;
+    display:none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color:brown;
+    gap:10px;
+}
+#molecount {
+    font-size:20px;
+}
+#roundcount {
+    font-size:40px;
+}
+#gamestartwraplvl2 {
+    display:flex;
+    position:fixed;
+    top:50%;
+    left:50%;
+    z-index: 100;
+    transform:translate(-50%, -50%)
+}
+
+@keyframes balloon-in {
+    0% {transform:scale(0.0001)}
+    90% {transform:scale(1.15)}
+    100% {transform:scale(1)}
+}
+@keyframes balloon-out {
+    0% {transform:scale(1)}
+    10% {transform:scale(1.15)}
+    100% {transform:scale(0.0001)}
 }

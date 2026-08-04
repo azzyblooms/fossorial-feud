@@ -18,12 +18,13 @@ const bonk = new Audio("audio/hits/bonk.mp3")
 const punch = new Audio("audio/hits/punch.mp3")
 const grrr = new Audio("audio/grrr.mp3")
 
+let intro = true;
 
-const molespawns = [
-    document.getElementById("molespawn1"),
-    document.getElementById("molespawn2"),
-    document.getElementById("molespawn3"),
-    document.getElementById("molespawn4")
+const moles = [
+    {element: molespawn1, busy:false, state:"ok"},
+    {element: molespawn2, busy:false, state:"ok"},
+    {element: molespawn3, busy:false, state:"ok"},
+    {element: molespawn4, busy:false, state:"ok"}
 ]
 
 const laughs = [
@@ -49,13 +50,14 @@ const startpageelements = [
 let teasing = true;
 
 function tease() {
+    intro = true;
     if(!teasing) {
         grr();
         return;
     }
 
-    molespawns.forEach((element) => {
-        element.querySelector("img").style.opacity = ("1")
+    moles.forEach((mole) => {
+        mole.element.querySelector("img").style.opacity = ("1")
     })
     for(let i = 0; i < 10; i++) {
         setTimeout(() => {
@@ -63,10 +65,9 @@ function tease() {
             
             const activemoles = [];
 
-            if (mole1state == "ok") activemoles.push(molespawn1)
-            if (mole2state == "ok") activemoles.push(molespawn2)
-            if (mole3state == "ok") activemoles.push(molespawn3)
-            if (mole4state == "ok") activemoles.push(molespawn4)
+            moles.forEach((thing) => {
+                if (thing.state == "ok") activemoles.push(thing.element)
+            })
                 
             if (activemoles.length == 0) {
                 teasing = false;
@@ -96,25 +97,25 @@ function grr() {
         for(let i = 0; i < 5; i++) {
         setTimeout(() => {
 
-            let currentMole = molespawns[Math.floor(Math.random() * molespawns.length)];
+            let currentMole = moles[Math.floor(Math.random() * moles.length)];
 
             const growl = grrr.cloneNode(true);
             growl.playbackRate = Math.random() * 1.4 + 0.6;
             growl.preservesPitch = false;
             console.log(growl.playbackRate)
             growl.play();
-            currentMole.querySelector("img").style.animation = ("none")
-            currentMole.querySelector("img").offsetHeight;
-            currentMole.querySelector("img").style.animation = ("wigglex 100ms ease")
+            currentMole.element.querySelector("img").style.animation = ("none")
+            currentMole.element.querySelector("img").offsetHeight;
+            currentMole.element.querySelector("img").style.animation = ("wigglex 100ms ease")
             document.querySelectorAll(".moleimgdiv").forEach((moleimg) => {moleimg.style.animation = ("redfilter 500ms ease reverse forwards")})
-        }, i * Math.random() * 350 + 99)
+            }, i * Math.random() * 350 + 99)
+        }
         setTimeout(() => {
-            molespawns.forEach((element) => {
-                element.querySelector("img").style.transform = ("scale(0.0001)")
+            moles.forEach((mole) => {
+                mole.element.querySelector("img").style.transform = ("scale(0.0001)")
                 roundcountshow();
             })
         }, 2500)
-        }
     }, 1000)
 
 }
@@ -135,11 +136,13 @@ startbutton.addEventListener('mousedown', () => {
     }, 1000)
 })
 
-let mole1state = "ok";
-let mole2state = "ok";
-let mole3state = "ok";
-let mole4state = "ok";
-
+function clickfx() {
+    cursorhb.style.animation = ("none")
+    cursorhb.offsetHeight;
+    cursorhb.style.animation = ("debugflicker 400ms ease")
+    let currentHit = Math.floor(Math.random() * hits.length)
+    hits[currentHit].cloneNode(true).play();
+}
 
 document.addEventListener('mousemove', (event) => {
     cursor.style.left = (`${event.clientX}px`)
@@ -155,58 +158,38 @@ document.addEventListener('mousedown', () => {
     cursor.querySelector("img").style.animation = ("none")
     cursor.querySelector("img").offsetHeight;
     cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
-    let currentHit = Math.floor(Math.random() * hits.length)
-    hits[currentHit].cloneNode(true).play();
-    clickSound.play();
+    clickSound.cloneNode(true).play();
 
-    if(clickCollision(molespawn1.querySelector("img"), cursorhb)) {
-        redFilter(molespawn1);
+    moles.forEach((mole) => {
+        if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
+            redFilter(mole.element);
 
-        //debug only
-        cursorhb.style.animation = ("none")
-        cursorhb.offsetHeight;
-        cursorhb.style.animation = ("debugflicker 400ms ease")
-        if(teasing) {
-            mole1state = "hit";
+            if(mole.state !== "dying" && mole.state !== "bury") {
+                clickfx();
+                if(!intro) {moleHit(mole)}
+            }
+            if(teasing) {
+                mole.state = "hit";
+            }
         }
-    }
-    if(clickCollision(molespawn2.querySelector("img"), cursorhb)) {
-        redFilter(molespawn2);
-
-        //debug only
-
-        cursorhb.style.animation = ("none")
-        cursorhb.offsetHeight;
-        cursorhb.style.animation = ("debugflicker 400ms ease")
-        if(teasing) {
-            mole2state = "hit";
-        }
-    }
-    if(clickCollision(molespawn3.querySelector("img"), cursorhb)) {
-        redFilter(molespawn3);
-
-        //debug only
-
-        cursorhb.style.animation = ("none")
-        cursorhb.offsetHeight;
-        cursorhb.style.animation = ("debugflicker 400ms ease")
-        if(teasing) {
-            mole3state = "hit";
-        }
-    }
-    if(clickCollision(molespawn4.querySelector("img"), cursorhb)) {
-        redFilter(molespawn4);
-
-        //debug only
-
-        cursorhb.style.animation = ("none")
-        cursorhb.offsetHeight;
-        cursorhb.style.animation = ("debugflicker 400ms ease")
-        if(teasing) {
-            mole4state = "hit";
-        }
-    }
+    })
 })
+
+const debugSound = new Audio("audio/hover.mp3")
+
+function moleHit(mole) {
+    if(mole.state == "bury" || mole.busy == false) {return;}
+    mole.state = "dying";
+    debugSound.cloneNode(true).play();
+    const moleImg = mole.element.querySelector("img")
+    if(moleImg.style.transform !== "scale(0.0001)" && !intro) {
+        moleImg.style.transform = ("scale(0.0001)")
+        moleImg.addEventListener("transitionend", () => {
+            mole.state = "bury";
+            mole.busy = false;
+        })
+    }
+}
 
 function clickCollision(divA, divB) {
     const a = divA.getBoundingClientRect();
@@ -231,16 +214,57 @@ let enemyList = [
     " Anteater"
 ]
 let round = 1;
-
+let score = 0;
 function roundcountshow() {
     roundCountText.textContent = (`ROUND ${round}`)
-    moleTypeText.textContent = [enemyList]
+    moleTypeText.textContent = enemyList;
     roundStartWrap.style.display = ("flex")
     roundStartWrap.style.animation = ("balloon-in 1.5s ease forwards")
     setTimeout(() => {
         roundStartWrap.style.animation = ("balloon-out 1.5s ease forwards")
         setTimeout(() => {
             roundStartWrap.style.display = ("none")
+            score = 0;
+            moles.forEach((mole) => {
+                mole.state = "bury";
+                mole.busy = false;
+            })
+            document.querySelectorAll(".moleimgdiv").forEach((moleimg) => {moleimg.style.animation = ("none")})
+
+            gameStart();
         }, 1500)
     }, 3500)
+}
+
+let randomMole;
+
+function gameStart() {
+    intro = false;
+    const interval = setInterval(() => {
+        if(score >= 10000) {
+            clearInterval(interval)
+            return;
+        }
+
+        const available = moles.filter(m => !m.busy)
+        if(available.length == 0) {return;}
+            
+        let randomMole = available[Math.floor(Math.random() * available.length)];
+        spawnMole(randomMole);
+    }, 1800) 
+}
+
+function spawnMole(mole) {
+    mole.state = "up";
+    mole.busy = true;
+    const moleImg = mole.element.querySelector("img")
+    moleImg.style.transition = "transform 350ms ease"
+    moleImg.style.transform = "scale(1)"
+    setTimeout(() => {
+        moleImg.style.transform = "scale(0.0001)"
+        setTimeout(() => {
+            mole.busy = false;
+            mole.state = "bury";
+        }, 350)
+    }, Math.random() * 1251 + 700)
 }

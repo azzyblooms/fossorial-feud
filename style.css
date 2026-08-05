@@ -1,21 +1,52 @@
 body {
-    background-color: rgb(104, 26, 12);
     color:rgb(255, 255, 255);
     font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     margin:0;
     animation-fill-mode: forwards;
     overflow-x:hidden;
     user-select:none;
+    background-color: black;
 }
 html {
     cursor:none;
     -webkit-user-drag: none;
 }
+#background {
+    height:100vh;
+    width:100vw;
+    position:fixed;
+    top:0%;
+    filter:brightness(0.34);
+    left:0%;
+    transform: translate(-50% -50%);
+    transform-origin: top left;
+    z-index: -100;
+    background-image: url(images/dirt.webp);
+    background-repeat: repeat;
+    background-size: auto;
+    animation: backgroundScroll 20s linear infinite
+}
+@keyframes backgroundScroll {
+    from {
+        background-position: 0 0;
+    } to {
+        background-position: 160px 1600px;
+    }
+}
 #pagetitle {
     font-size:50px;
     display:flex;
+    border:4px solid brown;
+    padding:8px;
+    justify-self: center;
+    align-self: center;
     justify-content: center;
-    align-items: center;
+    align-content: center;
+    width:400px;
+    padding-top:none;
+    border-radius: 5px;
+    background-color: rgb(99, 28, 28);
+    
     text-decoration: underline wavy;
 }
 
@@ -86,7 +117,7 @@ html {
     background-color:rgb(66, 47, 18);
     display:flex;
     position:absolute;
-    transform-origin: center center;
+    transform-origin: top left;
     top:50%;
     left:50%;
     transform:translate(-50%, -50%);
@@ -164,6 +195,38 @@ html {
     border:4px solid white;
 }
 
+#flashbang {
+    background-color: white;
+    z-index: 1000;
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:100vw;
+    height:100vh;
+    transform: translate(-50%, -50%);
+    display:none;
+    pointer-events: none
+}
+
+@keyframes flashbang {
+    0% {
+        display:inline;
+        opacity:1;
+    }
+    50% {
+        display:inline;
+        opacity:1;
+    }
+    99% {
+        display:inline;
+        opacity:0;
+    }
+    100% {
+        display:none;
+        opacity:0;
+    }
+}
+
 #scorewrap {
     display:flex;
     justify-content: center;
@@ -194,6 +257,23 @@ html {
     padding:10px;
     border:4px solid white;
     background-color: rgb(105, 207, 211);
+    border-radius:5px;
+    font-size:20px;
+}
+
+#testwrap {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    position:fixed;
+    transform:translate(-50%, -50%);
+    top:97%;
+    left:75%;
+}
+#testbutton {
+    padding:10px;
+    border:4px solid white;
+    background-color: rgb(123, 211, 105);
     border-radius:5px;
     font-size:20px;
 }

@@ -36,10 +36,10 @@ let intro = true;
 let difficulty = "easy";
 
 let moles = [
-    {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
-    {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
-    {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
-    {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0}
+    {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+    {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+    {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+    {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null}
 ]
 
 const laughs = [
@@ -52,6 +52,12 @@ const laughs = [
 const hits = [
     punch,
     //bonk
+]
+
+const enemyTypes = [
+    {name: "mole", image: "images/mole.png"},
+    {name: "groundhog", image: "images/groundhog.png"},
+    {name: "armadillo", image: "images/armadillo.png"}
 ]
 const moleGrid = document.getElementById("molegrid")
 molespawn5.style.display = "none";
@@ -67,13 +73,29 @@ molespawn14.style.display = "none";
 molespawn15.style.display = "none";
 molespawn16.style.display = "none";
 
+const testButton = document.getElementById("testbutton")
+const flashbang = document.getElementById("flashbang")
+testButton.addEventListener('mousedown', () => {
+    triggerFlashbang();
+})
+
+function triggerFlashbang() {
+    flashbang.style.animation = ("none")
+    flashbang.style.display = "none"
+    flashbang.offsetHeight;
+    flashbang.style.animation = "flashbang 2s ease forwards"
+    flashbang.style.display = "inline";
+}
+
+
+
 function difficultyChange() {
     if(difficulty == "easy") {
         moles = [
-            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0}
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null}
         ]
         molecontainer.style.scale = ("1")
         molespawn5.style.display = "none";
@@ -93,15 +115,15 @@ function difficultyChange() {
     if(difficulty == "normal") {
         molecontainer.style.scale = ("0.75")
         moles = [
-            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0}
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null}
         ]
         molespawn5.style.display = "flex";
         molespawn6.style.display = "flex";
@@ -120,22 +142,22 @@ function difficultyChange() {
     if(difficulty == "hard") {
         molecontainer.style.scale = ("0.5")
         moles = [
-            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn10, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn11, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn12, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn13, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn14, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn15, busy:false, state:"ok", hideTimer:null, cooldown:0},
-            {element: molespawn16, busy:false, state:"ok", hideTimer:null, cooldown:0}
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn10, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn11, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn12, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn13, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn14, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn15, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
+            {element: molespawn16, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null}
         ]
         molespawn5.style.display = "flex";
         molespawn6.style.display = "flex";
@@ -154,13 +176,12 @@ function difficultyChange() {
 }
 
 
-
-
 const clickSound = new Audio('audio/click2.mp3')
 
 const startpageelements = [
     document.getElementById("startbutton"),
-    document.getElementById("pagetitle")
+    document.getElementById("pagetitle"),
+    document.getElementById("difficulty")
 ]
 
 difficultyButton.addEventListener('mousedown', () => {
@@ -241,8 +262,8 @@ function grr() {
         setTimeout(() => {
             moles.forEach((mole) => {
                 mole.element.querySelector("img").style.transform = ("scale(0)")
-                roundcountshow();
             })
+            roundcountshow();
         }, 2500)
     }, 1000)
 
@@ -289,6 +310,7 @@ document.addEventListener('mousedown', () => {
     if(stun > 0) {
         const stunSound = new Audio('audio/hover.mp3')
         stunSound.cloneNode(true).play();
+        cursor.querySelector("img").style.animation = "redfilter 100ms ease";
     } else {
         cursor.querySelector("img").style.animation = ("none")
         cursor.querySelector("img").offsetHeight;
@@ -301,7 +323,8 @@ document.addEventListener('mousedown', () => {
             if(mole.state == "dying") return;
             if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
                 if(mole.state == "bury") {
-                    stun = 200;
+                    stun = 300;
+                    cursor.querySelector("img").style.animation = "redfilter 200ms ease"
                     growlSound.cloneNode(true).play();
                     console.log("dawg u missed")
                     score -= 10;
@@ -325,7 +348,8 @@ document.addEventListener('mousedown', () => {
         })
 
         if(hitMole == false && !intro) {
-            stun = 200;
+            stun = 300;
+            cursor.querySelector("img").style.animation = "redfilter 200ms ease";
             growlSound.cloneNode(true).play();
             console.log("dawg u missed")
             score -= 10;
@@ -342,18 +366,28 @@ const streakText = document.getElementById("streak")
 
 function moleHit(mole) {
     if(mole.state !== "up") {return;}
+    clearTimeout(mole.spawningTimer)
     mole.state = "dying";
-    score += 50;
-    streak++;
+    if(mole.type == "mole") {
+        score += 50;
+        streak++;
+    } else if (mole.type == "groundhog") {
+        score -= 50;
+        streak = 0;
+        bonk.cloneNode(true).play();
+    } else if (mole.type == "armadillo") {
+        streak = 0;
+        triggerFlashbang();
+        bonk.cloneNode(true).play();
+    }
     streakText.textContent = (`STREAK: ${streak}`)
     scoreText.textContent = (`SCORE: ${score}`)
-    debugSound.cloneNode(true).play();
     const moleImg = mole.element.querySelector("img")
     if(moleImg.style.transform !== "scale(0)" && !intro) {
         moleImg.style.transform = ("scale(0)")
-        moleImg.addEventListener('transitionend', () => {
+        setTimeout(() => {
             mole.state = "bury";
-        }, {once:true})
+        }, 350)
         mole.cooldown = Math.floor(Math.random() * 1500 + 350);
     }
 }
@@ -377,8 +411,8 @@ const roundStartWrap = document.getElementById("gamestartwrap")
 
 let enemyList = [
     "Mole",
-    " Test Enemy",
-    " Anteater"
+    " Groundhog",
+    " Armadillo"
 ]
 let round = 1;
 let score = 0;
@@ -406,6 +440,7 @@ function roundcountshow() {
 }
 
 let randomMole;
+let globalCooldown = 0;
 
 function gameStart() {
     intro = false;
@@ -417,10 +452,21 @@ function gameStart() {
             heheheha.play();
             return;
         }
-        const available = moles.filter(mole => mole.state == "bury");
+        const available = moles.filter(mole => mole.state == "bury" && mole.cooldown <= 0 && globalCooldown <= 0);
         if (available.length > 0) {
             const randomMole = available[Math.floor(Math.random() * available.length)];
-            spawnMole(randomMole)
+            //spawnMole(randomMole)
+            const moleType = Math.floor(Math.random() * 21)
+            if(moleType >= 0 && moleType <= 14) {
+                spawnMole(randomMole)
+            }
+            if(moleType >= 15 && moleType <= 18) {
+                spawnGroundhog(randomMole)
+            }
+            if(moleType >= 19 && moleType <= 20) {
+                spawnArmadillo(randomMole)
+            }
+            //globalCooldown = Math.random() * 100 + 50;
         }
 
         const delay = Math.random() * 1800 + 400;
@@ -439,19 +485,26 @@ setInterval(() => {
     if(stun > 0) {
         stun -= 10;
     }
+    if(globalCooldown > 0) {
+        globalCooldown -= 10;
+    }
 }, 10)
 
 function spawnMole(mole) {
-    if(mole.state !== "bury" || mole.cooldown > 0) {return;}
+    if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
     clearTimeout(mole.hideTimer)
-
+    clearTimeout(mole.spawningTimer)
+    mole.type = "mole";
     mole.state = "up";
     const moleImg = mole.element.querySelector("img")
+    moleImg.src = "images/mole.png"
     moleImg.style.transition = "transform 350ms ease"
     moleImg.style.transform = "scale(1)"
-    moleImg.addEventListener('transitionend', () => {
+    mole.spawningTimer = setTimeout(() => {
         mole.state = "up";
-    }, {once:true})
+        moleImg.style.transform = "scale(1)"
+        mole.spawningTimer = null;
+    }, 350)
     mole.hideTimer = setTimeout(() => {
         if(mole.state == "up") {
             moleImg.style.transform = "scale(0)"
@@ -465,5 +518,67 @@ function spawnMole(mole) {
                 mole.cooldown = Math.floor(Math.random() * 1500 + 350);
             }, 350)
         }
-    }, Math.random() * 2000 + 700)
+    }, Math.random() * 2000 + 500)
+}
+
+function spawnGroundhog(mole) {
+    if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
+    clearTimeout(mole.hideTimer)
+    clearTimeout(mole.spawningTimer)
+    mole.type = "groundhog"
+    mole.state = "up";
+    const moleImg = mole.element.querySelector("img")
+    moleImg.src = "images/groundhog.png"
+    moleImg.style.transition = "transform 350ms ease"
+    moleImg.style.transform = "scale(1)"
+    mole.spawningTimer = setTimeout(() => {
+        mole.state = "up";
+        moleImg.style.transform = "scale(1)"
+        mole.spawningTimer = null;
+    }, 350)
+    mole.hideTimer = setTimeout(() => {
+        if(mole.state == "up") {
+            moleImg.style.transform = "scale(0)"
+            setTimeout(() => {
+
+                /*if(mole.state !== "dying") {
+                    streak = 0; //is this fair?
+                    streakText.textContent = (`STREAK: ${streak}`)
+                }*/
+                mole.state = "bury";
+                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+            }, 350)
+        }
+    }, Math.random() * 1500 + 300)
+}
+
+function spawnArmadillo(mole) {
+    if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
+    clearTimeout(mole.hideTimer)
+    clearTimeout(mole.spawningTimer)
+    mole.type = "armadillo"
+    mole.state = "up";
+    const moleImg = mole.element.querySelector("img")
+    moleImg.src = "images/armadillo.png"
+    moleImg.style.transition = "transform 350ms ease"
+    moleImg.style.transform = "scale(1)"
+    mole.spawningTimer = setTimeout(() => {
+        mole.state = "up";
+        moleImg.style.transform = "scale(1)"
+        mole.spawningTimer = null;
+    }, 350)
+    mole.hideTimer = setTimeout(() => {
+        if(mole.state == "up") {
+            moleImg.style.transform = "scale(0)"
+            setTimeout(() => {
+
+                /*if(mole.state !== "dying") {
+                    streak = 0; //is this fair?
+                    streakText.textContent = (`STREAK: ${streak}`)
+                }*/
+                mole.state = "bury";
+                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+            }, 350)
+        }
+    }, Math.random() * 1000 + 400)
 }

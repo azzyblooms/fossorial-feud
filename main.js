@@ -3,11 +3,24 @@ const pagetitle = document.getElementById("pagetitle")
 const molecontainer = document.getElementById("molecontainer")
 const cursor = document.getElementById("cursor")
 const cursorhb = document.getElementById("cursorhb")
+const difficultyButton = document.getElementById("difficulty")
 
 const molespawn1 = document.getElementById("molespawn1")
 const molespawn2 = document.getElementById("molespawn2")
 const molespawn3 = document.getElementById("molespawn3")
 const molespawn4 = document.getElementById("molespawn4")
+const molespawn5 = document.getElementById("molespawn5")
+const molespawn6 = document.getElementById("molespawn6")
+const molespawn7 = document.getElementById("molespawn7")
+const molespawn8 = document.getElementById("molespawn8")
+const molespawn9 = document.getElementById("molespawn9")
+const molespawn10 = document.getElementById("molespawn10")
+const molespawn11 = document.getElementById("molespawn11")
+const molespawn12 = document.getElementById("molespawn12")
+const molespawn13 = document.getElementById("molespawn13")
+const molespawn14 = document.getElementById("molespawn14")
+const molespawn15 = document.getElementById("molespawn15")
+const molespawn16 = document.getElementById("molespawn16")
 
 const laugh1 = new Audio("audio/laughs/laugh1.mp3")
 const laugh2 = new Audio("audio/laughs/laugh2.mp3")
@@ -16,15 +29,17 @@ const laugh4 = new Audio("audio/laughs/laugh4.mp3")
 const heheheha = new Audio("audio/laughs/heheheha.mp3")
 const bonk = new Audio("audio/hits/bonk.mp3")
 const punch = new Audio("audio/hits/punch.mp3")
-const grrr = new Audio("audio/grrr.mp3")
+const growlSound = new Audio("audio/grrr.mp3")
+
 
 let intro = true;
+let difficulty = "easy";
 
-const moles = [
-    {element: molespawn1, busy:false, state:"ok"},
-    {element: molespawn2, busy:false, state:"ok"},
-    {element: molespawn3, busy:false, state:"ok"},
-    {element: molespawn4, busy:false, state:"ok"}
+let moles = [
+    {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
+    {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
+    {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
+    {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0}
 ]
 
 const laughs = [
@@ -38,6 +53,107 @@ const hits = [
     punch,
     //bonk
 ]
+const moleGrid = document.getElementById("molegrid")
+molespawn5.style.display = "none";
+molespawn6.style.display = "none";
+molespawn7.style.display = "none";
+molespawn8.style.display = "none";
+molespawn9.style.display = "none";
+molespawn10.style.display = "none";
+molespawn11.style.display = "none";
+molespawn12.style.display = "none";
+molespawn13.style.display = "none";
+molespawn14.style.display = "none";
+molespawn15.style.display = "none";
+molespawn16.style.display = "none";
+
+function difficultyChange() {
+    if(difficulty == "easy") {
+        moles = [
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0}
+        ]
+        molecontainer.style.scale = ("1")
+        molespawn5.style.display = "none";
+        molespawn6.style.display = "none";
+        molespawn7.style.display = "none";
+        molespawn8.style.display = "none";
+        molespawn9.style.display = "none";
+        molespawn10.style.display = "none";
+        molespawn11.style.display = "none";
+        molespawn12.style.display = "none";
+        molespawn13.style.display = "none";
+        molespawn14.style.display = "none";
+        molespawn15.style.display = "none";
+        molespawn16.style.display = "none";
+        moleGrid.style.gridTemplateColumns = ("repeat(2, 1fr)")
+    }
+    if(difficulty == "normal") {
+        molecontainer.style.scale = ("0.75")
+        moles = [
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0}
+        ]
+        molespawn5.style.display = "flex";
+        molespawn6.style.display = "flex";
+        molespawn7.style.display = "flex";
+        molespawn8.style.display = "flex";
+        molespawn9.style.display = "flex";
+        molespawn10.style.display = "none";
+        molespawn11.style.display = "none";
+        molespawn12.style.display = "none";
+        molespawn13.style.display = "none";
+        molespawn14.style.display = "none";
+        molespawn15.style.display = "none";
+        molespawn16.style.display = "none";
+        moleGrid.style.gridTemplateColumns = ("repeat(3, 1fr)")
+    }
+    if(difficulty == "hard") {
+        molecontainer.style.scale = ("0.5")
+        moles = [
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn10, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn11, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn12, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn13, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn14, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn15, busy:false, state:"ok", hideTimer:null, cooldown:0},
+            {element: molespawn16, busy:false, state:"ok", hideTimer:null, cooldown:0}
+        ]
+        molespawn5.style.display = "flex";
+        molespawn6.style.display = "flex";
+        molespawn7.style.display = "flex";
+        molespawn8.style.display = "flex";
+        molespawn9.style.display = "flex";
+        molespawn10.style.display = "flex";
+        molespawn11.style.display = "flex";
+        molespawn12.style.display = "flex";
+        molespawn13.style.display = "flex";
+        molespawn14.style.display = "flex";
+        molespawn15.style.display = "flex";
+        molespawn16.style.display = "flex";
+        moleGrid.style.gridTemplateColumns = ("repeat(4, 1fr)")
+    }
+}
+
+
 
 
 const clickSound = new Audio('audio/click2.mp3')
@@ -46,6 +162,19 @@ const startpageelements = [
     document.getElementById("startbutton"),
     document.getElementById("pagetitle")
 ]
+
+difficultyButton.addEventListener('mousedown', () => {
+    if(difficulty == "easy") {
+        difficulty = "normal";
+    } else if(difficulty == "normal") {
+        difficulty = "hard";
+    } else {
+        difficulty = "easy"
+    }
+    difficultyChange();
+    difficultyButton.textContent = (`DIFFICULTY: ${difficulty.toUpperCase()}`)
+})
+
 
 let teasing = true;
 
@@ -99,10 +228,9 @@ function grr() {
 
             let currentMole = moles[Math.floor(Math.random() * moles.length)];
 
-            const growl = grrr.cloneNode(true);
+            const growl = growlSound.cloneNode(true);
             growl.playbackRate = Math.random() * 1.4 + 0.6;
             growl.preservesPitch = false;
-            console.log(growl.playbackRate)
             growl.play();
             currentMole.element.querySelector("img").style.animation = ("none")
             currentMole.element.querySelector("img").offsetHeight;
@@ -112,7 +240,7 @@ function grr() {
         }
         setTimeout(() => {
             moles.forEach((mole) => {
-                mole.element.querySelector("img").style.transform = ("scale(0.0001)")
+                mole.element.querySelector("img").style.transform = ("scale(0)")
                 roundcountshow();
             })
         }, 2500)
@@ -154,40 +282,79 @@ document.addEventListener('mousemove', (event) => {
     cursorhb.style.top = (`${event.clientY}px`)
 })
 
+let stun = 0;
+
+
 document.addEventListener('mousedown', () => {
-    cursor.querySelector("img").style.animation = ("none")
-    cursor.querySelector("img").offsetHeight;
-    cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
-    clickSound.cloneNode(true).play();
+    if(stun > 0) {
+        const stunSound = new Audio('audio/hover.mp3')
+        stunSound.cloneNode(true).play();
+    } else {
+        cursor.querySelector("img").style.animation = ("none")
+        cursor.querySelector("img").offsetHeight;
+        cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
+        clickSound.cloneNode(true).play();
 
-    moles.forEach((mole) => {
-        if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
-            redFilter(mole.element);
+        let hitMole = false;
 
-            if(mole.state !== "dying" && mole.state !== "bury") {
-                clickfx();
-                if(!intro) {moleHit(mole)}
+        moles.forEach((mole) => {
+            if(mole.state == "dying") return;
+            if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
+                if(mole.state == "bury") {
+                    stun = 200;
+                    growlSound.cloneNode(true).play();
+                    console.log("dawg u missed")
+                    score -= 10;
+                    streak = 0;
+                    streakText.textContent = (`STREAK: ${streak}`)
+                    scoreText.textContent = (`SCORE: ${score}`)
+                } else {
+                    redFilter(mole.element);
+                    hitMole = true;
+                    if(mole.state == "up") {
+                        clickfx();
+                        if(!intro) {moleHit(mole)}
+                    }
+                    if(teasing) {
+                        mole.state = "hit";
+                        clickfx();
+                    }
+                    console.log("hit")
+                }
             }
-            if(teasing) {
-                mole.state = "hit";
-            }
+        })
+
+        if(hitMole == false && !intro) {
+            stun = 200;
+            growlSound.cloneNode(true).play();
+            console.log("dawg u missed")
+            score -= 10;
+            streak = 0;
+            streakText.textContent = (`STREAK: ${streak}`)
+            scoreText.textContent = (`SCORE: ${score}`)
         }
-    })
+    }
 })
 
+const scoreText = document.getElementById("score")
 const debugSound = new Audio("audio/hover.mp3")
+const streakText = document.getElementById("streak")
 
 function moleHit(mole) {
-    if(mole.state == "bury" || mole.busy == false) {return;}
+    if(mole.state !== "up") {return;}
     mole.state = "dying";
+    score += 50;
+    streak++;
+    streakText.textContent = (`STREAK: ${streak}`)
+    scoreText.textContent = (`SCORE: ${score}`)
     debugSound.cloneNode(true).play();
     const moleImg = mole.element.querySelector("img")
-    if(moleImg.style.transform !== "scale(0.0001)" && !intro) {
-        moleImg.style.transform = ("scale(0.0001)")
-        moleImg.addEventListener("transitionend", () => {
+    if(moleImg.style.transform !== "scale(0)" && !intro) {
+        moleImg.style.transform = ("scale(0)")
+        moleImg.addEventListener('transitionend', () => {
             mole.state = "bury";
-            mole.busy = false;
-        })
+        }, {once:true})
+        mole.cooldown = Math.floor(Math.random() * 1500 + 350);
     }
 }
 
@@ -215,6 +382,10 @@ let enemyList = [
 ]
 let round = 1;
 let score = 0;
+let streak = 0;
+scoreText.textContent = (`SCORE: ${score}`)
+streakText.textContent = (`STREAK: ${streak}`)
+
 function roundcountshow() {
     roundCountText.textContent = (`ROUND ${round}`)
     moleTypeText.textContent = enemyList;
@@ -224,10 +395,8 @@ function roundcountshow() {
         roundStartWrap.style.animation = ("balloon-out 1.5s ease forwards")
         setTimeout(() => {
             roundStartWrap.style.display = ("none")
-            score = 0;
             moles.forEach((mole) => {
                 mole.state = "bury";
-                mole.busy = false;
             })
             document.querySelectorAll(".moleimgdiv").forEach((moleimg) => {moleimg.style.animation = ("none")})
 
@@ -240,31 +409,61 @@ let randomMole;
 
 function gameStart() {
     intro = false;
-    const interval = setInterval(() => {
-        if(score >= 10000) {
-            clearInterval(interval)
+    moles.forEach((mole) => {
+        mole.state = "bury";
+    })
+    function spawnLoop() {
+        if(score >= 7500) {
+            heheheha.play();
             return;
         }
+        const available = moles.filter(mole => mole.state == "bury");
+        if (available.length > 0) {
+            const randomMole = available[Math.floor(Math.random() * available.length)];
+            spawnMole(randomMole)
+        }
 
-        const available = moles.filter(m => !m.busy)
-        if(available.length == 0) {return;}
-            
-        let randomMole = available[Math.floor(Math.random() * available.length)];
-        spawnMole(randomMole);
-    }, 1800) 
+        const delay = Math.random() * 1800 + 400;
+        setTimeout(spawnLoop, delay)
+    }
+    spawnLoop();
+
 }
 
+setInterval(() => {
+    moles.forEach((mole) => {
+        if(mole.cooldown > 0 && mole.state !== "up") {
+            mole.cooldown -= 10;
+        }
+    })
+    if(stun > 0) {
+        stun -= 10;
+    }
+}, 10)
+
 function spawnMole(mole) {
+    if(mole.state !== "bury" || mole.cooldown > 0) {return;}
+    clearTimeout(mole.hideTimer)
+
     mole.state = "up";
-    mole.busy = true;
     const moleImg = mole.element.querySelector("img")
     moleImg.style.transition = "transform 350ms ease"
     moleImg.style.transform = "scale(1)"
-    setTimeout(() => {
-        moleImg.style.transform = "scale(0.0001)"
-        setTimeout(() => {
-            mole.busy = false;
-            mole.state = "bury";
-        }, 350)
-    }, Math.random() * 1251 + 700)
+    moleImg.addEventListener('transitionend', () => {
+        mole.state = "up";
+    }, {once:true})
+    mole.hideTimer = setTimeout(() => {
+        if(mole.state == "up") {
+            moleImg.style.transform = "scale(0)"
+            setTimeout(() => {
+
+                if(mole.state !== "dying") {
+                    streak = 0; //is this fair?
+                    streakText.textContent = (`STREAK: ${streak}`)
+                }
+                mole.state = "bury";
+                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+            }, 350)
+        }
+    }, Math.random() * 2000 + 700)
 }

@@ -73,6 +73,12 @@ molespawn14.style.display = "none";
 molespawn15.style.display = "none";
 molespawn16.style.display = "none";
 
+let epilepsyFriendly = false;
+const epilepsyWrap = document.getElementById("epilepsywrap")
+const epilepsyContainer = document.getElementById("epilepsy")
+const epilepsyProceed = document.getElementById("epilepsyproceed")
+const epilepsyWarningToggle = document.getElementById("epilepsywarningtoggle")
+
 const testButton = document.getElementById("testbutton")
 const flashbang = document.getElementById("flashbang")
 testButton.addEventListener('mousedown', () => {
@@ -83,10 +89,17 @@ function triggerFlashbang() {
     flashbang.style.animation = ("none")
     flashbang.style.display = "none"
     flashbang.offsetHeight;
+    if(epilepsyFriendly == true) {
+        flashbang.style.backgroundColor = "black"
+    } else {
+        flashbang.style.backgroundColor = "white"
+    }
     flashbang.style.animation = "flashbang 2s ease forwards"
     flashbang.style.display = "inline";
 }
-
+epilepsyWarningToggle.addEventListener("mousedown", () => {
+    epilepsyFriendly = !epilepsyFriendly;
+})
 
 
 function difficultyChange() {
@@ -273,12 +286,23 @@ startbutton.addEventListener('mousedown', () => {
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
     })
+    epilepsyWrap.style.display = "flex"
+    epilepsyContainer.style.animation = "slideleft 1s ease-in-out forwards"
     setTimeout(() => {
         startpageelements.forEach((element) => {
             element.style.display = ("none")
         })
+    }, 1000)
+})
+
+epilepsyProceed.addEventListener('mousedown', () => {
+    epilepsyContainer.style.animation = ("wipeleft 1s ease-in-out forwards")
+    setTimeout(() => {
+        epilepsyWrap.style.display = ("none")
         molecontainer.style.display = ("flex")
         molecontainer.style.animation = ("fadein 1.2s ease forwards")
+        scoreWrap.style.display = "flex"
+        scoreWrap.style.animation = ("fadein 1.2s ease forwards")
         setTimeout(() => {
             tease();
         }, 1300)
@@ -324,6 +348,11 @@ document.addEventListener('mousedown', () => {
             if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
                 if(mole.state == "bury") {
                     stun = 300;
+                    scoreText.style.animation = "none"
+                    scoreText.offsetHeight;
+                    scoreText.style.animation = "loseScore 300ms ease"
+                    cursor.querySelector("img").style.animation = "none"
+                    cursor.querySelector("img").offsetHeight;
                     cursor.querySelector("img").style.animation = "redfilter 200ms ease"
                     growlSound.cloneNode(true).play();
                     console.log("dawg u missed")
@@ -349,7 +378,12 @@ document.addEventListener('mousedown', () => {
 
         if(hitMole == false && !intro) {
             stun = 300;
+            cursor.querySelector("img").style.animation = "none";
+            cursor.querySelector("img").offsetHeight;
             cursor.querySelector("img").style.animation = "redfilter 200ms ease";
+            scoreText.style.animation = "none"
+            scoreText.offsetHeight;
+            scoreText.style.animation = "loseScore 300ms ease"
             growlSound.cloneNode(true).play();
             console.log("dawg u missed")
             score -= 10;
@@ -363,7 +397,7 @@ document.addEventListener('mousedown', () => {
 const scoreText = document.getElementById("score")
 const debugSound = new Audio("audio/hover.mp3")
 const streakText = document.getElementById("streak")
-
+const scoreWrap = document.getElementById("scorewrap")
 function moleHit(mole) {
     if(mole.state !== "up") {return;}
     clearTimeout(mole.spawningTimer)
@@ -371,9 +405,15 @@ function moleHit(mole) {
     if(mole.type == "mole") {
         score += 50;
         streak++;
+        scoreText.style.animation = "none"
+        scoreText.offsetHeight;
+        scoreText.style.animation = "scoreBubbleUp 400ms ease"
     } else if (mole.type == "groundhog") {
         score -= 50;
         streak = 0;
+        scoreText.style.animation = "none"
+        scoreText.offsetHeight;
+        scoreText.style.animation = "loseScore 400ms ease"
         bonk.cloneNode(true).play();
     } else if (mole.type == "armadillo") {
         streak = 0;

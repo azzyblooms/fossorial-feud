@@ -46,7 +46,6 @@ html {
     padding-top:none;
     border-radius: 5px;
     background-color: rgb(99, 28, 28);
-    
     text-decoration: underline wavy;
 }
 
@@ -84,9 +83,59 @@ html {
     transform:scale(1.2);
 }
 
+#epilepsywrap {
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    align-items: center;
+    justify-content: center;
+}
+
+#epilepsy {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    padding:10px;
+    border:8px solid rgb(134, 45, 45);
+    background-color: rgb(100, 22, 22);
+    width:850px;
+    flex-direction: column;
+}
+#epilepsywarning {
+    font-size:30px;
+    text-align: center;
+}
+#epilepsyoptions {
+    display:flex;
+    flex-direction: row;
+    gap:10px;
+}
+.button {
+    margin-top:10px;
+    border:4px solid brown;
+    padding:10px;
+    font-size:20px;
+    background-color: rgb(80, 18, 18);
+    transition:transform ease 300ms;
+}
+.button:hover {
+    transform:scale(1.1)
+}
+
+
 @keyframes wipeleft {
     to {
-        transform:scaleX(2) translateX(-500px)
+        transform:scaleX(2) translateX(-1000px)
+    }
+}
+@keyframes slideleft {
+    from {
+        transform:scaleX(2) translateX(1000px)
+    }
+    to {
+        transform:scaleX(1) translateX(0px)
     }
 }
 
@@ -228,20 +277,46 @@ html {
 }
 
 #scorewrap {
-    display:flex;
+    display:none;
     justify-content: center;
     align-items: center;
     position:fixed;
     transform:translate(-50%, -50%);
-    top:75%;
-    left:75%;
+    top:15%;
+    left:50%;
 }
 #score {
     padding:10px;
     border:4px solid white;
     background-color: blue;
     border-radius:5px;
-    font-size:20px;
+    font-size:50px;
+}
+
+@keyframes scoreBubbleUp {
+    from {
+        transform:scale(1.2)
+    } to {
+        transform:scale(1)
+    }
+}
+
+@keyframes scoreShrinkDown {
+    from {
+        transform:scale(0.8)
+    } to {
+        transform:scale(1)
+    }
+}
+
+@keyframes loseScore {
+    from {
+        background-color: red;
+        transform:scale(0.8)
+    } to {
+        background-color: blue;
+        transform:scale(1)
+    }
 }
 
 #streakwrap {

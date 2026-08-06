@@ -4,6 +4,7 @@ const molecontainer = document.getElementById("molecontainer")
 const cursor = document.getElementById("cursor")
 const cursorhb = document.getElementById("cursorhb")
 const difficultyButton = document.getElementById("difficulty")
+const settingsButton = document.getElementById("settingsbutton")
 
 const molespawn1 = document.getElementById("molespawn1")
 const molespawn2 = document.getElementById("molespawn2")
@@ -34,6 +35,7 @@ const growlSound = new Audio("audio/grrr.mp3")
 
 let intro = true;
 let difficulty = "easy";
+let skipIntro = false;
 
 let moles = [
     {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null},
@@ -59,6 +61,50 @@ const enemyTypes = [
     {name: "groundhog", image: "images/groundhog.png"},
     {name: "armadillo", image: "images/armadillo.png"}
 ]
+
+const toggleBrightFlashes = document.getElementById("epilepsybutton")
+const toggleSkipIntro = document.getElementById("introbutton")
+const toggleMouseHitbox = document.getElementById("mousehitboxbutton")
+
+const settings = [
+    {setting: "brightFlashes", isOn: true, button: toggleBrightFlashes},
+    {setting: "skipIntro", isOn: false, button: toggleSkipIntro},
+    {setting: "showMouseHitbox", isOn: true, button: toggleMouseHitbox}
+]
+
+settings.forEach((button) => {
+    if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
+    if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
+})
+
+toggleBrightFlashes.addEventListener('mousedown', () => {
+    settings[0].isOn = !settings[0].isOn;
+    settings.forEach((button) => {
+        if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
+        if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
+    })
+    epilepsyFriendly = !epilepsyFriendly;
+})
+
+toggleSkipIntro.addEventListener('mousedown', () => {
+    settings[1].isOn = !settings[1].isOn;
+    settings.forEach((button) => {
+        if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
+        if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
+    })
+    skipIntro = !skipIntro
+})
+
+toggleMouseHitbox.addEventListener('mousedown', () => {
+    settings[2].isOn = !settings[2].isOn;
+    settings.forEach((button) => {
+        if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
+        if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
+    })
+    if(settings[2].isOn) {cursorhb.style.opacity = "0"} else {cursorhb.style.opacity = "1"}
+})
+
+
 const moleGrid = document.getElementById("molegrid")
 molespawn5.style.display = "none";
 molespawn6.style.display = "none";
@@ -84,6 +130,18 @@ const flashbang = document.getElementById("flashbang")
 testButton.addEventListener('mousedown', () => {
     triggerFlashbang();
 })
+
+let settingsOpen = false;
+const settingsMenu = document.getElementById("settingsmenu")
+settingsButton.addEventListener('mousedown', () => {
+    if(!settingsOpen) {
+        settingsOpen = true;
+        settingsMenu.style.display = "flex";
+    }
+})
+
+
+
 
 function triggerFlashbang() {
     flashbang.style.animation = ("none")
@@ -194,7 +252,8 @@ const clickSound = new Audio('audio/click2.mp3')
 const startpageelements = [
     document.getElementById("startbutton"),
     document.getElementById("pagetitle"),
-    document.getElementById("difficulty")
+    document.getElementById("difficulty"),
+    document.getElementById("settings")
 ]
 
 difficultyButton.addEventListener('mousedown', () => {
@@ -216,6 +275,13 @@ function tease() {
     intro = true;
     if(!teasing) {
         grr();
+        return;
+    }
+    if(skipIntro) {
+        moles.forEach((mole) => {
+            mole.element.querySelector("img").style.opacity = ("1")
+        })
+        roundcountshow();
         return;
     }
 
@@ -255,30 +321,36 @@ function tease() {
 
 function grr() {
 
-    setTimeout(() => {
-
-        for(let i = 0; i < 5; i++) {
+    if(!skipIntro) {
         setTimeout(() => {
-
-            let currentMole = moles[Math.floor(Math.random() * moles.length)];
-
-            const growl = growlSound.cloneNode(true);
-            growl.playbackRate = Math.random() * 1.4 + 0.6;
-            growl.preservesPitch = false;
-            growl.play();
-            currentMole.element.querySelector("img").style.animation = ("none")
-            currentMole.element.querySelector("img").offsetHeight;
-            currentMole.element.querySelector("img").style.animation = ("wigglex 100ms ease")
-            document.querySelectorAll(".moleimgdiv").forEach((moleimg) => {moleimg.style.animation = ("redfilter 500ms ease reverse forwards")})
-            }, i * Math.random() * 350 + 99)
-        }
-        setTimeout(() => {
-            moles.forEach((mole) => {
-                mole.element.querySelector("img").style.transform = ("scale(0)")
-            })
-            roundcountshow();
-        }, 2500)
-    }, 1000)
+            for(let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                let currentMole = moles[Math.floor(Math.random() * moles.length)];
+                const growl = growlSound.cloneNode(true);
+                growl.playbackRate = Math.random() * 1.4 + 0.6;
+                growl.preservesPitch = false;
+                growl.play();
+                currentMole.element.querySelector("img").style.animation = ("none")
+                currentMole.element.querySelector("img").offsetHeight;
+                currentMole.element.querySelector("img").style.animation = ("wigglex 100ms ease")
+                document.querySelectorAll(".moleimgdiv").forEach((moleimg) => {moleimg.style.animation = ("redfilter 500ms ease reverse forwards")})
+                }, i * Math.random() * 350 + 99)
+            }
+            setTimeout(() => {
+                moles.forEach((mole) => {
+                    mole.element.querySelector("img").style.transform = ("scale(0)")
+                })
+                roundcountshow();
+            }, 2500)
+        }, 1000)
+    } else {
+        teasing = false;
+        intro = false;
+        moles.forEach((mole) => {
+            mole.element.querySelector("img").style.transform = ("scale(0)")
+        })
+        roundcountshow();
+    }
 
 }
 
@@ -286,8 +358,20 @@ startbutton.addEventListener('mousedown', () => {
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
     })
-    epilepsyWrap.style.display = "flex"
-    epilepsyContainer.style.animation = "slideleft 1s ease-in-out forwards"
+    if(!epilepsyFriendly) {
+        epilepsyWrap.style.display = "flex"
+        epilepsyContainer.style.animation = "slideleft 1s ease-in-out forwards"
+    } else {
+        setTimeout(() => {
+            molecontainer.style.display = ("flex")
+            molecontainer.style.animation = ("fadein 1.2s ease forwards")
+            scoreWrap.style.display = "flex"
+            scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+            setTimeout(() => {
+                tease();
+            }, 1300)
+        }, 1000)
+    }
     setTimeout(() => {
         startpageelements.forEach((element) => {
             element.style.display = ("none")
@@ -466,6 +550,9 @@ function roundcountshow() {
     roundStartWrap.style.display = ("flex")
     roundStartWrap.style.animation = ("balloon-in 1.5s ease forwards")
     setTimeout(() => {
+        moles.forEach((mole) => {
+            mole.element.querySelector("img").style.transform = "scale(0)"
+        })
         roundStartWrap.style.animation = ("balloon-out 1.5s ease forwards")
         setTimeout(() => {
             roundStartWrap.style.display = ("none")

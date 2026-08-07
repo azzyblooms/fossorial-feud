@@ -1,3 +1,31 @@
+//web audio api stuff
+let audioCtx;
+let audioBuffer;
+let sourceNode;
+
+async function setupAudio(audioPath) {
+    if (audioCtx) return; 
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const response = await fetch(audioPath);
+    const arrayBuffer = await response.arrayBuffer();
+    audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+    gainNode = audioCtx.createGain();
+  
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime)
+}
+
+function playLoopingMusic() {
+  sourceNode = audioCtx.createBufferSource();
+  sourceNode.buffer = audioBuffer;
+  sourceNode.loop = true;
+  sourceNode.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  sourceNode.start(0);
+}
+
+
 const startbutton = document.getElementById("startbutton")
 const pagetitle = document.getElementById("pagetitle")
 const molecontainer = document.getElementById("molecontainer")
@@ -22,6 +50,21 @@ const molespawn13 = document.getElementById("molespawn13")
 const molespawn14 = document.getElementById("molespawn14")
 const molespawn15 = document.getElementById("molespawn15")
 const molespawn16 = document.getElementById("molespawn16")
+
+
+const tutorialmolecontainer = document.getElementById("tutorialmolecontainer")
+const tutorialmolegrid = document.getElementById("tutorialmolegrid")
+
+const tutorialspawn1 = document.getElementById("tmolespawn1")
+const tutorialspawn2 = document.getElementById("tmolespawn2")
+const tutorialspawn3 = document.getElementById("tmolespawn3")
+const tutorialspawn4 = document.getElementById("tmolespawn4")
+
+tutorialspawn2.style.display = "none";
+tutorialspawn3.style.display = "none";
+tutorialspawn4.style.display = "none";
+
+
 
 const laugh1 = new Audio("audio/laughs/laugh1.mp3")
 const laugh2 = new Audio("audio/laughs/laugh2.mp3")
@@ -103,6 +146,9 @@ toggleMouseHitbox.addEventListener('mousedown', () => {
     })
     if(settings[2].isOn) {cursorhb.style.opacity = "0"} else {cursorhb.style.opacity = "1"}
 })
+
+const tutorialButton = document.getElementById("tutorial")
+
 
 
 const moleGrid = document.getElementById("molegrid")
@@ -253,7 +299,8 @@ const startpageelements = [
     document.getElementById("startbutton"),
     document.getElementById("pagetitle"),
     document.getElementById("difficulty"),
-    document.getElementById("settings")
+    document.getElementById("settings"),
+    document.getElementById("tutorial")
 ]
 
 difficultyButton.addEventListener('mousedown', () => {
@@ -354,6 +401,46 @@ function grr() {
 
 }
 
+const tutorialTexts = [
+    "Hello! Welcome to Fossorial Feud. This game is similar to Whack-A-Mole, but has a few quirks. Here's how the game works!",
+    "This is a MOLE. Click on it to hit it. Be careful not to click on things outside of the mole's hitbox; you'll be stunned for a moment.",
+    "Great work! Try hitting some more moles, and make sure to keep up that streak!",
+    "This is a GROUNDHOG. Groundhogs are mischevious, and will steal 50 points if you hit them. Stay far away!",
+    "This is a SNAKE. Please hit them! They will spit venom at you if you keep them around for too long!",
+    "This is an ARMADILLO. Armadillos like to pick up items they find in the dirt. Watch before you hit; you may be in for a nasty surprise!",
+    "Amazing work! You're absolutely ready for the real deal now!"
+]
+
+tutorial = false;
+
+tutorialButton.addEventListener('mousedown', async () => {
+    startpageelements.forEach((element) => {
+        element.style.animation = ("wipeleft 1s ease-in-out forwards")
+        tutorial = true;
+    })
+    setTimeout(() => {
+        startpageelements.forEach((element) => {
+            element.style.display = ("none")
+        })
+    }, 1000)
+    await setupAudio('audio/practice.mp3');
+    playLoopingMusic();
+    setTimeout(() => {
+        tutorialmolecontainer.style.display = ("flex")
+        tutorialmolecontainer.style.animation = ("fadein 1.2s ease forwards")
+        scoreWrap.style.display = "flex"
+        scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+        setTimeout(() => {
+            tutorial();
+        }, 1300)
+    }, 1000)
+})
+
+
+const tutorialMusic = new Audio("audio/practice.mp3")
+tutorialMusic.loop = true;
+tutorialMusic.volume = 0.6;
+
 startbutton.addEventListener('mousedown', () => {
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
@@ -391,7 +478,7 @@ epilepsyProceed.addEventListener('mousedown', () => {
             tease();
         }, 1300)
     }, 1000)
-})
+}) 
 
 function clickfx() {
     cursorhb.style.animation = ("none")
@@ -413,9 +500,17 @@ document.addEventListener('mousemove', (event) => {
 })
 
 let stun = 0;
+let tap1 = new Audio("audio/dstap1.mp3")
+let tap2 = new Audio("audio/dstap2.mp3")
 
 
-document.addEventListener('mousedown', () => {
+document.addEventListener('mouseup', async () => {
+    if(tutorial) {
+        tap2.cloneNode(true).play();
+    }
+})
+
+document.addEventListener('mousedown', async () => {
     if(stun > 0) {
         const stunSound = new Audio('audio/hover.mp3')
         stunSound.cloneNode(true).play();
@@ -424,7 +519,11 @@ document.addEventListener('mousedown', () => {
         cursor.querySelector("img").style.animation = ("none")
         cursor.querySelector("img").offsetHeight;
         cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
-        clickSound.cloneNode(true).play();
+        if(tutorial) {
+            tap1.cloneNode(true).play();
+        } else {
+            clickSound.cloneNode(true).play();
+        }
 
         let hitMole = false;
 

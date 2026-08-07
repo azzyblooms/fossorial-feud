@@ -67,6 +67,23 @@ html {
     transform:scale(1.2);
 }
 
+#tutorial {
+    display:flex;
+    font-size:40px;
+    align-items: center;
+    justify-content: center;
+    margin-top:30px;
+    padding:10px;
+    border:8px solid rgb(134, 45, 45);
+    background-color: rgb(100, 22, 22);
+    width:200px;
+    justify-self: center;
+    transition:transform 300ms ease;
+}
+#tutorial:hover {
+    transform:scale(1.2);
+}
+
 #difficulty {
     display:flex;
     font-size:25px;
@@ -235,6 +252,45 @@ html {
     gap:10px;
 }
 .moleimg {
+    opacity:0;
+    width:150px;
+    transition:opacity 200ms ease;
+}
+
+.tmolespawn {
+    width:200px;
+    height:200px;
+    background-color: rgb(102, 74, 37);
+    border:4px solid white;
+    object-fit:contain;
+    background-size:contain;
+    justify-content: center;
+    align-items: center;
+    display:flex;
+}
+.tmolespawn img {
+    transition: transform ease 2s, opacity ease 1s;
+    
+}
+#tutorialmolecontainer {
+    padding:10px;
+    width:fit-content;
+    border:4px solid white;
+    background-color:rgb(66, 47, 18);
+    display:flex;
+    position:absolute;
+    transform-origin: top left;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    display:none;
+}
+#tutorialmolegrid {
+    display:grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap:10px;
+}
+.tmoleimg {
     opacity:0;
     width:150px;
     transition:opacity 200ms ease;

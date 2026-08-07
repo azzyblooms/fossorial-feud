@@ -1,3 +1,5 @@
+//const { createElement } = require("react");
+
 //web audio api stuff
 let audioCtx;
 let audioBuffer;
@@ -81,10 +83,10 @@ let difficulty = "easy";
 let skipIntro = false;
 
 let moles = [
-    {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-    {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-    {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-    {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null}
+    {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+    {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+    {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+    {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null}
 ]
 
 const laughs = [
@@ -209,10 +211,10 @@ epilepsyWarningToggle.addEventListener("mousedown", () => {
 function difficultyChange() {
     if(difficulty == "easy") {
         moles = [
-            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null}
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null}
         ]
         molecontainer.style.scale = ("1")
         molespawn5.style.display = "none";
@@ -232,15 +234,15 @@ function difficultyChange() {
     if(difficulty == "normal") {
         molecontainer.style.scale = ("0.75")
         moles = [
-            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null}
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null}
         ]
         molespawn5.style.display = "flex";
         molespawn6.style.display = "flex";
@@ -259,22 +261,22 @@ function difficultyChange() {
     if(difficulty == "hard") {
         molecontainer.style.scale = ("0.5")
         moles = [
-            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn10, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn11, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn12, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn13, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn14, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn15, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null},
-            {element: molespawn16, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null}
+            {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn2, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn3, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn4, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn5, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn6, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn7, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn8, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn9, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn10, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn11, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn12, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn13, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn14, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn15, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
+            {element: molespawn16, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null}
         ]
         molespawn5.style.display = "flex";
         molespawn6.style.display = "flex";
@@ -315,7 +317,7 @@ difficultyButton.addEventListener('mousedown', () => {
     difficultyButton.textContent = (`DIFFICULTY: ${difficulty.toUpperCase()}`)
 })
 
-
+let health = 100;
 let teasing = true;
 
 function tease() {
@@ -411,12 +413,93 @@ const tutorialTexts = [
     "Amazing work! You're absolutely ready for the real deal now!"
 ]
 
-tutorial = false;
+const tutorialTextBox = document.getElementById("tutorialtextbox")
+const tutorialBox = document.getElementById("tutorialbox")
+const shading = document.getElementById("shader")
+
+
+
+let typeTimeout = null;
+let typeCancelled = false;
+
+function prepText(text) {
+    current = 0;
+    tutorialTextBox.innerHTML = ""
+    for(const char of text) {
+      const span = document.createElement("span")
+      span.textContent = char;
+      tutorialTextBox.appendChild(span)
+    }
+    type();
+}
+
+let current = 0;
+let punctuation = [".", "?", "!"]
+let whereAreWe = 0;
+
+function type() {
+    const chars = tutorialTextBox.children;
+    if(current >= chars.length) return;
+    const char = chars[current].textContent;
+    chars[current].classList.add("visible")
+    current++;
+    if(/[a-zA-z]/.test(char)) {
+        const speakSound = (new Audio(`audio/speech/${(char.toUpperCase())}.wav`)).cloneNode(true);
+        speakSound.playbackRate = 1.5;
+        speakSound.volume = 0.7;
+        speakSound.play();
+    }
+    let delay = 35;
+    if (char === ",") delay = 180;
+    if (punctuation.includes(char)) delay = 300;
+    setTimeout(type, delay)
+}
+
+const continueButton = document.getElementById("continuebutton")
+continueButton.addEventListener('click', () => {
+    if(whereAreWe > tutorialTexts.length - 2) {
+        window.location.reload();
+    } else {
+        whereAreWe++;
+        tutorial();
+    }
+})
+
+
+
+
+/*function typeText(text) {
+    let speed = 35;
+    let typeCancelled = false;
+    let currentText = 0;
+    let punctuation = [".", "?", "!"]
+
+    function type() {
+        if(typeCancelled) {return;}
+        let speed = 35;
+        const currentChar = text[currentText];
+        tutorialTextBox.innerHTML = text.substring(0, ++currentText)
+        if (currentChar === ",") {speed = 180;}
+        if (punctuation.includes(currentChar)) {speed = 300;}
+        if(/[a-zA-z]/.test(currentChar)) {
+            const speakSound = (new Audio(`audio/speech/${(currentChar.toUpperCase())}.wav`)).cloneNode(true);
+            speakSound.playbackRate = 1.5;
+            speakSound.volume = 0.7;
+            speakSound.play();
+        }
+        if (currentText === text.length) {return;}
+        typeTimeout = setTimeout(type, speed)
+    }
+    type();
+}*/
+
+
+tutorialState = false;
 
 tutorialButton.addEventListener('mousedown', async () => {
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
-        tutorial = true;
+        tutorialState = true;
     })
     setTimeout(() => {
         startpageelements.forEach((element) => {
@@ -425,6 +508,8 @@ tutorialButton.addEventListener('mousedown', async () => {
     }, 1000)
     await setupAudio('audio/practice.mp3');
     playLoopingMusic();
+    tutorialBox.style.display = ("flex")
+    tutorialBox.style.animation = ("slideleft 1s ease-in-out forwards")
     setTimeout(() => {
         tutorialmolecontainer.style.display = ("flex")
         tutorialmolecontainer.style.animation = ("fadein 1.2s ease forwards")
@@ -435,6 +520,10 @@ tutorialButton.addEventListener('mousedown', async () => {
         }, 1300)
     }, 1000)
 })
+
+function tutorial() {
+    prepText(tutorialTexts[whereAreWe])
+}
 
 
 const tutorialMusic = new Audio("audio/practice.mp3")
@@ -505,7 +594,7 @@ let tap2 = new Audio("audio/dstap2.mp3")
 
 
 document.addEventListener('mouseup', async () => {
-    if(tutorial) {
+    if(tutorialState) {
         tap2.cloneNode(true).play();
     }
 })
@@ -519,7 +608,7 @@ document.addEventListener('mousedown', async () => {
         cursor.querySelector("img").style.animation = ("none")
         cursor.querySelector("img").offsetHeight;
         cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
-        if(tutorial) {
+        if(tutorialState) {
             tap1.cloneNode(true).play();
         } else {
             clickSound.cloneNode(true).play();
@@ -595,6 +684,14 @@ function moleHit(mole) {
     clearTimeout(mole.spawningTimer)
     mole.state = "dying";
     if(mole.type == "mole") {
+        clearTimeout(mole.saveStreak)
+        score += 50;
+        streak++;
+        streakIncrease();
+        scoreText.style.animation = "none"
+        scoreText.offsetHeight;
+        scoreText.style.animation = "scoreBubbleUp 400ms ease"
+    } else if(mole.type == "snake") {
         clearTimeout(mole.saveStreak)
         score += 50;
         streak++;
@@ -716,7 +813,7 @@ function gameStart() {
         if (available.length > 0) {
             const randomMole = available[Math.floor(Math.random() * available.length)];
             //spawnMole(randomMole)
-            const moleType = Math.floor(Math.random() * 21)
+            const moleType = Math.floor(Math.random() * 23)
             if(moleType >= 0 && moleType <= 14) {
                 spawnMole(randomMole)
             }
@@ -725,6 +822,9 @@ function gameStart() {
             }
             if(moleType >= 19 && moleType <= 20) {
                 spawnArmadillo(randomMole)
+            }
+            if(moleType >= 21 && moleType <= 22) {
+                spawnSnake(randomMole)
             }
             globalCooldown = Math.random() * 100 + 50;
         }
@@ -852,4 +952,80 @@ function spawnArmadillo(mole) {
             }, 350)
         }
     }, Math.random() * 1000 + 400)
+}
+
+function spawnSnake(mole) {
+    if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
+    clearTimeout(mole.hideTimer)
+    clearTimeout(mole.spawningTimer)
+    clearTimeout(mole.saveStreak)
+    mole.type = "snake";
+    mole.state = "up";
+    const moleImg = mole.element.querySelector("img")
+    moleImg.src = "images/snake.png"
+    moleImg.style.transition = "transform 350ms ease"
+    moleImg.style.transform = "scale(1)"
+    mole.spawningTimer = setTimeout(() => {
+        mole.state = "up";
+        moleImg.style.transform = "scale(1)"
+        mole.spawningTimer = null;
+    }, 350)
+    mole.hideTimer = setTimeout(() => {
+        if(mole.state == "up") {
+            moleImg.style.transform = "scale(0)"
+            setTimeout(() => {
+
+                /*if(mole.state !== "dying") {
+                    streak = 0; //is this fair?
+                    streakText.textContent = (`STREAK: ${streak}`)
+                }*/
+                mole.state = "bury";
+                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+            }, 350)
+            mole.saveStreak = setTimeout(() => {
+                if(mole.state !== "dying") {
+                    if(streak > 0) {
+                        endStreak();
+                    }
+                    streakText.textContent = (`STREAK: ${streak}`)
+                    spit(mole);
+                }
+            }, 350)
+        }
+    }, Math.random() * 2500 + 800)
+}
+redScreenTimeout = null;
+
+const shakeKeyFrames = [
+    {transform: "translate(0, 0)"},
+    {transform: "translate(-5px, 4px)", offset:0.1},
+    {transform: "translate(6px, -3.33px)", offset:0.2},
+    {transform: "translate(-4px, -6px)", offset:0.3},
+    {transform: "translate(5.33px, 3px)", offset:0.4},
+    {transform: "translate(-6px, 2px)", offset:0.5},
+    {transform: "translate(4px, -5.33px)", offset:0.6},
+    {transform: "translate(-2.33px, 6px)", offset:0.7},
+    {transform: "translate(5px, -2.33px)", offset:0.8},
+    {transform: "translate(-4px, 3.33px)", offset:0.9},
+    {transform: "translate(0, 0)", offset:1},
+]
+
+
+function spit(mole) {
+    clearTimeout(redScreenTimeout)
+    shading.style.backgroundColor = "red"
+    shading.style.display = "inline"
+    shading.style.animation = "none"
+    shading.offsetHeight;
+    shading.style.animation = "shaderFade 500ms ease forwards"
+    shakingElements = Array.from(document.body.querySelectorAll("*"));
+    shakingElements.forEach((element) => {
+        element.animate(shakeKeyFrames, {
+            duration:400, easing:"linear", composite: "add"
+        })
+    })
+    redScreenTimeout = setTimeout(() => {
+        shading.style.backgroundColor = "black"
+        shading.style.display = "none"
+    }, 500)
 }

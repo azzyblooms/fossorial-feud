@@ -198,6 +198,36 @@ html {
     transform:scale(1.1)
 }
 
+#shader {
+    display:none;
+    opacity:0.5;
+    background-color: black;
+    height:100vh;
+    width:100vw;
+    position:fixed;
+    z-index:1001;
+}
+@keyframes shaderFade {
+    from {
+        opacity:0.5;
+    } to {
+        opacity:0;
+    }
+}
+
+@keyframes shake {
+    0%   {transform: translate(0, 0);}
+    10%  {transform: translate(-1px, 1px);}
+    20%  {transform: translate(0px, 2px);}
+    30%  {transform: translate(1px, 1px);}
+    40%  {transform: translate(2px, 0px);}
+    50%  {transform: translate(1px, -1px);}
+    60%  {transform: translate(0px, -2px);}
+    70%  {transform: translate(-1px, -1px);}
+    80%  {transform: translate(-2px, -2px);}
+    90%  {transform: translate(-1px, -1px);}
+    100% {transform: translate(0, 0);}
+}
 
 @keyframes wipeleft {
     to {
@@ -343,13 +373,67 @@ html {
     pointer-events: none;
     position:fixed;
     transform:translate(-50%, -50%) rotate(50deg);
-    z-index:200;
+    z-index:2000;
+}
+
+#tutorialbox {
+    position:fixed;
+    z-index:999;
+    display:none;
+    border:4px solid white;
+    border-radius:5px;
+    width:400px;
+    height:500px;
+    flex-direction: row;
+    top:25%;
+    justify-content: center;
+    background-color: rgb(82, 60, 28);
+    align-items: center;
+    margin-left:20px;
+}
+
+#tutorialtextbox {
+    font-size:20px;
+    background-color: rgb(51, 38, 18);
+    text-align: left;
+    padding:10px;
+    border:4px solid white;
+    margin-left:20px;
+    margin-right:20px;
+    width:max-content
+}
+
+#tutorialtextbox span {
+    opacity:0;
+}
+#tutorialtextbox span.visible {
+    opacity:1;
+}
+
+#continuebutton {
+    display:flex;
+    justify-content: center;
+    align-self: flex-end;
+    border:4px solid white;
+    margin-bottom:20px;
+    font-size:25px;
+    border-radius:5px;
+    padding:7px;
+    transition:transform 300ms ease;
+    background-color: rgb(51, 38, 18);
+}
+
+#continuebutton:hover {
+    transform:scale(1.1);
+}
+#continuebutton:active {
+    background-color: rgb(29, 21, 10);
 }
 
 #cursorhb {
     pointer-events: none;
     position:fixed;
-    z-index:200;
+    z-index:2000;
     width:20px;
     height:20px;
     transform:translate(-50%, -50%);
@@ -367,6 +451,21 @@ html {
     height:100vh;
     transform: translate(-50%, -50%);
     display:none;
+    pointer-events: none
+}
+
+#flashbang {
+    background-color: black;
+    z-index: 998;
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:100vw;
+    height:100vh;
+    transform: translate(-50%, -50%);
+    display:none;
+    opacity:0.5;
+    transition: opacity 1s ease;
     pointer-events: none
 }
 

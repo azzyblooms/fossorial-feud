@@ -58,15 +58,7 @@ const tutorialmolecontainer = document.getElementById("tutorialmolecontainer")
 const tutorialmolegrid = document.getElementById("tutorialmolegrid")
 
 const tutorialspawn1 = document.getElementById("tmolespawn1")
-const tutorialspawn2 = document.getElementById("tmolespawn2")
-const tutorialspawn3 = document.getElementById("tmolespawn3")
-const tutorialspawn4 = document.getElementById("tmolespawn4")
-
-tutorialspawn2.style.display = "none";
-tutorialspawn3.style.display = "none";
-tutorialspawn4.style.display = "none";
-
-
+const tmoleimg = document.getElementById("tmoleimg")
 
 const laugh1 = new Audio("audio/laughs/laugh1.mp3")
 const laugh2 = new Audio("audio/laughs/laugh2.mp3")
@@ -412,6 +404,7 @@ const tutorialTexts = [
     "This is an ARMADILLO. Armadillos like to pick up items they find in the dirt. Watch before you hit; you may be in for a nasty surprise!",
     "Amazing work! You're absolutely ready for the real deal now!"
 ]
+const justText = [0, 2, 3, 5, 6]
 
 const tutorialTextBox = document.getElementById("tutorialtextbox")
 const tutorialBox = document.getElementById("tutorialbox")
@@ -424,75 +417,203 @@ let typeCancelled = false;
 
 function prepText(text) {
     current = 0;
+    globalDelay = 35;
+    tmoleimg.style.transform = "scale(0)"
+    tmoletype = null;
     tutorialTextBox.innerHTML = ""
     for(const char of text) {
       const span = document.createElement("span")
       span.textContent = char;
       tutorialTextBox.appendChild(span)
     }
+    if(!justText.includes(whereAreWe)) {
+        canContinue = false;
+    }
     type();
 }
+
+function spawnTutorialMole(mole) {
+
+}
+
+
 
 let current = 0;
 let punctuation = [".", "?", "!"]
 let whereAreWe = 0;
+let typingDone = null;
+let canContinue = true;
+let globalDelay = 35;
 
 function type() {
+    typingDone = false;
+    continueButton.classList.remove("flashing")
     const chars = tutorialTextBox.children;
-    if(current >= chars.length) return;
+    if(current >= chars.length) {
+        if(canContinue) {
+            continueButton.classList.add("flashing")
+        }
+        if(whereAreWe == 1) {
+            spawnTutorialMole()
+        }
+        if(whereAreWe == 3) {
+            spawnTutorialGroundhog()
+        }
+        if(whereAreWe == 4) {
+            spawnTutorialSnake()
+        }
+        if(whereAreWe == 5) {
+            spawnTutorialArmadillo()
+        }
+        typingDone = true;
+        return;
+    }
     const char = chars[current].textContent;
     chars[current].classList.add("visible")
     current++;
     if(/[a-zA-z]/.test(char)) {
         const speakSound = (new Audio(`audio/speech/${(char.toUpperCase())}.wav`)).cloneNode(true);
-        speakSound.playbackRate = 1.5;
+        speakSound.playbackRate = Math.random() * 0.2 + 1.3;
+        speakSound.preservesPitch = false;
         speakSound.volume = 0.7;
         speakSound.play();
     }
     let delay = 35;
-    if (char === ",") delay = 180;
-    if (punctuation.includes(char)) delay = 300;
+    if(globalDelay == 35) {
+        if (char === ",") delay = 180;
+        if (punctuation.includes(char)) delay = 300;
+    } else {
+        delay = globalDelay;
+    }
     setTimeout(type, delay)
 }
 
-const continueButton = document.getElementById("continuebutton")
-continueButton.addEventListener('click', () => {
-    if(whereAreWe > tutorialTexts.length - 2) {
-        window.location.reload();
-    } else {
+let tmoletype = null;
+
+function spawnTutorialMole() {
+    tmoletype = "mole"
+    tmoleimg.src = "images/mole.png"
+    tmoleimg.style.transition = "transform 350ms ease"
+    tmoleimg.style.transform = "scale(1)"
+}
+let tgroundhogTimer = null;
+function spawnTutorialGroundhog() {
+    tmoletype = "groundhog"
+    tmoleimg.src = "images/groundhog.png"
+    tmoleimg.style.transition = "transform 350ms ease"
+    tmoleimg.style.transform = "scale(1)"
+    tgroundhogTimer = setTimeout(() => {
+        tmoleimg.style.transform = "scale(0)"
+        whereAreWe = 4;
+        setTimeout(() => {
+            prepText(tutorialTexts[whereAreWe])
+        }, 500)
+    }, 6000)
+}
+let tsnakeTimer = null;
+function spawnTutorialSnake() {
+    tmoletype = "snake"
+    tmoleimg.src = "images/snake.png"
+    tmoleimg.style.transition = "transform 350ms ease"
+    tmoleimg.style.transform = "scale(1)"
+    tsnakeTimer = setTimeout(() => {
+        tmoleimg.style.transition = "transform 350ms ease"
+        tmoleimg.style.transform = "scale(0)"
+        spit();
+        whereAreWe = 5;
+        setTimeout(() => {
+            prepText(tutorialTexts[whereAreWe])
+        }, 500)
+    }, 6000)
+}
+let tarmadilloTimer = null;
+function spawnTutorialArmadillo() {
+    tmoletype = "armadillo"
+    tmoleimg.src = "images/armadillo.png"
+    tmoleimg.style.transition = "transform 350ms ease"
+    tmoleimg.style.transform = "scale(1)"
+    tarmadilloTimer = setTimeout(() => {
+        tmoleimg.style.transform = "scale(0)"
+        whereAreWe = 6;
+        setTimeout(() => {
+            prepText(tutorialTexts[whereAreWe])
+        }, 500)
+    }, 6000)
+}
+
+tmoleimg.addEventListener('mousedown', () => {
+    clearTimeout(tsnakeTimer)
+    cursor.querySelector("img").style.animation = ("none")
+    cursor.querySelector("img").offsetHeight;
+    cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
+    if(clickCollision(tmoleimg, cursorhb)) {
+        redFilter(tmoleimg);
+        tmoleHit();
+        tmoleimg.style.transform = "scale(0)"
+        clickfx();
+        console.log("hit")
+    }
+    if(tmoletype !== null) {
         whereAreWe++;
-        tutorial();
+        prepText(tutorialTexts[whereAreWe])
     }
 })
 
-
-
-
-/*function typeText(text) {
-    let speed = 35;
-    let typeCancelled = false;
-    let currentText = 0;
-    let punctuation = [".", "?", "!"]
-
-    function type() {
-        if(typeCancelled) {return;}
-        let speed = 35;
-        const currentChar = text[currentText];
-        tutorialTextBox.innerHTML = text.substring(0, ++currentText)
-        if (currentChar === ",") {speed = 180;}
-        if (punctuation.includes(currentChar)) {speed = 300;}
-        if(/[a-zA-z]/.test(currentChar)) {
-            const speakSound = (new Audio(`audio/speech/${(currentChar.toUpperCase())}.wav`)).cloneNode(true);
-            speakSound.playbackRate = 1.5;
-            speakSound.volume = 0.7;
-            speakSound.play();
+function tmoleHit(mole) {
+    if(tmoletype == "mole") {
+        score += 50;
+        streak++;
+        streakIncrease();
+        scoreText.style.animation = "none"
+        scoreText.offsetHeight;
+        scoreText.style.animation = "scoreBubbleUp 400ms ease"
+    } else if(tmoletype == "snake") {
+        score += 50;
+        streak++;
+        streakIncrease();
+        scoreText.style.animation = "none"
+        scoreText.offsetHeight;
+        scoreText.style.animation = "scoreBubbleUp 400ms ease"
+    } else if (tmoletype == "groundhog") {
+        score -= 50;
+        if(streak > 0) {
+            endStreak();
         }
-        if (currentText === text.length) {return;}
-        typeTimeout = setTimeout(type, speed)
+        scoreText.style.animation = "none"
+        scoreText.offsetHeight;
+        scoreText.style.animation = "loseScore 400ms ease"
+        bonk.cloneNode(true).play();
+    } else if (tmoletype == "armadillo") {
+        if(streak > 0) {
+            endStreak();
+        }
+        triggerFlashbang();
+        bonk.cloneNode(true).play();
     }
-    type();
-}*/
+    streakText.textContent = (`STREAK: ${streak}`)
+    scoreText.textContent = (`SCORE: ${score}`)
+}
 
+
+const continueButton = document.getElementById("continuebutton")
+continueButton.addEventListener('click', () => {
+    if(typingDone == false && canContinue == false) {
+        globalDelay = 15;
+    }
+    if(justText.includes(whereAreWe)) {
+        if(whereAreWe > tutorialTexts.length - 2) {
+            window.location.reload();
+        } else {
+            whereAreWe++;
+            prepText(tutorialTexts[whereAreWe]);
+        }
+    } else {
+        clickSound.cloneNode(true).play();
+        continueButton.animate(shakeKeyFrames, {
+            duration:400, easing:"linear", composite: "add"
+        })
+    }
+})
 
 tutorialState = false;
 
@@ -508,6 +629,7 @@ tutorialButton.addEventListener('mousedown', async () => {
     }, 1000)
     await setupAudio('audio/practice.mp3');
     playLoopingMusic();
+    tmoleimg.style.transform = "scale(0)"
     tutorialBox.style.display = ("flex")
     tutorialBox.style.animation = ("slideleft 1s ease-in-out forwards")
     setTimeout(() => {
@@ -516,14 +638,10 @@ tutorialButton.addEventListener('mousedown', async () => {
         scoreWrap.style.display = "flex"
         scoreWrap.style.animation = ("fadein 1.2s ease forwards")
         setTimeout(() => {
-            tutorial();
+            prepText(tutorialTexts[whereAreWe]);
         }, 1300)
     }, 1000)
 })
-
-function tutorial() {
-    prepText(tutorialTexts[whereAreWe])
-}
 
 
 const tutorialMusic = new Audio("audio/practice.mp3")
@@ -750,9 +868,15 @@ function streakIncrease() {
 }
 
 function redFilter(molespawn) {
-    molespawn.querySelector("img").style.animation = ("none")
-    molespawn.querySelector("img").offsetHeight;
-    molespawn.querySelector("img").style.animation = ("redfilter 400ms ease")
+    if(!tutorialState) {
+        molespawn.querySelector("img").style.animation = ("none")
+        molespawn.querySelector("img").offsetHeight;
+        molespawn.querySelector("img").style.animation = ("redfilter 400ms ease")
+    } else {
+        molespawn.style.animation = ("none")
+        molespawn.offsetHeight;
+        molespawn.style.animation = ("redfilter 400ms ease")
+    }
 }
 
 const roundCountText = document.getElementById("roundcount")

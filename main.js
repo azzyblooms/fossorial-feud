@@ -73,6 +73,20 @@ const growlSound = new Audio("audio/grrr.mp3")
 let intro = true;
 let difficulty = "easy";
 let skipIntro = false;
+if(localStorage.getItem("skipIntroState") === null) {
+    localStorage.setItem("skipIntroState", false)
+}
+if(localStorage.getItem("brightFlashesState") === null) {
+    localStorage.setItem("brightFlashesState", true)
+}
+if(localStorage.getItem("showMouseHitboxState") === null) {
+    localStorage.setItem("showMouseHitboxState", true)
+}
+
+skipIntroState = localStorage.getItem("skipIntroState") === "true"
+brightFlashesState = localStorage.getItem("brightFlashesState") === "true"
+showMouseHitboxState = localStorage.getItem("showMouseHitboxState") === "true"
+if(showMouseHitboxState == true) {cursorhb.style.opacity = "0"} else {cursorhb.style.opacity = "1"}
 
 let moles = [
     {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null},
@@ -94,9 +108,10 @@ const hits = [
 ]
 
 const enemyTypes = [
-    {name: "mole", image: "images/mole.png"},
-    {name: "groundhog", image: "images/groundhog.png"},
-    {name: "armadillo", image: "images/armadillo.png"}
+    {name: "mole", image: "images/mole.png", item: null},
+    {name: "groundhog", image: "images/groundhog.png", item: null},
+    {name: "armadillo", image: "images/armadillo.png", item: "bomb"},
+    {name: "snake", image: "images/snake.png", item: null}
 ]
 
 const toggleBrightFlashes = document.getElementById("epilepsybutton")
@@ -104,9 +119,9 @@ const toggleSkipIntro = document.getElementById("introbutton")
 const toggleMouseHitbox = document.getElementById("mousehitboxbutton")
 
 const settings = [
-    {setting: "brightFlashes", isOn: true, button: toggleBrightFlashes},
-    {setting: "skipIntro", isOn: false, button: toggleSkipIntro},
-    {setting: "showMouseHitbox", isOn: true, button: toggleMouseHitbox}
+    {setting: "brightFlashes", isOn: brightFlashesState, button: toggleBrightFlashes},
+    {setting: "skipIntro", isOn: skipIntroState, button: toggleSkipIntro},
+    {setting: "showMouseHitbox", isOn: showMouseHitboxState, button: toggleMouseHitbox}
 ]
 
 settings.forEach((button) => {
@@ -116,15 +131,21 @@ settings.forEach((button) => {
 
 toggleBrightFlashes.addEventListener('mousedown', () => {
     settings[0].isOn = !settings[0].isOn;
+    localStorage.setItem("brightFlashesState", settings[0].isOn)
     settings.forEach((button) => {
         if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
         if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
     })
-    epilepsyFriendly = !epilepsyFriendly;
+    if(localStorage.getItem("brightFlashesState") === "true") {
+        epilepsyFriendly = false;
+    } else {
+        epilepsyFriendly = true;
+    }
 })
 
 toggleSkipIntro.addEventListener('mousedown', () => {
     settings[1].isOn = !settings[1].isOn;
+    localStorage.setItem("skipIntroState", settings[1].isOn)
     settings.forEach((button) => {
         if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
         if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
@@ -134,6 +155,7 @@ toggleSkipIntro.addEventListener('mousedown', () => {
 
 toggleMouseHitbox.addEventListener('mousedown', () => {
     settings[2].isOn = !settings[2].isOn;
+    localStorage.setItem("showMouseHitboxState", settings[2].isOn)
     settings.forEach((button) => {
         if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
         if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
@@ -159,7 +181,12 @@ molespawn14.style.display = "none";
 molespawn15.style.display = "none";
 molespawn16.style.display = "none";
 
-let epilepsyFriendly = false;
+let epilepsyFriendly = null;
+if(localStorage.getItem("brightFlashesState") === "true") {
+    epilepsyFriendly = false;
+} else {
+    epilepsyFriendly = true;
+}
 const epilepsyWrap = document.getElementById("epilepsywrap")
 const epilepsyContainer = document.getElementById("epilepsy")
 const epilepsyProceed = document.getElementById("epilepsyproceed")
@@ -318,7 +345,7 @@ function tease() {
         grr();
         return;
     }
-    if(skipIntro) {
+    if(skipIntro || skipIntroState) {
         moles.forEach((mole) => {
             mole.element.querySelector("img").style.opacity = ("1")
         })
@@ -362,7 +389,7 @@ function tease() {
 
 function grr() {
 
-    if(!skipIntro) {
+    if(!skipIntro || !skipIntroState) {
         setTimeout(() => {
             for(let i = 0; i < 5; i++) {
             setTimeout(() => {
@@ -594,11 +621,14 @@ function tmoleHit(mole) {
     scoreText.textContent = (`SCORE: ${score}`)
 }
 
-
+const cantSelect = new Audio("audio/cantselect.wav")
 const continueButton = document.getElementById("continuebutton")
 continueButton.addEventListener('click', () => {
-    if(typingDone == false && canContinue == false) {
-        globalDelay = 15;
+    if(canContinue == false) {
+        cantSelect.cloneNode(true).play()
+        if(typingDone == false) {
+            globalDelay = 15;
+        }
     }
     if(justText.includes(whereAreWe)) {
         if(whereAreWe > tutorialTexts.length - 2) {
@@ -608,7 +638,7 @@ continueButton.addEventListener('click', () => {
             prepText(tutorialTexts[whereAreWe]);
         }
     } else {
-        clickSound.cloneNode(true).play();
+        cantSelect.cloneNode(true).play()
         continueButton.animate(shakeKeyFrames, {
             duration:400, easing:"linear", composite: "add"
         })
@@ -757,11 +787,13 @@ document.addEventListener('mousedown', async () => {
                     if(mole.state == "up") {
                         if(!intro) {moleHit(mole)}
                     }
-                    if(teasing || !skipIntro) {
+                    if(teasing || !skipIntro || !skipIntroState) {
                         mole.state = "hit";
                     }
-                    if(skipIntro && !gameOn) {
-                        mole.element.querySelector("img").style.transform = "scale(0)"
+                    if(skipIntro || skipIntroState) {
+                        if(!gameOn) {
+                            mole.element.querySelector("img").style.transform = "scale(0)"
+                        }
                     }
                     clickfx();
                     console.log("hit")
@@ -797,6 +829,9 @@ const scoreText = document.getElementById("score")
 const debugSound = new Audio("audio/hover.mp3")
 const streakText = document.getElementById("streak")
 const scoreWrap = document.getElementById("scorewrap")
+
+const ping = new Audio("audio/ding.wav")
+const healSound = new Audio("audio/heal.wav")
 function moleHit(mole) {
     if(mole.state !== "up") {return;}
     clearTimeout(mole.spawningTimer)
@@ -827,11 +862,22 @@ function moleHit(mole) {
         scoreText.style.animation = "loseScore 400ms ease"
         bonk.cloneNode(true).play();
     } else if (mole.type == "armadillo") {
-        if(streak > 0) {
-            endStreak();
+        if(mole.item == "bomb") {
+            if(streak > 0) {
+                endStreak();
+            }
+            ping.cloneNode(true).play();
+            bonk.cloneNode(true).play();
+            triggerFlashbang();
+        } else if(mole.item == "heal") {
+            score += 50;
+            streak++;
+            healSound.cloneNode(true).play();
+            streakIncrease();
+            scoreText.style.animation = "none"
+            scoreText.offsetHeight;
+            scoreText.style.animation = "scoreBubbleUp 400ms ease"
         }
-        triggerFlashbang();
-        bonk.cloneNode(true).play();
     }
     streakText.textContent = (`STREAK: ${streak}`)
     scoreText.textContent = (`SCORE: ${score}`)
@@ -979,6 +1025,7 @@ setInterval(() => {
 function spawnMole(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
     clearTimeout(mole.hideTimer)
+    mole.item = null;
     clearTimeout(mole.spawningTimer)
     clearTimeout(mole.saveStreak)
     mole.type = "mole";
@@ -1019,6 +1066,7 @@ function spawnMole(mole) {
 function spawnGroundhog(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
     clearTimeout(mole.hideTimer)
+    mole.item = null;
     clearTimeout(mole.spawningTimer)
     mole.type = "groundhog"
     mole.state = "up";
@@ -1049,6 +1097,12 @@ function spawnGroundhog(mole) {
 
 function spawnArmadillo(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
+    mole.item = "bomb";
+    if(Math.round(Math.random() + 1) == 1) {
+        mole.item = "bomb"
+    } else {
+        mole.item = "heal"
+    }
     clearTimeout(mole.hideTimer)
     clearTimeout(mole.spawningTimer)
     mole.type = "armadillo"
@@ -1081,6 +1135,7 @@ function spawnArmadillo(mole) {
 function spawnSnake(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
     clearTimeout(mole.hideTimer)
+    mole.item = null;
     clearTimeout(mole.spawningTimer)
     clearTimeout(mole.saveStreak)
     mole.type = "snake";
@@ -1133,7 +1188,7 @@ const shakeKeyFrames = [
     {transform: "translate(-4px, 3.33px)", offset:0.9},
     {transform: "translate(0, 0)", offset:1},
 ]
-
+const hurtSound = new Audio("audio/hurt.wav")
 
 function spit(mole) {
     clearTimeout(redScreenTimeout)
@@ -1141,6 +1196,7 @@ function spit(mole) {
     shading.style.display = "inline"
     shading.style.animation = "none"
     shading.offsetHeight;
+    hurtSound.cloneNode(true).play();
     shading.style.animation = "shaderFade 500ms ease forwards"
     shakingElements = Array.from(document.body.querySelectorAll("*"));
     shakingElements.forEach((element) => {

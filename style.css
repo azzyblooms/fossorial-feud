@@ -83,6 +83,22 @@ html {
 #tutorial:hover {
     transform:scale(1.2);
 }
+#shop {
+    display:flex;
+    font-size:40px;
+    align-items: center;
+    justify-content: center;
+    margin-top:30px;
+    padding:10px;
+    border:8px solid rgb(134, 45, 45);
+    background-color: rgb(100, 22, 22);
+    width:200px;
+    justify-self: center;
+    transition:transform 300ms ease;
+}
+#shop:hover {
+    transform:scale(1.2);
+}
 
 #difficulty {
     display:flex;
@@ -205,6 +221,10 @@ html {
     height:100vh;
     width:100vw;
     position:fixed;
+    top:50%;
+    left:50%;
+    pointer-events: none;
+    transform:translate(-50%, -50%);
     z-index:1001;
 }
 @keyframes shaderFade {
@@ -449,19 +469,6 @@ html {
     border:4px solid white;
 }
 
-/*#flashbang {
-    background-color: white;
-    z-index: 5000;
-    position:fixed;
-    top:50%;
-    left:50%;
-    width:100vw;
-    height:100vh;
-    transform: translate(-50%, -50%);
-    display:none;
-    pointer-events: none
-}*/
-
 #flashbang {
     background-color: black;
     z-index: 5000;
@@ -512,6 +519,66 @@ html {
     border-radius:5px;
     font-size:50px;
 }
+#timerwrap {
+    display:none;
+    justify-content: center;
+    align-items: center;
+    position:fixed;
+    transform:translateY(-50%);
+    top:15%;
+    left:75%;
+}
+#timer {
+    padding:10px;
+    border:4px solid white;
+    background-color: rgb(44, 44, 143);
+    border-radius:5px;
+    font-size:50px;
+}
+
+#cashwrap {
+    display:none;
+    justify-content: center;
+    align-items: center;
+    position:fixed;
+    transform:translateY(-50%);
+    top:15%;
+    left:5%;
+}
+#cash {
+    padding:10px;
+    border:4px solid white;
+    background-color: rgb(143, 44, 113);
+    border-radius:5px;
+    font-size:50px;
+}
+#evilbutton {
+    border-top:4px solid white;
+    border-right:4px solid white;
+    position:fixed;
+    bottom:0%;
+    width:244px;
+    text-align: center;
+    left:0%;
+    padding:10px;
+    transform-origin: bottom left;
+    transition:transform 300ms ease;
+    background-color:rgb(52, 80, 80);
+}
+#evilbutton:hover {
+    transform:scale(1.1);
+}
+#evilbutton:active {
+    background-color:rgb(33, 51, 51);
+}
+
+@keyframes epicflash {
+    0% {opacity:0}
+    25% {opacity:1}
+    75% {opacity:1}
+    100% {opacity:0}
+}
+
 
 @keyframes scoreBubbleUp {
     from {
@@ -555,22 +622,8 @@ html {
     border-radius:5px;
     font-size:20px;
 }
-
-#testwrap {
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    position:fixed;
-    transform:translate(-50%, -50%);
-    top:97%;
-    left:75%;
-}
-#testbutton {
-    padding:10px;
-    border:4px solid white;
-    background-color: rgb(123, 211, 105);
-    border-radius:5px;
-    font-size:20px;
+#shopkeeper {
+    display:none;
 }
 
 @keyframes swing {

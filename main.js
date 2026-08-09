@@ -1,5 +1,3 @@
-//const { createElement } = require("react");
-
 //web audio api stuff
 let audioCtx;
 let audioBuffer;
@@ -192,11 +190,7 @@ const epilepsyContainer = document.getElementById("epilepsy")
 const epilepsyProceed = document.getElementById("epilepsyproceed")
 const epilepsyWarningToggle = document.getElementById("epilepsywarningtoggle")
 
-const testButton = document.getElementById("testbutton")
 const flashbang = document.getElementById("flashbang")
-testButton.addEventListener('mousedown', () => {
-    triggerFlashbang();
-})
 
 let settingsOpen = false;
 const settingsMenu = document.getElementById("settingsmenu")
@@ -321,7 +315,9 @@ const startpageelements = [
     document.getElementById("pagetitle"),
     document.getElementById("difficulty"),
     document.getElementById("settings"),
-    document.getElementById("tutorial")
+    document.getElementById("tutorial"),
+    document.getElementById("evilbutton"),
+    document.getElementById("shop")
 ]
 
 difficultyButton.addEventListener('mousedown', () => {
@@ -578,7 +574,6 @@ tmoleimg.addEventListener('mousedown', () => {
         tmoleHit();
         tmoleimg.style.transform = "scale(0)"
         clickfx();
-        console.log("hit")
     }
     if(tmoletype !== null) {
         whereAreWe++;
@@ -667,11 +662,17 @@ tutorialButton.addEventListener('mousedown', async () => {
         tutorialmolecontainer.style.animation = ("fadein 1.2s ease forwards")
         scoreWrap.style.display = "flex"
         scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+        cashWrap.style.display = "flex"
+        cashWrap.style.animation = ("fadein 1.2s ease forwards")
+        timerWrap.style.display = "flex"
+        timerWrap.style.animation = ("fadein 1.2s ease forwards")
         setTimeout(() => {
             prepText(tutorialTexts[whereAreWe]);
         }, 1300)
     }, 1000)
 })
+
+const timerWrap = document.getElementById("timerwrap")
 
 
 const tutorialMusic = new Audio("audio/practice.mp3")
@@ -691,6 +692,10 @@ startbutton.addEventListener('mousedown', () => {
             molecontainer.style.animation = ("fadein 1.2s ease forwards")
             scoreWrap.style.display = "flex"
             scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+            cashWrap.style.display = "flex"
+        cashWrap.style.animation = ("fadein 1.2s ease forwards")
+            timerWrap.style.display = "flex"
+            timerWrap.style.animation = ("fadein 1.2s ease forwards")
             setTimeout(() => {
                 tease();
             }, 1300)
@@ -710,7 +715,11 @@ epilepsyProceed.addEventListener('mousedown', () => {
         molecontainer.style.display = ("flex")
         molecontainer.style.animation = ("fadein 1.2s ease forwards")
         scoreWrap.style.display = "flex"
-        scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+        scoreWrap.style.animation = ("fadein 1.2s ease forwards") 
+        cashWrap.style.display = "flex"
+        cashWrap.style.animation = ("fadein 1.2s ease forwards")
+        timerWrap.style.display = "flex"
+        timerWrap.style.animation = ("fadein 1.2s ease forwards")
         setTimeout(() => {
             tease();
         }, 1300)
@@ -723,7 +732,6 @@ function clickfx() {
     cursorhb.style.animation = ("debugflicker 400ms ease")
     let currentHit = Math.floor(Math.random() * hits.length)
     hits[currentHit].cloneNode(true).play();
-    console.log("hitsound")
 }
 
 document.addEventListener('mousemove', (event) => {
@@ -748,81 +756,87 @@ document.addEventListener('mouseup', async () => {
 })
 
 document.addEventListener('mousedown', async () => {
-    if(stun > 0) {
-        const stunSound = new Audio('audio/hover.mp3')
-        stunSound.cloneNode(true).play();
-        cursor.querySelector("img").style.animation = "redfilter 100ms ease";
-    } else {
-        cursor.querySelector("img").style.animation = ("none")
-        cursor.querySelector("img").offsetHeight;
-        cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
-        if(tutorialState) {
-            tap1.cloneNode(true).play();
+    if(!timeUp) {
+        if(stun > 0) {
+            const stunSound = new Audio('audio/hover.mp3')
+            stunSound.cloneNode(true).play();
+            cursor.querySelector("img").style.animation = "redfilter 100ms ease";
         } else {
-            clickSound.cloneNode(true).play();
-        }
-
-        let hitMole = false;
-
-        moles.forEach((mole) => {
-            if(mole.state == "dying") return;
-            if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
-                if(mole.state == "bury") {
-                    stun = 300;
-                    scoreText.style.animation = "none"
-                    scoreText.offsetHeight;
-                    scoreText.style.animation = "loseScore 300ms ease"
-                    cursor.querySelector("img").style.animation = "none"
-                    cursor.querySelector("img").offsetHeight;
-                    cursor.querySelector("img").style.animation = "redfilter 200ms ease"
-                    console.log("dawg u missed")
-                    score -= 10;
-                    if(streak > 0) {
-                        endStreak();
-                    }
-                    scoreText.textContent = (`SCORE: ${score}`)
-                } else {
-                    redFilter(mole.element);
-                    hitMole = true;
-                    if(mole.state == "up") {
-                        if(!intro) {moleHit(mole)}
-                    }
-                    if(teasing || !skipIntro || !skipIntroState) {
-                        mole.state = "hit";
-                    }
-                    if(skipIntro || skipIntroState) {
-                        if(!gameOn) {
-                            mole.element.querySelector("img").style.transform = "scale(0)"
-                        }
-                    }
-                    clickfx();
-                    console.log("hit")
-                }
-            }
-        })
-
-        if(hitMole == false && !intro) {
-            stun = 300;
-            cursor.querySelector("img").style.animation = "none";
+            cursor.querySelector("img").style.animation = ("none")
             cursor.querySelector("img").offsetHeight;
-            cursor.querySelector("img").style.animation = "redfilter 200ms ease";
-            scoreText.style.animation = "none"
-            scoreText.offsetHeight;
-            scoreText.style.animation = "loseScore 300ms ease"
-            console.log("dawg u missed")
-            score -= 10;
-            if(streak > 0) {
-                endStreak();
+            cursor.querySelector("img").style.animation = ("swing 200ms ease-out")
+            if(tutorialState) {
+                tap1.cloneNode(true).play();
+            } else {
+                clickSound.cloneNode(true).play();
             }
-            scoreText.textContent = (`SCORE: ${score}`)
+
+            let hitMole = false;
+
+            moles.forEach((mole) => {
+                if(mole.state == "dying") return;
+                if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
+                    if(mole.state == "bury") {
+                        stun = 300;
+                        scoreText.style.animation = "none"
+                        scoreText.offsetHeight;
+                        scoreText.style.animation = "loseScore 300ms ease"
+                        cursor.querySelector("img").style.animation = "none"
+                        cursor.querySelector("img").offsetHeight;
+                        cursor.querySelector("img").style.animation = "redfilter 200ms ease"
+                        score -= 10;
+                        if(streak > 0) {
+                            endStreak();
+                        }
+                        scoreText.textContent = (`SCORE: ${score}`)
+                    } else {
+                        redFilter(mole.element);
+                        hitMole = true;
+                        if(mole.state == "up") {
+                            if(!intro) {moleHit(mole)}
+                        }
+                        if(teasing || !skipIntro || !skipIntroState) {
+                            mole.state = "hit";
+                        }
+                        if(skipIntro || skipIntroState) {
+                            if(!gameOn) {
+                                mole.element.querySelector("img").style.transform = "scale(0)"
+                            }
+                        }
+                        clickfx();
+                    }
+                }
+            })
+
+            if(hitMole == false && !intro) {
+                stun = 300;
+                cursor.querySelector("img").style.animation = "none";
+                cursor.querySelector("img").offsetHeight;
+                cursor.querySelector("img").style.animation = "redfilter 200ms ease";
+                scoreText.style.animation = "none"
+                scoreText.offsetHeight;
+                scoreText.style.animation = "loseScore 300ms ease"
+                score -= 10;
+                if(streak > 0) {
+                    endStreak();
+                }
+                scoreText.textContent = (`SCORE: ${score}`)
+            }
         }
+    } else {
+        cantSelect.cloneNode(true).play();
+        cursor.animate(shakeKeyFrames, {
+            duration:400, easing:"linear", composite: "add"
+        })
     }
 })
 
 function endStreak() {
-    streakEndSfx.cloneNode(true).play();
-    streak = 0;
-    streakText.textContent = (`STREAK: ${streak}`)
+    if(!timeUp) {
+        streakEndSfx.cloneNode(true).play();
+        streak = 0;
+        streakText.textContent = (`STREAK: ${streak}`)
+    }
 }
 
 const scoreText = document.getElementById("score")
@@ -897,20 +911,19 @@ function clickCollision(divA, divB) {
 
     return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
 }
+let streakCycles = 0;
+
+const drumroll = new Audio("audio/drumroll.wav")
 
 function streakIncrease() {
-    if(streak > 8) {
-        let streakSfx = new Audio("audio/streak/1.mp3")
-        streakSfx.preservesPitch = false;
-        streakSfx.playbackRate = 1 + streak / 20 
-        const stroke = streakSfx.cloneNode(true);
-        stroke.playbackRate = Math.pow(1.04, streak);
-        stroke.preservesPitch = false;
-        stroke.play();
-    } else {
-        let streakSfx = new Audio(`audio/streak/${streak}.mp3`)
-        streakSfx.cloneNode(true).play();
-    }
+    let streakSound = ((streak - 1) % 8) + 1;
+    let streakSfx = (new Audio(`audio/streak/${streakSound}.mp3`)).cloneNode(true)
+    streakSfx.preservesPitch = false;
+    /*if((streak - 1) % 8 == 0 && streak > 8) {
+        streakSfx.playbackRate += Math.floor((streak - 1) / 8) * 0.2;
+    }*/
+    streakSfx.playbackRate = 1 + Math.floor((streak - 1) / 8) * 0.2;
+    streakSfx.play();
 }
 
 function redFilter(molespawn) {
@@ -942,6 +955,9 @@ streakText.textContent = (`STREAK: ${streak}`)
 
 function roundcountshow() {
     gameOn = false;
+    timeLeft = 60;
+    timeUp = false;
+    timer.textContent = `TIME: ${timeLeft}`
     roundCountText.textContent = (`ROUND ${round}`)
     moleTypeText.textContent = enemyList;
     roundStartWrap.style.display = ("flex")
@@ -964,19 +980,107 @@ function roundcountshow() {
     }, 3500)
 }
 
+let cash = Number(localStorage.getItem("cash")) || 0;
+let cashWrap = document.getElementById("cashwrap")
+let cashText = document.getElementById("cash")
+let tallyScoreMath;
+let scoreToCash = false;
+
+const orchHit = new Audio("audio/orchhit.ogg")
+function finishGame() {
+    orchHit.play();
+    setTimeout(() => {
+        tallyScore();
+        drumroll.play();
+    }, 2000)
+}
+function tallyScore() {
+    tallyScoreMath = setInterval(() => {
+        if(score > 0 ) {
+            if (!Number.isFinite(cash)) {
+                console.warn("Invalid cash value:", storedCash);
+                cash = 0;
+                localStorage.setItem("cash", 0);
+            }
+            if(score >= 10) {
+                score -= 10;
+                cash += 20;
+            } else {
+                cash += score * 2
+                score = 0;
+            }
+            cashText.style.animation = "none"
+            cashText.offsetHeight;
+            cashText.textContent = `CASH: \$${cash.toLocaleString()}`
+            scoreText.textContent = `SCORE: ${score}`
+            cashText.style.animation = "scoreBubbleUp 15ms ease"
+        }
+        if(score <= 0) {
+            clearInterval(tallyScoreMath)
+            localStorage.setItem("cash", cash)
+            scoreToCash = true;
+            applause.play();
+        }
+    }, 10)
+}
+let deleteFileCountdown;
+const evilbutton = document.getElementById("evilbutton")
+const weirdSound = new Audio("audio/weirdsound.wav")
+evilbutton.addEventListener("click", () => {
+    if(evilbutton.textContent == "evil button that deletes your save file") {
+        evilbutton.textContent = "you sure?"
+        clearTimeout(deleteFileCountdown)
+        deleteFileCountdown = setTimeout(() => {
+            evilbutton.textContent = "evil button that deletes your save file"
+            cantSelect.cloneNode(true).play();
+        }, 5000)
+    } else {
+        clearTimeout(deleteFileCountdown)
+        evilbutton.textContent = "evil button that deletes your save file"
+        weirdSound.cloneNode(true).play();
+        localStorage.setItem("cash", 0)
+        cashText.textContent = `CASH: \$${cash.toLocaleString()}`
+        triggerFlashbang();
+    }
+})
+
+cashText.textContent = `CASH: \$${cash.toLocaleString()}`
+if (!Number.isFinite(cash)) {
+    console.warn("Invalid cash value:", localStorage.getItem("cash"));
+    cash = 0;
+    localStorage.setItem("cash", 0);
+}
+
+
+if(localStorage.getItem("cash") === null) {
+    localStorage.setItem("cash", 0)
+}
+
+const applause = new Audio("audio/applause.wav")
+
 let randomMole;
 let gameOn = false;
 let globalCooldown = 0;
-
+let timeUp = false;
 function gameStart() {
     intro = false;
     gameOn = true;
     moles.forEach((mole) => {
         mole.state = "bury";
     })
+    countdown = setInterval(() => {
+        timeLeft--;
+        timer.textContent = `TIME: ${timeLeft}`
+
+        if(timeLeft <= 0) {
+            clearInterval(countdown)
+            timer.classList.add("flashing")
+            timeUp = true;
+        }
+    }, 1000)
     function spawnLoop() {
-        if(score >= 7500) {
-            heheheha.play();
+        if(timeUp) {
+            finishGame();
             return;
         }
         const available = moles.filter(mole => mole.state == "bury" && mole.cooldown <= 0 && globalCooldown <= 0);
@@ -1043,11 +1147,6 @@ function spawnMole(mole) {
         if(mole.state == "up") {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
-
-                /*if(mole.state !== "dying") {
-                    streak = 0; //is this fair?
-                    streakText.textContent = (`STREAK: ${streak}`)
-                }*/
                 mole.state = "bury";
                 mole.cooldown = Math.floor(Math.random() * 1500 + 350);
             }, 350)
@@ -1083,11 +1182,6 @@ function spawnGroundhog(mole) {
         if(mole.state == "up") {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
-
-                /*if(mole.state !== "dying") {
-                    streak = 0; //is this fair?
-                    streakText.textContent = (`STREAK: ${streak}`)
-                }*/
                 mole.state = "bury";
                 mole.cooldown = Math.floor(Math.random() * 1500 + 350);
             }, 350)
@@ -1120,11 +1214,6 @@ function spawnArmadillo(mole) {
         if(mole.state == "up") {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
-
-                /*if(mole.state !== "dying") {
-                    streak = 0; //is this fair?
-                    streakText.textContent = (`STREAK: ${streak}`)
-                }*/
                 mole.state = "bury";
                 mole.cooldown = Math.floor(Math.random() * 1500 + 350);
             }, 350)
@@ -1153,11 +1242,6 @@ function spawnSnake(mole) {
         if(mole.state == "up") {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
-
-                /*if(mole.state !== "dying") {
-                    streak = 0; //is this fair?
-                    streakText.textContent = (`STREAK: ${streak}`)
-                }*/
                 mole.state = "bury";
                 mole.cooldown = Math.floor(Math.random() * 1500 + 350);
             }, 350)
@@ -1167,7 +1251,9 @@ function spawnSnake(mole) {
                         endStreak();
                     }
                     streakText.textContent = (`STREAK: ${streak}`)
-                    spit(mole);
+                    if(!timeUp) {
+                        spit(mole);
+                    }
                 }
             }, 350)
         }
@@ -1209,3 +1295,37 @@ function spit(mole) {
         shading.style.display = "none"
     }, 500)
 }
+
+let timeLeft = null;
+let countdown;
+const timer = document.getElementById("timer")
+let shopOpen = false;
+const shopButton = document.getElementById("shop")
+const opendoor = new Audio("audio/opendoor.wav")
+shopButton.addEventListener("mousedown", () => {
+    if(!shopOpen) {
+        shopOpen = true;
+        shading.style.display = "flex"
+        shading.style.animation = "epicflash 2.8s ease forwards"
+        setTimeout(() => {
+            startpageelements.forEach((element) => {
+                element.style.display = "none"
+            })
+            shopElements.forEach((element) => {
+                element.style.display = "flex"
+            })
+            streakText.style.display = "none"
+        }, 1000)
+        opendoor.cloneNode(true).play();
+        shading.addEventListener('animationend', async () => {
+            shading.style.display = "none"
+            await setupAudio('audio/shop.mp3');
+            playLoopingMusic();
+        }, {once:true})
+    }
+})
+
+const shopElements = [
+    document.getElementById("shopkeeper")
+]
+

@@ -25,6 +25,9 @@ function playLoopingMusic() {
   sourceNode.start(0);
 }
 
+const hearts = document.querySelectorAll(".heart")
+let healthPoints = 3;
+
 
 const startbutton = document.getElementById("startbutton")
 const pagetitle = document.getElementById("pagetitle")
@@ -198,10 +201,22 @@ settingsButton.addEventListener('mousedown', () => {
     if(!settingsOpen) {
         settingsOpen = true;
         settingsMenu.style.display = "flex";
+    } else {
+        settingsOpen = false;
+        settingsMenu.style.display = "none";
     }
 })
 
+let molesHit = 0;
+let groundhogsHit = 0;
+let snakesHit = 0;
+let armadillosHit = 0;
+let totalHits = 0;
+let maxStreak = 0;
 
+/*function displayStatistics() {
+
+}*/
 
 
 function triggerFlashbang() {
@@ -641,7 +656,7 @@ continueButton.addEventListener('click', () => {
 })
 
 tutorialState = false;
-
+const hpWrap = document.getElementById("hpwrap")
 tutorialButton.addEventListener('mousedown', async () => {
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
@@ -662,6 +677,8 @@ tutorialButton.addEventListener('mousedown', async () => {
         tutorialmolecontainer.style.animation = ("fadein 1.2s ease forwards")
         scoreWrap.style.display = "flex"
         scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+        hpWrap.style.display = "flex"
+        hpWrap.style.animation = ("fadein 1.2s ease forwards")
         cashWrap.style.display = "flex"
         cashWrap.style.animation = ("fadein 1.2s ease forwards")
         timerWrap.style.display = "flex"
@@ -692,8 +709,10 @@ startbutton.addEventListener('mousedown', () => {
             molecontainer.style.animation = ("fadein 1.2s ease forwards")
             scoreWrap.style.display = "flex"
             scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+            hpWrap.style.display = "flex"
+            hpWrap.style.animation = ("fadein 1.2s ease forwards")
             cashWrap.style.display = "flex"
-        cashWrap.style.animation = ("fadein 1.2s ease forwards")
+            cashWrap.style.animation = ("fadein 1.2s ease forwards")
             timerWrap.style.display = "flex"
             timerWrap.style.animation = ("fadein 1.2s ease forwards")
             setTimeout(() => {
@@ -716,6 +735,8 @@ epilepsyProceed.addEventListener('mousedown', () => {
         molecontainer.style.animation = ("fadein 1.2s ease forwards")
         scoreWrap.style.display = "flex"
         scoreWrap.style.animation = ("fadein 1.2s ease forwards") 
+        hpWrap.style.display = "flex"
+        hpWrap.style.animation = ("fadein 1.2s ease forwards")
         cashWrap.style.display = "flex"
         cashWrap.style.animation = ("fadein 1.2s ease forwards")
         timerWrap.style.display = "flex"
@@ -835,6 +856,7 @@ function endStreak() {
     if(!timeUp) {
         streakEndSfx.cloneNode(true).play();
         streak = 0;
+        goldenMoleChance = 0;
         streakText.textContent = (`STREAK: ${streak}`)
     }
 }
@@ -853,6 +875,17 @@ function moleHit(mole) {
     if(mole.type == "mole") {
         clearTimeout(mole.saveStreak)
         score += 50;
+        molesHit++;
+        streak++;
+        streakIncrease();
+        scoreText.style.animation = "none"
+        scoreText.offsetHeight;
+        scoreText.style.animation = "scoreBubbleUp 400ms ease"
+    } else if(mole.type == "goldmole") {
+        clearTimeout(mole.saveStreak)
+        score += 500;
+        molesHit++;
+        shinyHitSound.cloneNode(true).play();
         streak++;
         streakIncrease();
         scoreText.style.animation = "none"
@@ -861,6 +894,7 @@ function moleHit(mole) {
     } else if(mole.type == "snake") {
         clearTimeout(mole.saveStreak)
         score += 50;
+        snakesHit++;
         streak++;
         streakIncrease();
         scoreText.style.animation = "none"
@@ -868,6 +902,7 @@ function moleHit(mole) {
         scoreText.style.animation = "scoreBubbleUp 400ms ease"
     } else if (mole.type == "groundhog") {
         score -= 50;
+        groundhogsHit++;
         if(streak > 0) {
             endStreak();
         }
@@ -876,6 +911,7 @@ function moleHit(mole) {
         scoreText.style.animation = "loseScore 400ms ease"
         bonk.cloneNode(true).play();
     } else if (mole.type == "armadillo") {
+        armadillosHit++;
         if(mole.item == "bomb") {
             if(streak > 0) {
                 endStreak();
@@ -885,14 +921,26 @@ function moleHit(mole) {
             triggerFlashbang();
         } else if(mole.item == "heal") {
             score += 50;
+            if(healthPoints < 3) {
+                healthPoints++;
+            }
+            updateHealth();
             streak++;
             healSound.cloneNode(true).play();
             streakIncrease();
             scoreText.style.animation = "none"
             scoreText.offsetHeight;
             scoreText.style.animation = "scoreBubbleUp 400ms ease"
+        } else {
+            score += 50;
+            streak++;
+            streakIncrease();
+            scoreText.style.animation = "none"
+            scoreText.offsetHeight;
+            scoreText.style.animation = "scoreBubbleUp 400ms ease"
         }
     }
+    totalHits++;
     streakText.textContent = (`STREAK: ${streak}`)
     scoreText.textContent = (`SCORE: ${score}`)
     const moleImg = mole.element.querySelector("img")
@@ -919,12 +967,21 @@ function streakIncrease() {
     let streakSound = ((streak - 1) % 8) + 1;
     let streakSfx = (new Audio(`audio/streak/${streakSound}.mp3`)).cloneNode(true)
     streakSfx.preservesPitch = false;
-    /*if((streak - 1) % 8 == 0 && streak > 8) {
-        streakSfx.playbackRate += Math.floor((streak - 1) / 8) * 0.2;
-    }*/
     streakSfx.playbackRate = 1 + Math.floor((streak - 1) / 8) * 0.2;
     streakSfx.play();
+    if(streak > maxStreak) {
+        maxStreak = streak;
+    }
+    if(streak > 8) {
+        goldenMoleChance = (streak / 8) / 100;
+    }
 }
+
+
+
+const shinySound = new Audio("audio/shiny.mp3")
+const shinyHitSound = new Audio("audio/hits/crackhit.mp3")
+goldenMoleChance = 0;
 
 function redFilter(molespawn) {
     if(!tutorialState) {
@@ -952,10 +1009,20 @@ let score = 0;
 let streak = 0;
 scoreText.textContent = (`SCORE: ${score}`)
 streakText.textContent = (`STREAK: ${streak}`)
-
+updateHealth();
 function roundcountshow() {
     gameOn = false;
-    timeLeft = 60;
+    timeLeft = 1;
+    healthPoints = 3;
+    molesHit = 0;
+    groundhogsHit = 0;
+    snakesHit = 0;
+    armadillosHit = 0;
+    timesBanged = 0;
+    timesHealed = 0;
+    totalHits = 0;
+    maxStreak = 0;
+    updateHealth();
     timeUp = false;
     timer.textContent = `TIME: ${timeLeft}`
     roundCountText.textContent = (`ROUND ${round}`)
@@ -994,6 +1061,9 @@ function finishGame() {
         drumroll.play();
     }, 2000)
 }
+
+const statisticsBox = document.getElementById("statisticsbox")
+
 function tallyScore() {
     tallyScoreMath = setInterval(() => {
         if(score > 0 ) {
@@ -1006,7 +1076,9 @@ function tallyScore() {
                 score -= 10;
                 cash += 20;
             } else {
-                cash += score * 2
+                if(score > 0) {
+                    cash += score * 2
+                }
                 score = 0;
             }
             cashText.style.animation = "none"
@@ -1018,8 +1090,17 @@ function tallyScore() {
         if(score <= 0) {
             clearInterval(tallyScoreMath)
             localStorage.setItem("cash", cash)
+            score = 0;
             scoreToCash = true;
             applause.play();
+            setTimeout(() => {
+                molecontainer.style.animation = ("fadeout 1.2s ease forwards")
+                molecontainer.addEventListener('animationend', () => {
+                    molecontainer.style.display = ("none")
+                    statisticsBox.style.display = ("flex")
+                    statisticsBox.style.animation = ("fadein 1.2s ease forwards")
+                }, {once:true})
+            }, 2500)
         }
     }, 10)
 }
@@ -1135,7 +1216,14 @@ function spawnMole(mole) {
     mole.type = "mole";
     mole.state = "up";
     const moleImg = mole.element.querySelector("img")
-    moleImg.src = "images/mole.png"
+    if(Math.random() > goldenMoleChance) {
+        moleImg.src = "images/mole.png"
+        mole.type = "mole"
+    } else {
+        moleImg.src = "images/goldmole.png"
+        shinySound.cloneNode(true).play();
+        mole.type = "goldmole"
+    }
     moleImg.style.transition = "transform 350ms ease"
     moleImg.style.transform = "scale(1)"
     mole.spawningTimer = setTimeout(() => {
@@ -1191,12 +1279,6 @@ function spawnGroundhog(mole) {
 
 function spawnArmadillo(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
-    mole.item = "bomb";
-    if(Math.round(Math.random() + 1) == 1) {
-        mole.item = "bomb"
-    } else {
-        mole.item = "heal"
-    }
     clearTimeout(mole.hideTimer)
     clearTimeout(mole.spawningTimer)
     mole.type = "armadillo"
@@ -1205,6 +1287,17 @@ function spawnArmadillo(mole) {
     moleImg.src = "images/armadillo.png"
     moleImg.style.transition = "transform 350ms ease"
     moleImg.style.transform = "scale(1)"
+    let determineItem = Math.floor(Math.random() * 7 );
+    if(determineItem < 4) {
+        mole.item = "bomb"
+        moleImg.src = "images/armedadillo.png"
+    } else if (determineItem > 5) {
+        mole.item = "heal"
+        moleImg.src = "images/immahealyou.png"
+    } else if(determineItem == 5) {
+        mole.item = "null"
+        moleImg.src = "images/armadillo.png"
+    }
     mole.spawningTimer = setTimeout(() => {
         mole.state = "up";
         moleImg.style.transform = "scale(1)"
@@ -1260,7 +1353,6 @@ function spawnSnake(mole) {
     }, Math.random() * 2500 + 800)
 }
 redScreenTimeout = null;
-
 const shakeKeyFrames = [
     {transform: "translate(0, 0)"},
     {transform: "translate(-5px, 4px)", offset:0.1},
@@ -1282,7 +1374,7 @@ function spit(mole) {
     shading.style.display = "inline"
     shading.style.animation = "none"
     shading.offsetHeight;
-    hurtSound.cloneNode(true).play();
+    hurtPlayer();
     shading.style.animation = "shaderFade 500ms ease forwards"
     shakingElements = Array.from(document.body.querySelectorAll("*"));
     shakingElements.forEach((element) => {
@@ -1302,6 +1394,8 @@ const timer = document.getElementById("timer")
 let shopOpen = false;
 const shopButton = document.getElementById("shop")
 const opendoor = new Audio("audio/opendoor.wav")
+const background = document.getElementById("background")
+const shopBackground = document.getElementById("shopbackground")
 shopButton.addEventListener("mousedown", () => {
     if(!shopOpen) {
         shopOpen = true;
@@ -1311,6 +1405,8 @@ shopButton.addEventListener("mousedown", () => {
             startpageelements.forEach((element) => {
                 element.style.display = "none"
             })
+            background.style.display = "none"
+            shopBackground.style.display = "inline"
             shopElements.forEach((element) => {
                 element.style.display = "flex"
             })
@@ -1326,6 +1422,34 @@ shopButton.addEventListener("mousedown", () => {
 })
 
 const shopElements = [
-    document.getElementById("shopkeeper")
+    document.getElementById("shopkeeper"),
+    document.getElementById("shopinterface")
 ]
 
+
+
+function hurtPlayer() {
+    hurtSound.cloneNode(true).play();
+    healthPoints--;
+    updateHealth();
+}
+
+function updateHealth() {
+    if(healthPoints == 3) {
+        hearts.forEach((heart) => heart.style.filter = "brightness(1)")
+    }
+    if(healthPoints == 2) {
+        hearts.forEach((heart) => heart.style.filter = "brightness(1)")
+        hearts[2].style.filter = "brightness(0)"
+    }
+    if(healthPoints == 1) {
+        hearts.forEach((heart) => heart.style.filter = "brightness(0)")
+        hearts[0].style.filter = "brightness(1)"
+    }
+    if(healthPoints == 0) {
+        triggerFlashbang();
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000)
+    }
+}

@@ -10,6 +10,7 @@ body {
 html {
     cursor:none;
     -webkit-user-drag: none;
+    overflow-y:hidden;
 }
 #background {
     height:100vh;
@@ -25,6 +26,19 @@ html {
     background-repeat: repeat;
     background-size: auto;
     animation: backgroundScroll 20s linear infinite
+}
+#shopbackground {
+    height:100vh;
+    width:100vw;
+    position:fixed;
+    top:0%;
+    filter:brightness(0.34);
+    left:0%;
+    transform: translate(-50% -50%);
+    transform-origin: top left;
+    z-index: -100;
+    background-color:bisque;
+    display:none;
 }
 @keyframes backgroundScroll {
     from {
@@ -152,6 +166,7 @@ html {
     background-color: rgb(80, 18, 18);
     width:400px;
     gap:10px;
+    margin-top:10px;
 }
 
 .settingwrap {
@@ -360,6 +375,16 @@ html {
     } to {
         opacity:1;
         filter:blur(0px);
+    }
+}
+
+@keyframes fadeout {
+    from {
+        opacity:1;
+        filter:blur(0px)
+    } to {
+        opacity:0;
+        filter:blur(25px);
     }
 }
 
@@ -622,9 +647,66 @@ html {
     border-radius:5px;
     font-size:20px;
 }
-#shopkeeper {
+
+#statisticsbox {
+    position:fixed;
+    top:57%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    width:450px;
+    height:600px;
+    pointer-events: none;
+    background-color: rgb(62, 104, 91);
+    border:4px solid white;
+    justify-content: center;
+
+    border-radius:5px;
     display:none;
 }
+
+#statstitle {
+    width:370px;
+    height:fit-content;
+    padding:10px;
+    display:flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    margin-top:10px;
+    font-size:40px;
+    border:4px solid white;
+    border-radius:5px;
+    background-color: rgb(39, 70, 60);
+}
+
+#shopkeeper {
+    display:none;
+    position:fixed;
+    top:23%;
+    left:50%;
+    transform:translate(-50%, -50%)
+}
+#shopinterface {
+    position:fixed;
+    top:75%;
+    left: 50%;
+    transform:translate(-50%, -50%);
+    background-color: black;
+    width:100vw;
+    height:50vh;
+    display:none;
+    border-top:4px solid rgb(44, 44, 44);
+}
+
+@font-face {
+    font-family: bit;
+    src: url(bit.ttf);
+}
+#shoptextbox {
+    font-family: bit;
+}
+
+
 
 @keyframes swing {
     from {
@@ -632,6 +714,26 @@ html {
     } to {
         transform:rotate(0deg)
     }
+}
+
+.heart {
+    image-rendering: crisp-edges;
+    width:40px;
+    height:40px;
+}
+#hp {
+    display:flex;
+    gap:10px;
+    margin-left:10px;
+    margin-top:10px;
+
+    flex-direction: row;
+}
+#hpwrap {
+    display:none;
+    left:0%;
+    position:fixed;
+    top:0%;
 }
 
 @keyframes redfilter {

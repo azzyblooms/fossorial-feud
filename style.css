@@ -462,6 +462,12 @@ html {
 #tutorialtextbox span.visible {
     opacity:1;
 }
+#shoptextbox span {
+    opacity:0;
+}
+#shoptextbox span.visible {
+    opacity:1;
+}
 
 #continuebutton {
     display:flex;
@@ -659,9 +665,11 @@ html {
     background-color: rgb(62, 104, 91);
     border:4px solid white;
     justify-content: center;
-
+    z-index:400;
     border-radius:5px;
     display:none;
+    flex-direction: column;
+    align-items: center;
 }
 
 #statstitle {
@@ -677,6 +685,20 @@ html {
     border:4px solid white;
     border-radius:5px;
     background-color: rgb(39, 70, 60);
+}
+#statsorganizer {
+    display:flex;
+    width:350px;
+    flex-direction: column;
+    margin-top:10px;
+    padding:10px;
+    gap:10px;
+    border:4px solid white;
+    border-radius:5px;
+    background-color: rgb(39, 70, 60);
+}
+.statistic {
+    font-size:30px;
 }
 
 #shopkeeper {
@@ -698,12 +720,18 @@ html {
     border-top:4px solid rgb(44, 44, 44);
 }
 
+.goldentext {
+    color:goldenrod
+}
+
 @font-face {
     font-family: bit;
     src: url(bit.ttf);
 }
 #shoptextbox {
     font-family: bit;
+    margin-left:30px;
+    font-size:50px;
 }
 
 

@@ -209,14 +209,132 @@ settingsButton.addEventListener('mousedown', () => {
 
 let molesHit = 0;
 let groundhogsHit = 0;
+let goldenMolesHit = 0;
 let snakesHit = 0;
 let armadillosHit = 0;
 let totalHits = 0;
 let maxStreak = 0;
 
-/*function displayStatistics() {
+const totalHitsText = document.getElementById("totalhits")
+const molesHitText = document.getElementById("molehits")
+const goldenMolesHitText = document.getElementById("goldenmolehits")
+const snakesHitText = document.getElementById("snakehits")
+const armadillosHitText = document.getElementById("armadillohits")
+const groundhogsHitText = document.getElementById("groundhoghits")
+const maxStreakText = document.getElementById("maxstreak")
+const gmhnum = document.getElementById("gmh")
 
-}*/
+
+
+
+
+const tone = new Audio("audio/tone.wav")
+const lockin = new Audio("audio/lockin.wav")
+const toneSound = tone.cloneNode(true)
+toneSound.preservesPitch = false;
+function displayStatistics() {
+    let th = 0;
+    let mh = 0;
+    let gmh = 0;
+    let gh = 0;
+    let sh = 0;
+    let ah = 0;
+    let ms = 0;
+    function playTone(abcde) {
+        const sound = tone.cloneNode(true);
+        sound.preservesPitch = false;
+        sound.playbackRate = 1 + (abcde * 0.014);
+        sound.play();
+    }
+    let waiting = false;
+    const calcMolesHit = setInterval(() => {
+        if(waiting) {
+            toneSound.playbackRate = 1;
+            return;
+        }
+        if(totalHitsText.textContent !== `TOTAL HITS: ${totalHits}`) {
+            th++;
+            totalHitsText.textContent = `TOTAL HITS: ${th}`
+            playTone(th);
+            if(th == totalHits) {
+                lockin.cloneNode(true).play();
+                waiting = true;
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else if(molesHitText.textContent !== `MOLES HIT: ${molesHit}`) {
+            mh++;
+            molesHitText.textContent = `MOLES HIT: ${mh}`
+            playTone(mh);
+            if(mh == molesHit) {
+                lockin.cloneNode(true).play();
+                waiting = true;
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else if(gmhnum.textContent !== `${goldenMolesHit}`) {
+            gmh++;
+            gmhnum.textContent = `${gmh}`
+            playTone(gmh);
+            if(gmh == goldenMolesHit) {
+                lockin.cloneNode(true).play();
+                waiting = true;
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else if(snakesHitText.textContent !== `SNAKES HIT: ${snakesHit}`) {
+            sh++;
+            playTone(sh);
+            snakesHitText.textContent = `SNAKES HIT: ${sh}`
+            if(sh == snakesHit) {
+                lockin.cloneNode(true).play();
+                waiting = true;
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else if(groundhogsHitText.textContent !== `GROUNDHOGS HIT: ${groundhogsHit}`) {
+            gh++;
+            playTone(gh);
+            groundhogsHitText.textContent = `GROUNDHOGS HIT: ${gh}`
+            if(gh == groundhogsHit) {
+                waiting = true;
+                lockin.cloneNode(true).play();
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else if(armadillosHitText.textContent !== `ARMADILLOS HIT: ${armadillosHit}`) {
+            ah++;
+            playTone(ah);
+            armadillosHitText.textContent = `ARMADILLOS HIT: ${ah}`
+            if(ah == armadillosHit) {
+                waiting = true;
+                lockin.cloneNode(true).play();
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else if(maxStreakText.textContent !== `HIGHEST STREAK: ${maxStreak}`) {
+            ms++;
+            playTone(ms);
+            maxStreakText.textContent = `HIGHEST STREAK: ${ms}`
+            if(ms == maxStreak) {
+                waiting = true;
+                lockin.cloneNode(true).play();
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else {
+            applause.play();
+            clearInterval(calcMolesHit)
+        }
+    }, 20)
+}
 
 
 function triggerFlashbang() {
@@ -469,12 +587,6 @@ function prepText(text) {
     }
     type();
 }
-
-function spawnTutorialMole(mole) {
-
-}
-
-
 
 let current = 0;
 let punctuation = [".", "?", "!"]
@@ -884,7 +996,7 @@ function moleHit(mole) {
     } else if(mole.type == "goldmole") {
         clearTimeout(mole.saveStreak)
         score += 500;
-        molesHit++;
+        goldenMolesHit++;
         shinyHitSound.cloneNode(true).play();
         streak++;
         streakIncrease();
@@ -931,6 +1043,19 @@ function moleHit(mole) {
             scoreText.style.animation = "none"
             scoreText.offsetHeight;
             scoreText.style.animation = "scoreBubbleUp 400ms ease"
+        } else if(mole.item == "cash") {
+            score += 100;
+            cash += 1000;
+            streak++;
+            lockin.cloneNode(true).play();
+            streakIncrease();
+            scoreText.style.animation = "none"
+            scoreText.offsetHeight;
+            scoreText.style.animation = "scoreBubbleUp 400ms ease"
+            cashText.style.animation = "none"
+            cashText.offsetHeight;
+            cashText.textContent = `CASH: \$${cash.toLocaleString()}`
+            cashText.style.animation = "scoreBubbleUp 400ms ease"
         } else {
             score += 50;
             streak++;
@@ -1012,7 +1137,7 @@ streakText.textContent = (`STREAK: ${streak}`)
 updateHealth();
 function roundcountshow() {
     gameOn = false;
-    timeLeft = 1;
+    timeLeft = 120;
     healthPoints = 3;
     molesHit = 0;
     groundhogsHit = 0;
@@ -1065,6 +1190,13 @@ function finishGame() {
 const statisticsBox = document.getElementById("statisticsbox")
 
 function tallyScore() {
+    let loops = 0
+    function playTone(abcde) {
+        const sound = tone.cloneNode(true);
+        sound.preservesPitch = false;
+        sound.playbackRate = 1 + (abcde * 0.01);
+        sound.play();
+    }
     tallyScoreMath = setInterval(() => {
         if(score > 0 ) {
             if (!Number.isFinite(cash)) {
@@ -1074,18 +1206,21 @@ function tallyScore() {
             }
             if(score >= 10) {
                 score -= 10;
+                
                 cash += 20;
             } else {
                 if(score > 0) {
                     cash += score * 2
+                    loops++;
                 }
                 score = 0;
             }
             cashText.style.animation = "none"
             cashText.offsetHeight;
+            playTone(loops)
             cashText.textContent = `CASH: \$${cash.toLocaleString()}`
             scoreText.textContent = `SCORE: ${score}`
-            cashText.style.animation = "scoreBubbleUp 15ms ease"
+            cashText.style.animation = "scoreBubbleUp 400ms ease"
         }
         if(score <= 0) {
             clearInterval(tallyScoreMath)
@@ -1099,10 +1234,13 @@ function tallyScore() {
                     molecontainer.style.display = ("none")
                     statisticsBox.style.display = ("flex")
                     statisticsBox.style.animation = ("fadein 1.2s ease forwards")
+                    setTimeout(() => {
+                        displayStatistics();
+                    }, 1500)
                 }, {once:true})
             }, 2500)
         }
-    }, 10)
+    }, 8)
 }
 let deleteFileCountdown;
 const evilbutton = document.getElementById("evilbutton")
@@ -1287,16 +1425,19 @@ function spawnArmadillo(mole) {
     moleImg.src = "images/armadillo.png"
     moleImg.style.transition = "transform 350ms ease"
     moleImg.style.transform = "scale(1)"
-    let determineItem = Math.floor(Math.random() * 7 );
+    let determineItem = Math.floor(Math.random() * 8 );
     if(determineItem < 4) {
         mole.item = "bomb"
         moleImg.src = "images/armedadillo.png"
-    } else if (determineItem > 5) {
+    } else if (determineItem > 6) {
         mole.item = "heal"
         moleImg.src = "images/immahealyou.png"
     } else if(determineItem == 5) {
         mole.item = "null"
         moleImg.src = "images/armadillo.png"
+    } else if(determineItem == 6) {
+        mole.item = "cash"
+        moleImg.src = "images/dolladillo.png"
     }
     mole.spawningTimer = setTimeout(() => {
         mole.state = "up";
@@ -1350,7 +1491,7 @@ function spawnSnake(mole) {
                 }
             }, 350)
         }
-    }, Math.random() * 2500 + 800)
+    }, Math.random() * 2500 + 500)
 }
 redScreenTimeout = null;
 const shakeKeyFrames = [
@@ -1417,6 +1558,7 @@ shopButton.addEventListener("mousedown", () => {
             shading.style.display = "none"
             await setupAudio('audio/shop.mp3');
             playLoopingMusic();
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 4)])
         }, {once:true})
     }
 })
@@ -1425,6 +1567,55 @@ const shopElements = [
     document.getElementById("shopkeeper"),
     document.getElementById("shopinterface")
 ]
+const shopTextBox = document.getElementById("shoptextbox")
+
+function shopPrepText(text) {
+    current = 0;
+    globalDelay = 35;
+    shopTextBox.innerHTML = ""
+    for(const char of text) {
+      const span = document.createElement("span")
+      span.textContent = char;
+      shopTextBox.appendChild(span)
+    }
+    shopType();
+}
+
+function shopType() {
+    typingDone = false;
+    const chars = shopTextBox.children;
+    if(current >= chars.length) {
+        typingDone = true;
+        return;
+    }
+    const char = chars[current].textContent;
+    chars[current].classList.add("visible")
+    current++;
+    if(/[a-zA-z]/.test(char)) {
+        const speakSound = (new Audio(`audio/speech/${(char.toUpperCase())}.wav`)).cloneNode(true);
+        speakSound.playbackRate = Math.random() * 0.2 + 0.9;
+        speakSound.preservesPitch = false;
+        speakSound.volume = 0.7;
+        speakSound.play();
+    }
+    let delay = 35;
+    if (char === ",") delay = 180;
+    if (punctuation.includes(char)) delay = 300;
+    
+    setTimeout(shopType, delay)
+}
+
+const shopDialogue = [
+    "* Hello! Welcome to my shop!",
+    "* Hey, aren't you a sight for sore eyes!",
+    "* Back for more?",
+    "* My favourite customer! What'll it be for ya?",
+    "* Yeah! Buy my stuff!",
+    "* Oh, hell yeah!",
+    "* You wanna talk? Yeah, we can talk. Just buy something afterwards.",
+]
+
+
 
 
 

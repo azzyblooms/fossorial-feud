@@ -1,28 +1,62 @@
+let yourItems = [
+    {item: "antistun", owned: false, q:0},
+    {item: "heart4", owned:false, q:0},
+    {item: "combosave", owned:false, q:0},
+    {item: "heart5", owned:false, q:0},
+    {item: "anticooldown", owned:false, q:0},
+    {item: "snakeflute", owned:false, q:0},
+    {item: "hogsave", owned:false, q:0},
+    {item: "gmoleexp", owned:false, q:0},
+    {item: "rock", owned:false, q:0},
+    {item: "rock2", owned:false, q:0},
+    {item: "fruit", owned:false, q:0},
+    {item: "donate", owned:false, q:0}
+]
+const savedItems = localStorage.getItem("yourItems")
+if(savedItems == null) {
+    yourItems = JSON.parse(savedItems)
+}
+function saveItems() {
+    localStorage.setItem("yourItems", JSON.stringify(yourItems))
+}
+saveItems();
+
 //web audio api stuff
 let audioCtx;
 let audioBuffer;
 let sourceNode;
 
 async function setupAudio(audioPath) {
-    if (audioCtx) return; 
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.connect(audioCtx.destination);
+    }
 
     const response = await fetch(audioPath);
     const arrayBuffer = await response.arrayBuffer();
     audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-    gainNode = audioCtx.createGain();
-  
-    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime)
 }
 
 function playLoopingMusic() {
-  sourceNode = audioCtx.createBufferSource();
-  sourceNode.buffer = audioBuffer;
-  sourceNode.loop = true;
-  sourceNode.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  sourceNode.start(0);
+    stopLoopingMusic();
+    sourceNode = audioCtx.createBufferSource();
+    sourceNode.buffer = audioBuffer;
+    sourceNode.loop = true;
+
+    sourceNode.connect(gainNode);
+    sourceNode.start();
+}
+
+
+function stopLoopingMusic() {
+    if (sourceNode) {
+        sourceNode.stop();
+        sourceNode.disconnect();
+        sourceNode = null;
+    }
 }
 
 const hearts = document.querySelectorAll(".heart")
@@ -230,8 +264,6 @@ const gmhnum = document.getElementById("gmh")
 
 const tone = new Audio("audio/tone.wav")
 const lockin = new Audio("audio/lockin.wav")
-const toneSound = tone.cloneNode(true)
-toneSound.preservesPitch = false;
 function displayStatistics() {
     let th = 0;
     let mh = 0;
@@ -243,7 +275,11 @@ function displayStatistics() {
     function playTone(abcde) {
         const sound = tone.cloneNode(true);
         sound.preservesPitch = false;
+        sound.volume = 0.3;
         sound.playbackRate = 1 + (abcde * 0.014);
+        if(sound.playbackRate > 15) {
+            sound.playbackRate = 15;
+        }
         sound.play();
     }
     let waiting = false;
@@ -450,7 +486,8 @@ const startpageelements = [
     document.getElementById("settings"),
     document.getElementById("tutorial"),
     document.getElementById("evilbutton"),
-    document.getElementById("shop")
+    document.getElementById("shop"),
+    document.getElementById("endlessbutton")
 ]
 
 difficultyButton.addEventListener('mousedown', () => {
@@ -679,7 +716,7 @@ function spawnTutorialSnake() {
 let tarmadilloTimer = null;
 function spawnTutorialArmadillo() {
     tmoletype = "armadillo"
-    tmoleimg.src = "images/armadillo.png"
+    tmoleimg.src = "images/armedadillo.png"
     tmoleimg.style.transition = "transform 350ms ease"
     tmoleimg.style.transform = "scale(1)"
     tarmadilloTimer = setTimeout(() => {
@@ -789,8 +826,6 @@ tutorialButton.addEventListener('mousedown', async () => {
         tutorialmolecontainer.style.animation = ("fadein 1.2s ease forwards")
         scoreWrap.style.display = "flex"
         scoreWrap.style.animation = ("fadein 1.2s ease forwards")
-        hpWrap.style.display = "flex"
-        hpWrap.style.animation = ("fadein 1.2s ease forwards")
         cashWrap.style.display = "flex"
         cashWrap.style.animation = ("fadein 1.2s ease forwards")
         timerWrap.style.display = "flex"
@@ -821,8 +856,6 @@ startbutton.addEventListener('mousedown', () => {
             molecontainer.style.animation = ("fadein 1.2s ease forwards")
             scoreWrap.style.display = "flex"
             scoreWrap.style.animation = ("fadein 1.2s ease forwards")
-            hpWrap.style.display = "flex"
-            hpWrap.style.animation = ("fadein 1.2s ease forwards")
             cashWrap.style.display = "flex"
             cashWrap.style.animation = ("fadein 1.2s ease forwards")
             timerWrap.style.display = "flex"
@@ -839,6 +872,43 @@ startbutton.addEventListener('mousedown', () => {
     }, 1000)
 })
 
+endlessbutton.addEventListener('mousedown', () => {
+    startpageelements.forEach((element) => {
+        element.style.animation = ("wipeleft 1s ease-in-out forwards")
+    })
+    setTimeout(() => {
+        molecontainer.style.display = ("flex")
+        molecontainer.style.animation = ("fadein 1.2s ease forwards")
+        scoreWrap.style.display = "flex"
+        scoreWrap.style.animation = ("fadein 1.2s ease forwards")
+        hpWrap.style.display = "flex"
+        hpWrap.style.animation = ("fadein 1.2s ease forwards")
+        if(yourItems[3].owned == false) {
+            hearts[4].style.display = "none"
+        } else {hearts[4].style.display = "inline"}
+        if(yourItems[1].owned == false) {
+            hearts[3].style.display = "none"
+        } else {hearts[3].style.display = "inline"}
+        updateHealth();
+        cashWrap.style.display = "flex"
+        cashWrap.style.animation = ("fadein 1.2s ease forwards")
+        timerWrap.style.display = "flex"
+        timerWrap.style.animation = ("fadein 1.2s ease forwards")
+        setTimeout(() => {
+            moles.forEach((mole) => {
+                mole.element.querySelector("img").style.transform = "scale(1)"
+                mole.element.querySelector("img").style.opacity = "1"
+            })
+             endlessPrep();
+        }, 1300)
+    }, 1000)
+    setTimeout(() => {
+        startpageelements.forEach((element) => {
+            element.style.display = ("none")
+        })
+    }, 1000)
+})
+
 epilepsyProceed.addEventListener('mousedown', () => {
     epilepsyContainer.style.animation = ("wipeleft 1s ease-in-out forwards")
     setTimeout(() => {
@@ -847,8 +917,6 @@ epilepsyProceed.addEventListener('mousedown', () => {
         molecontainer.style.animation = ("fadein 1.2s ease forwards")
         scoreWrap.style.display = "flex"
         scoreWrap.style.animation = ("fadein 1.2s ease forwards") 
-        hpWrap.style.display = "flex"
-        hpWrap.style.animation = ("fadein 1.2s ease forwards")
         cashWrap.style.display = "flex"
         cashWrap.style.animation = ("fadein 1.2s ease forwards")
         timerWrap.style.display = "flex"
@@ -1018,6 +1086,9 @@ function moleHit(mole) {
         if(streak > 0) {
             endStreak();
         }
+        if(endless && !timeUp) {
+            spit()
+        }
         scoreText.style.animation = "none"
         scoreText.offsetHeight;
         scoreText.style.animation = "loseScore 400ms ease"
@@ -1028,13 +1099,22 @@ function moleHit(mole) {
             if(streak > 0) {
                 endStreak();
             }
+            if(endless && !timeUp) {
+                spit()
+            }
             ping.cloneNode(true).play();
             bonk.cloneNode(true).play();
             triggerFlashbang();
         } else if(mole.item == "heal") {
             score += 50;
-            if(healthPoints < 3) {
-                healthPoints++;
+            if(healthPoints < 5) {
+                if(healthPoints == 4 && yourItems[3].owned == true) {
+                    healthPoints = 5;
+                } else if(healthPoints == 3 && yourItems[1].owned == true) {
+                    healthPoints = 4;
+                } else {
+                    healthPoints++;
+                }
             }
             updateHealth();
             streak++;
@@ -1098,7 +1178,7 @@ function streakIncrease() {
         maxStreak = streak;
     }
     if(streak > 8) {
-        goldenMoleChance = (streak / 8) / 100;
+        goldenMoleChance = (streak / 12) / 100;
     }
 }
 
@@ -1138,13 +1218,18 @@ updateHealth();
 function roundcountshow() {
     gameOn = false;
     timeLeft = 120;
-    healthPoints = 3;
+    if(yourItems[3].owned == true) {
+        healthPoints = 5;
+    } else if(yourItems[1].owned == true) {
+        healthPoints = 4;
+    } else {
+        healthPoints = 3;
+    }
     molesHit = 0;
     groundhogsHit = 0;
+    goldenMolesHit = 0;
     snakesHit = 0;
     armadillosHit = 0;
-    timesBanged = 0;
-    timesHealed = 0;
     totalHits = 0;
     maxStreak = 0;
     updateHealth();
@@ -1172,6 +1257,41 @@ function roundcountshow() {
     }, 3500)
 }
 
+function endlessPrep() {
+    gameOn = false;
+    endless = true;
+    timeLeft = 0;
+    if(yourItems[3].owned == true) {
+        healthPoints = 5;
+    } else if(yourItems[1].owned == true) {
+        healthPoints = 4;
+    } else {
+        healthPoints = 3;
+    }
+    molesHit = 0;
+    groundhogsHit = 0;
+    goldenMolesHit = 0;
+    snakesHit = 0;
+    armadillosHit = 0;
+    totalHits = 0;
+    maxStreak = 0;
+    updateHealth();
+    timeUp = false;
+    moleTypeText.textContent = enemyList;
+    setTimeout(() => {
+        moles.forEach((mole) => {
+                mole.element.querySelector("img").style.transform = "scale(0)"
+        })
+        setTimeout(() => {
+            moles.forEach((mole) => {
+                mole.state = "bury";
+            })
+            document.querySelectorAll(".moleimgdiv").forEach((moleimg) => {moleimg.style.animation = ("none")})
+            endlessStart();
+        }, 900)
+    }, 2000)
+}
+
 let cash = Number(localStorage.getItem("cash")) || 0;
 let cashWrap = document.getElementById("cashwrap")
 let cashText = document.getElementById("cash")
@@ -1193,8 +1313,12 @@ function tallyScore() {
     let loops = 0
     function playTone(abcde) {
         const sound = tone.cloneNode(true);
+        sound.volume = 0.3;
         sound.preservesPitch = false;
-        sound.playbackRate = 1 + (abcde * 0.01);
+        sound.playbackRate = 1 + (abcde * 0.007);
+        if(sound.playbackRate > 15) {
+            sound.playbackRate = 15;
+        }
         sound.play();
     }
     tallyScoreMath = setInterval(() => {
@@ -1206,7 +1330,7 @@ function tallyScore() {
             }
             if(score >= 10) {
                 score -= 10;
-                
+                loops++;
                 cash += 20;
             } else {
                 if(score > 0) {
@@ -1329,6 +1453,56 @@ function gameStart() {
 
 }
 
+let endless = false;
+
+function endlessStart() {
+    intro = false;
+    gameOn = true;
+    endless = true;
+    timeUp = false;
+    moles.forEach((mole) => {
+        mole.state = "bury";
+    })
+    countdown = setInterval(() => {
+        timeLeft++;
+        timer.textContent = `TIME: ${timeLeft}`
+
+        if(gameOn == false) {
+            clearInterval(countdown)
+            timer.classList.add("flashing")
+        }
+    }, 1000)
+    function spawnLoop() {
+        if(hp <= 0 || gameOn == false || timeUp == true) {
+            return;
+        }
+        const available = moles.filter(mole => mole.state == "bury" && mole.cooldown <= 0 && globalCooldown <= 0);
+        if (available.length > 0) {
+            const randomMole = available[Math.floor(Math.random() * available.length)];
+            //spawnMole(randomMole)
+            const moleType = Math.floor(Math.random() * 23)
+            if(moleType >= 0 && moleType <= 14) {
+                spawnMole(randomMole)
+            }
+            if(moleType >= 15 && moleType <= 18) {
+                spawnGroundhog(randomMole)
+            }
+            if(moleType >= 19 && moleType <= 20) {
+                spawnArmadillo(randomMole)
+            }
+            if(moleType >= 21 && moleType <= 22) {
+                spawnSnake(randomMole)
+            }
+            globalCooldown = Math.random() * 100 + 50;
+        }
+
+        const delay = Math.random() * 600 + 100;
+        setTimeout(spawnLoop, delay)
+    }
+    spawnLoop();
+
+}
+
 const streakEndSfx = new Audio("audio/perfectfail.wav")
 
 setInterval(() => {
@@ -1381,6 +1555,9 @@ function spawnMole(mole) {
                     if(streak > 0) {
                         endStreak();
                     }
+                    if(endless && !timeUp) {
+                        spit()
+                    }
                     streakText.textContent = (`STREAK: ${streak}`)      
                 }
             }, 350)
@@ -1430,14 +1607,26 @@ function spawnArmadillo(mole) {
         mole.item = "bomb"
         moleImg.src = "images/armedadillo.png"
     } else if (determineItem > 6) {
-        mole.item = "heal"
-        moleImg.src = "images/immahealyou.png"
+        if(endless) {
+            mole.item = "heal"
+            moleImg.src = "images/immahealyou.png"
+        } else {
+            mole.item = "null"
+            moleImg.src = "images/armadillo.png"
+        }
     } else if(determineItem == 5) {
         mole.item = "null"
         moleImg.src = "images/armadillo.png"
     } else if(determineItem == 6) {
         mole.item = "cash"
         moleImg.src = "images/dolladillo.png"
+        /*if(stimulateEconomy) {
+            mole.item = "cash"
+            moleImg.src = "images/dolladillo.png"
+        } else {
+            mole.item = "null"
+            moleImg.src = "images/armadillo.png"
+        }*/
     }
     mole.spawningTimer = setTimeout(() => {
         mole.state = "up";
@@ -1515,7 +1704,12 @@ function spit(mole) {
     shading.style.display = "inline"
     shading.style.animation = "none"
     shading.offsetHeight;
-    hurtPlayer();
+    if(endless) {
+        hurtPlayer();
+    } else {
+        timeLeft -= 15;
+        ping.cloneNode(true).play();
+    }
     shading.style.animation = "shaderFade 500ms ease forwards"
     shakingElements = Array.from(document.body.querySelectorAll("*"));
     shakingElements.forEach((element) => {
@@ -1537,9 +1731,11 @@ const shopButton = document.getElementById("shop")
 const opendoor = new Audio("audio/opendoor.wav")
 const background = document.getElementById("background")
 const shopBackground = document.getElementById("shopbackground")
+const shopCash = document.getElementById("yourcash")
 shopButton.addEventListener("mousedown", () => {
     if(!shopOpen) {
         shopOpen = true;
+        shopCash.textContent = `\$${cash.toLocaleString()}`
         shading.style.display = "flex"
         shading.style.animation = "epicflash 2.8s ease forwards"
         setTimeout(() => {
@@ -1567,7 +1763,7 @@ const shopElements = [
     document.getElementById("shopkeeper"),
     document.getElementById("shopinterface")
 ]
-const shopTextBox = document.getElementById("shoptextbox")
+const shopTextBox = document.getElementById("shoptextgoeshere")
 
 function shopPrepText(text) {
     current = 0;
@@ -1604,20 +1800,406 @@ function shopType() {
     
     setTimeout(shopType, delay)
 }
+let price = 0;
+const shopItems = [
+    document.getElementById("shopitem1"),
+    document.getElementById("shopitem2"),
+    document.getElementById("shopitem3"),
+    document.getElementById("shopitem4"),
+    document.getElementById("shopitem5"),
+    document.getElementById("shopitem6")
+]
 
 const shopDialogue = [
+    //greetings
     "* Hello! Welcome to my shop!",
     "* Hey, aren't you a sight for sore eyes!",
     "* Back for more?",
     "* My favourite customer! What'll it be for ya?",
+    //leaving
+    "* See ya.",
+    "* Same time tomorrow?",
+    "* Come back when you're a little more, mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm, richer!",
+
+    //open shop
     "* Yeah! Buy my stuff!",
     "* Oh, hell yeah!",
+    "* Anything catch your eye?",
+    //talk
     "* You wanna talk? Yeah, we can talk. Just buy something afterwards.",
+    "* 'Sup?",
+    //stimulate the economy
+    "* Well, I'm the only one around here who runs a shop, I suppose it wouldn't hurt to share the wealth.",
+    "* I heard those armadillos like to pick up cash. Check them out now. They might be carrying some fat stacks.",
+    //who are you
+    "* I'm the Meerkat. I collect cash.",
+    "* I also collect wares, in case you were interested in buying anything today.",
+    "* And for the record, I don't like the moles either. I'm just here 'cause the money's good.",
+    //golden moles
+    "* Golden moles are elusive creatures. I've only ever seen one, and he ran out of my store before I could tie him up.",
+    "* Legend has it that they're attracted to the most skilled of mole hunters. For some reason.",
+    "* Ain't it a little suicidal that they only show up for the people who want them dead the most?",
+    "* Anywho, if you fetch me some golden moles, I might have something new to offer ya. Deal?",
+    //the moles
+    "* It's been about two years, give or take. Two years since I moved in.",
+    "* The moles got here last month. Heh, at least life ain't so mundane anymore. But still...",
+    "* To be honest, I wanted to move out. Everything seemed to get worse. Couldn't even last a day without one digging into my shop.",
+    "* But then, hunters showed up. Hunters like you. That helped a lot.",
+    "* Now, the moles tend to keep to their burrows. Things flared up once they recruited the snakes and armadillos, but not much has come out of it.",
+    
+
+    //SHOP ITEMS
+    "* Heh, thanks.",
+    "* Pleasure doing business with ya.",
+    //stun remover (28)
+    "* Check out my Stun Remover. With this guy, when you miss a mole, sure, you'll still lose your streak, but you won't be stunned! All yours for $30,000!",
+    //heart 4
+    "* You need a heart? I can tell from those soulless eyes. Increase your maximum health! Only $100,000!",
+    //combo insurance
+    "* Your first combo break of the round? Nope, didn't see it. Insure your streaks for $150,000!",
+    //heart 5
+    "* First one wasn't enough? God, you're greedy. Give me more money. $500,000. Take it or leave it.",
+    //burrow heater
+    "* Don't you just hate cooldowns? This'll shrink 'em. $50,000. Good luck.",
+    // snake charmer's flute
+    "* Attracts snakes. Use at your own risk. Masterfully crafted for $200,000.",
+    //groundhog insurance
+    "* This wallet lining makes it so groundhogs only steal 49 points. Sick, right? It's gold plated, so it's pricey at $300,000. Worth it!!!",
+    //exponential gold
+    "* This little trinket makes golden moles become exponentially more common! Lower streak means WAY lower, higher streak means WAY higher. They're golden moles, so it's $250,000.",
+    // rock 1 (useless)
+    "* It's a rock. $1,000.",
+    // rock 2 (useless)
+    "* It's also a rock. $2,000.",
+    // fruit (useless)
+    "* Fruit From Colombia. $5,000 for you.",
+    // ridiculously expensive thing (useless)
+    "* Spare change? Donate to the poor? I'm an orphan!!! Please... $1,000,000...",
+    // can't afford (40)
+    "* Sorry, Link, I can't give credit!",
+    `* That doesn't look like \$${price.toLocaleString()}...`,
+    "* You think I'm stupid or something?",
+    `* You only got \$${cash.toLocaleString()}.`,
+    "* Don't play games with me.",
+    //can't buy? (45)
+    "* You don't need any more.",
+    "* That was my last one.",
+    "* Sorry, all out.",
+    //more than one
+    "* Happy customer, eh?.",
+    "* Yes... Good...",
+    "* Stocking up?",
 ]
+const talkButton = document.getElementById("talkbutton")
+const buyButton = document.getElementById("buybutton")
+const leaveButton = document.getElementById("leavebutton")
+let leavingShop = false;
+
+leaveButton.addEventListener('mousedown', () => {
+    if(!leavingShop) {
+        shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 4)])
+        setTimeout(() => {
+            shopOpen = false;
+            leavingShop = true;
+            shading.style.display = "flex"
+            shading.style.animation = "epicflash 2.8s ease forwards"
+            opendoor.cloneNode(true).play();
+            setTimeout(() => {
+                shopElements.forEach((element) => {
+                    element.style.display = "none"
+                })
+                background.style.display = "inline"
+                stopLoopingMusic();
+                leavingShop = false;
+                shopBackground.style.display = "none"
+                startpageelements.forEach((element) => {
+                    element.style.display = "flex"
+                })
+                streakText.style.display = "flex"
+            }, 1000)
+            shading.addEventListener('animationend', async () => {
+                shading.style.display = "none"
+            }, {once:true})
+        }, 3000)
+    }
+})
+
+const backArrow = document.getElementById("pageback")
+const nextArrow = document.getElementById("pagenext")
+const shopButtonBox = document.getElementById("shopbuttonbox")
+const storePage = document.getElementById("buystuff")
+const purchaseButton = document.getElementById("purchase")
+const cancelPurchaseButton = document.getElementById("closepurchase")
+
+purchaseButton.addEventListener('mousedown', () => {
+    if(cash < price) {
+        shopPrepText(shopDialogue[Math.floor(Math.random() * 5 + 40)])
+        cantSelect.cloneNode(true).play();
+    } else {
+        cash -= price;
+        //fix cash
+        if(focusedItem == 0) {
+            if(yourItems[0].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[0].owned = true;
+                yourItems[0].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 1) {
+            if(yourItems[1].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[1].owned = true;
+                yourItems[1].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 2) {
+            if(yourItems[2].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[2].owned = true;
+                yourItems[2].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 3) {
+            if(yourItems[3].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[3].owned = true;
+                yourItems[3].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 4) {
+            if(yourItems[4].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[4].owned = true;
+                yourItems[4].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 5) {
+            if(yourItems[5].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[5].owned = true;
+                yourItems[5].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 6) {
+            if(yourItems[6].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[6].owned = true;
+                yourItems[6].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 7) {
+            if(yourItems[7].owned == true) {
+                cantSelect.cloneNode(true).play();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+            } else {
+                yourItems[7].owned = true;
+                yourItems[7].q++;
+                saveItems();
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+        }
+        if(focusedItem == 8) {
+            if(yourItems[8].owned == true) {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 48)])
+            } else {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+            yourItems[8].owned = true;
+            yourItems[8].q++;
+            saveItems();
+        }
+        if(focusedItem == 9) {
+            if(yourItems[9].owned == true) {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 48)])
+            } else {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+            yourItems[9].owned = true;
+            yourItems[9].q++;
+            saveItems();
+        }
+        if(focusedItem == 10) {
+            if(yourItems[10].owned == true) {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 48)])
+            } else {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+            yourItems[10].owned = true;
+            yourItems[10].q++;
+            saveItems();
+        }
+        if(focusedItem == 11) {
+            if(yourItems[11].owned == true) {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 48)])
+            } else {
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
+            }
+            yourItems[11].owned = true;
+            yourItems[11].q++;
+            saveItems();
+        }
+    }
+})
+
+let focusedItem = null;
+let shopPage = 0
+backArrow.addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        storePage.style.display = "none"
+        talkButton.style.display = "flex"
+        buyButton.style.display = "flex"
+        leaveButton.style.display = "flex"
+    } else {
+        shopPage--;
+        updateShopItems();
+    }
+})
+nextArrow.addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        shopPage++;
+        updateShopItems();
+    } else {
+        cantSelect.cloneNode(true).play();
+    }
+})
+
+function updateShopItems() {
+    if(shopPage <= 0) {
+        shopItems[0].textContent = "StunRemover"
+        shopItems[1].textContent = "ExtraHeart"
+        shopItems[2].textContent = "ComboInsure"
+        shopItems[3].textContent = "HeartPlusUp"
+        shopItems[4].textContent = "BurrowHeater"
+        shopItems[5].textContent = "SnakeFlute"
+    } else {
+        shopItems[0].textContent = "WalletLining"
+        shopItems[1].textContent = "GoldenGoose"
+        shopItems[2].textContent = "Rock"
+        shopItems[3].textContent = "Rock2"
+        shopItems[4].textContent = "Fruit"
+        shopItems[5].textContent = "DonationBox"
+    }
+}
+
+shopItems[0].addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        shopPrepText(shopDialogue[28])
+        price = 30000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 0;
+    } else {
+        shopPrepText(shopDialogue[34])
+        price = 300000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 6;
+    }
+})
+shopItems[1].addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        shopPrepText(shopDialogue[29])
+        price = 100000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 1;
+    } else {
+        shopPrepText(shopDialogue[35])
+        price = 250000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 7;
+    }
+})
+shopItems[2].addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        shopPrepText(shopDialogue[30])
+        price = 150000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 2;
+    } else {
+        shopPrepText(shopDialogue[36])
+        price = 1000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 8;
+    }
+})
+shopItems[3].addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        shopPrepText(shopDialogue[31])
+        price = 500000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 3;
+    } else {
+        shopPrepText(shopDialogue[37])
+        price = 2000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 9;
+    }
+})
+shopItems[4].addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        shopPrepText(shopDialogue[32])
+        price = 50000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 4;
+    } else {
+        shopPrepText(shopDialogue[38])
+        price = 5000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 10;
+    }
+})
+shopItems[5].addEventListener('mousedown', () => {
+    if(shopPage <= 0) {
+        shopPrepText(shopDialogue[33])
+        price = 200000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 5;
+    } else {
+        shopPrepText(shopDialogue[39])
+        price = 1000000;
+        shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
+        focusedItem = 11;
+    }
+})
 
 
 
 
+
+buyButton.addEventListener('mousedown', () => {
+    shopPage = 0;
+    shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 7)])
+    talkButton.style.display = "none"
+    buyButton.style.display = "none"
+    leaveButton.style.display = "none"
+    storePage.style.display = "flex"
+})
 
 function hurtPlayer() {
     hurtSound.cloneNode(true).play();
@@ -1626,21 +2208,83 @@ function hurtPlayer() {
 }
 
 function updateHealth() {
-    if(healthPoints == 3) {
+    if(yourItems[3].owned == false) {
+            hearts[4].style.display = "none"
+        } else {hearts[4].style.display = "inline"}
+        if(yourItems[1].owned == false) {
+            hearts[3].style.display = "none"
+        } else {hearts[3].style.display = "inline"}
+    if(healthPoints == 5) {
         hearts.forEach((heart) => heart.style.filter = "brightness(1)")
+    }
+    if(healthPoints == 4) {
+        hearts[0].style.filter = "brightness(1)"
+        hearts[1].style.filter = "brightness(1)"
+        hearts[2].style.filter = "brightness(1)"
+        hearts[3].style.filter = "brightness(1)"
+        hearts[4].style.filter = "brightness(0)"
+    }
+    if(healthPoints == 3) {
+        hearts[0].style.filter = "brightness(1)"
+        hearts[1].style.filter = "brightness(1)"
+        hearts[2].style.filter = "brightness(1)"
+        hearts[3].style.filter = "brightness(0)"
+        hearts[4].style.filter = "brightness(0)"
     }
     if(healthPoints == 2) {
-        hearts.forEach((heart) => heart.style.filter = "brightness(1)")
+        hearts[0].style.filter = "brightness(1)"
+        hearts[1].style.filter = "brightness(1)"
         hearts[2].style.filter = "brightness(0)"
+        hearts[3].style.filter = "brightness(0)"
+        hearts[4].style.filter = "brightness(0)"
     }
     if(healthPoints == 1) {
-        hearts.forEach((heart) => heart.style.filter = "brightness(0)")
         hearts[0].style.filter = "brightness(1)"
+        hearts[1].style.filter = "brightness(0)"
+        hearts[2].style.filter = "brightness(0)"
+        hearts[3].style.filter = "brightness(0)"
+        hearts[4].style.filter = "brightness(0)"
     }
     if(healthPoints == 0) {
-        triggerFlashbang();
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000)
+        hearts.forEach((heart) => heart.style.filter = "brightness(0)")
+        if(!endless) {
+            triggerFlashbang();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000)
+        } else {
+            finishGame();
+            gameOn = false;
+            timeUp = true;
+        }
     }
 }
+
+if(yourItems[3].owned == false) {
+    hearts[4].style.display = "none"
+}
+if(yourItems[1].owned == false) {
+    hearts[3].style.display = "none"
+}
+
+
+document.addEventListener('keydown', (event) => {
+    if(event.key = "l") {
+        yourItems = [
+        {item: "antistun", owned: true, q:1},
+        {item: "heart4", owned:true, q:1},
+        {item: "combosave", owned:true, q:1},
+        {item: "heart5", owned:true, q:1},
+        {item: "anticooldown", owned:true, q:1},
+        {item: "snakeflute", owned:true, q:1},
+        {item: "hogsave", owned:true, q:1},
+        {item: "gmoleexp", owned:true, q:1},
+        {item: "rock", owned:true, q:1},
+        {item: "rock2", owned:true, q:1},
+        {item: "fruit", owned:true, q:1},
+        {item: "donate", owned:true, q:1}
+        ]
+        saveItems();
+        ping.cloneNode(true).play();
+    }
+})

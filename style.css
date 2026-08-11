@@ -3,14 +3,16 @@ body {
     font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     margin:0;
     animation-fill-mode: forwards;
-    overflow-x:hidden;
     user-select:none;
     background-color: black;
 }
 html {
     cursor:none;
     -webkit-user-drag: none;
-    overflow-y:hidden;
+    scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+    display:none;
 }
 #background {
     height:100vh;
@@ -26,6 +28,14 @@ html {
     background-repeat: repeat;
     background-size: auto;
     animation: backgroundScroll 20s linear infinite
+}
+.arrow {
+    padding:5px;
+    border:4px solid white;
+    background-color: black;
+}
+.arrow:hover {
+    background-color: rgb(10, 10, 10);
 }
 #shopbackground {
     height:100vh;
@@ -78,6 +88,23 @@ html {
     transition:transform 300ms ease;
 }
 #startbutton:hover {
+    transform:scale(1.2);
+}
+
+#endlessbutton {
+    display:flex;
+    font-size:40px;
+    align-items: center;
+    justify-content: center;
+    margin-top:100px;
+    padding:10px;
+    border:8px solid rgb(134, 45, 45);
+    background-color: rgb(100, 22, 22);
+    width:200px;
+    justify-self: center;
+    transition:transform 300ms ease;
+}
+#endlessbutton:hover {
     transform:scale(1.2);
 }
 
@@ -469,6 +496,14 @@ html {
     opacity:1;
 }
 
+#startbuttonwrap {
+    display:flex;
+    flex-direction: row;
+    gap:30px;
+    justify-content: center;
+    align-items: center;
+}
+
 #continuebutton {
     display:flex;
     justify-content: center;
@@ -717,6 +752,7 @@ html {
     width:100vw;
     height:50vh;
     display:none;
+    flex-direction: row;
     border-top:4px solid rgb(44, 44, 44);
 }
 
@@ -731,10 +767,97 @@ html {
 #shoptextbox {
     font-family: bit;
     margin-left:30px;
+    margin-top:10px;
+    padding:20px;
+    font-size:50px;
+    width:700px;
+    height:380px;
+    border:4px solid white;
+}
+#shopbuttonbox {
+    margin-top:10px;
+    height:380px;
+    width:380px;
+    margin-left:30px;
+    padding:20px;
+    border:4px solid white;
+    justify-content: center;
+    align-items: center;
+    display:flex;
+    flex-direction: column;
+    font-family: bit;
+    gap:30px;
     font-size:50px;
 }
+.shopbutton {
+    border: 4px solid white;
+    text-align: center;
+    width:300px;
+    background-color: rgb(0, 0, 0);
+    padding:10px;
+    transition:transform 300ms ease;
+}
+.shopbutton:hover {
+    background-color: rgb(10, 10, 10);
+}
+#buystuff {
+    display:none;
+    flex-direction: column;
+}
+#shopgrid {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:10px;
+    margin-top:30px;
+}
+#arrowwrap {
+    gap:30px;
+    display:flex;
+    justify-content: center;
+    flex-direction: row;
+}
+#shoptextgoeshere {
+    height:310px;
+}
 
+.shopitem {
+    border:4px solid white;
+    padding:10px;
+    font-size:30px;
+    background-color: black;
+    text-align:center;
+}
+.shopitem:hover {
+    background-color: rgb(10, 10, 10);
+}
 
+#buyclose {
+    display:flex;
+    flex-direction: row;
+    gap:10px;
+    justify-content: space-evenly;
+}
+#purchase {
+    border:4px solid white;
+    padding:10px;
+    background-color:black;
+}
+#yourcash {
+    border:4px solid white;
+    padding:10px;
+    background-color:black;
+}
+#closepurchase {
+    border:4px solid white;
+    padding:10px;
+    background-color:black;
+}
+#purchase:hover {
+    background-color:rgb(10, 10, 10);
+}
+#closepurchase:hover {
+    background-color:rgb(10, 10, 10);
+}
 
 @keyframes swing {
     from {

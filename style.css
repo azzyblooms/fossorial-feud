@@ -157,10 +157,47 @@ html::-webkit-scrollbar {
     transform:scale(1.2);
 }
 
+#achievementpopup {
+    width:500px;
+    pointer-events: none;
+    padding:10px;
+    background-color: rgb(114, 17, 17);
+    display:flex;
+    margin-bottom:10px;
+    flex-direction: row;
+    margin-left:10px;
+    border:4px solid white;
+    transform:translateX(-600px);
+}
+@keyframes poppingup {
+    from {
+        transform:translateX(-600px)
+    } to {
+        transform:translateX(0)
+    }
+}
+@keyframes popupaway {
+    from {
+        transform:translateX(0px)
+    } to {
+        transform:translateX(-600px)
+    }
+}
+#achievementpopup img {
+    border:4px solid white;
+}
+#achievementpopupwrap {
+    position:fixed;
+    bottom:0%;
+    left:0%;
+    pointer-events: none;
+}
+
+
 #achievementbox {
     display:flex;
     overflow-y:scroll;
-    width:500px;
+    width:600px;
     height:800px;
     border:4px solid white;
     align-items: center;
@@ -183,7 +220,7 @@ html::-webkit-scrollbar {
 
 }
 .achievement {
-    width:450px;
+    width:500px;
     padding:10px;
     background-color: rgb(114, 17, 17);
     display:flex;

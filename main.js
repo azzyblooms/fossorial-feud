@@ -12,6 +12,142 @@ let yourItems = [
     {item: "fruit", owned:false, q:0},
     {item: "donate", owned:false, q:0}
 ]
+
+let inGame = false;
+let achievementCounter = 0;
+const achievementCount = document.getElementById("achievementstat")
+const achievementButton = document.getElementById("achievements")
+const achievementMenu = document.getElementById("achievementbox")
+const achievementWrap = document.getElementById("achievementwrap")
+
+let achievements = [
+    {name: "Class Dismissed", requires: 1, desc: "Complete the tutorial.", challenge:false, owned:false},
+    {name: "First Steps", requires:1, desc:"Play one game of classic mode.", challenge:false, owned:false},
+    {name: "Giant Steps", requires:10, desc:"Play ten games of classic mode.", challenge:false, owned:false},
+    {name: "Is this the best use of your time?", requires: 50, desc: "Play 50 games of classic mode.", challenge:true, owned:false},
+
+    {name: "Let's-a-go! Keep it up, baby!", requires: 20000, desc: "Have a score over 20,000 in classic mode.", challenge:true, owned:false},
+    {name: "The Idea", requires: 50000, desc: "Have a score over 50,000.", challenge:true, owned:false},
+    {name: "The Man", requires: 250000, desc: "Have a score over 250,000.", challenge:true, owned:false},
+
+    {name: "It Begins", requires: 1, desc: "Play one game of endless mode.", challenge:false, owned:false},
+    {name: "Round After Round", requires: 10, desc: "Play ten games of endless mode.", challenge:false, owned:false},
+    {name: "Well, that's one way to do it.", requires: 50, desc: "Play 50 games of endless mode.", challenge:true, owned:false},
+    {name: "Still Alive", requires: 600, desc: "Last 10 minutes in one game of endless mode.", challenge:true, owned:false},
+
+    {name: "Beginning Batter", requires: 50, desc:"Hit 50 enemies.", challenge:false, owned:false},
+    {name: "Novice Knocker", requires: 500, desc: "Hit 500 enemies.", challenge:false, owned:false},
+    {name: "Skilled Smasher", requires: 5000, desc: "Hit 5,000 enemies.", challenge:false, owned:false},
+    {name: "Master Masher", requires: 50000, desc: "Hit 50,000 enemies. What is wrong with you.", challenge:true, owned:false},
+
+    {name: "Smorgasbord", requires: 5, desc: "Hit one of each enemy consecutively (including a golden mole)", challenge:true, owned:false},
+    {name: "Trigger Happy", requires: 3, desc: "Hit the same enemy three times before it disappears.", challenge:false, owned:false},
+    {name: "Intentional", requires: 1, desc: "Hit an enemy within 300ms of it appearing.", challenge:true, owned:false},
+    {name: "Clutched", requires: 1, desc: "Hit a mole or snake within 100ms of it disappearing.", challenge:false, owned:false},
+    {name: "Quick Draw", requires: 10, desc: "Hit 30 enemies within 10 seconds.", challenge:false, owned:false},
+
+    {name: "HAH!", requires: 1, desc: "YOU MISSED!", challenge:false, owned:false},
+    {name: "HAH! HAH! HAH!", requires: 100, desc: "Lose 100 streaks.", challenge:false, owned:false},
+
+    {name: "Begone!", requires: 10, desc: "Hit 10 enemies in a row.", challenge:false, owned:false},
+    {name: "Flow State", requires: 100, desc: "Hit 100 enemies in a row.", challenge:false, owned:false},
+    {name: "Generational Run", requires: 250, desc: "Hit 250 enemies in a row.", challenge:true, owned:false},
+    {name: "Flawless", requires: 0, desc: "Complete a game of classic mode without losing your streak.", challenge:true, owned:false},
+
+    {name: "Mountain out of a Molehill", requires: 10000, desc: "Hit 10,000 moles.", challenge:true, owned:false},
+
+    {name: "Gotcha!", requires: 1, desc: "Hit a golden mole.", challenge:false, owned:false},
+    {name: "My Beautiful Collection", requires: 500, desc: "Hit 500 golden moles.", challenge:true, owned:false},
+    {name: "Gold Rush", requires: 10, desc: "Hit 10 golden moles in one round.", challenge:false, owned:false},
+    {name: "Set For Life", requires: 50, desc: "Hit 50 golden moles in one round.", challenge:true, owned:false},
+    {name: "Serendipity", requires: 3, desc: "Hit 3 consecutive golden moles.", challenge:true, owned:false},
+    {name: "Wow! That was so Gold!", requires: 1, desc: "Have a high enough streak for all moles to be golden.", challenge:true, owned:false},
+    {name: "Butterfingers", requires: 1, desc: "The one that got away...", challenge:false, owned:false},
+
+    {name: "Shell Shocked", requires: 50, desc: "Hit 50 armadillos.", challenge:false, owned:false},
+    {name: "Medic!", requires: 1, desc: "Get healed by an armadillo.", challenge:false, owned:false}, 
+    {name: "MY EYES!!!", requires: 1, desc: "Get flashbanged by an armadillo.", challenge:false, owned:false},
+    {name: "360 No-Scope", requires: 1, desc: "Hit an enemy while fully blinded.", challenge:false, owned:false},
+    {name: "Good Returns", requires: 1, desc: "Step 2: Profit.", challenge:false, owned:false},
+
+    {name: "Antivenom", requires: 50, desc: "Hit 50 snakes.", challenge:false, owned:false},
+    {name: "Spit Take", requires: 1, desc: "Get spat at.", challenge:false, owned:false},
+    {name: "Joke's on you, I'm into this.", requires: 100, desc: "Get spat at 100 times.", challenge:true, owned:false},
+
+    {name: "Hogs and Robbers", requires: 1, desc: "Hit a groundhog.", challenge:false, owned:false},
+    {name: "Highway Robbery", requires: 50, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true, owned:false},
+    
+    {name: "Hello!!!", requires: 1 /*i'm not sure*/, desc: "Spend some quality time chatting with Meerkat.", challenge:true, owned:false},
+    {name: "SHUT UP AND TAKE MY MONEY!", requires: 12, desc: "Buy one of every item in Meerkat's shop.", challenge:true, owned:false},
+    {name: "Not So Fast!", requires: 1, desc: "Protect your wallet from thieves.", challenge:false, owned:false},
+    {name: "Sharing Is Caring", requires: 1, desc: "Step 1: Stimulate the economy.", challenge:false, owned:false},
+    {name: "Stop, Criminell!", requires: 1, desc: "Hit Meerkat. Jerk.", challenge:false, owned:false},
+    {name: "We will, we will", requires: 1, desc: "Buy Rock.", challenge:false, owned:false},
+    {name: "Rock 2", requires: 1, desc: "Buy Rock 2.", challenge:false, owned:false},
+    {name: "Macondo", requires: 100, desc: "Maybe the real hackathon was the friends we made along the way.", challenge:true, owned:false},
+    {name: "Charitable", requires: 1, desc: "Donate to Meerkat", challenge:true, owned:false},
+    {name: "Highly Charitable", requires: 2, desc: "Do it again.", challenge:true, owned:false},
+
+    {name: "Azzy hates this one simple trick", requires: 5, desc: "Exploit easy difficulty for money.", challenge:false, owned:false},
+]
+
+const achievementPopup = document.getElementById("achievementpopup")
+const achievementPopupImg = document.getElementById("popupimg")
+const achievementPopupTitle = document.getElementById("popuptitle")
+const achievementPopupDesc = document.getElementById("popupsubtitle")
+
+let popupShowing = false;
+let popupQueue = [];
+
+
+function showPopup(achievement) {
+    popupQueue.push(achievement)
+    if(!popupShowing) {
+        processPopupQueue();
+    }
+}
+
+function processPopupQueue() {
+    if(popupQueue.length === 0) {
+        popupShowing = false;
+        return;
+    }
+    popupShowing = true;
+    const achievementQ = popupQueue.shift();
+
+    achievementPopupTitle.textContent = achievementQ.name;
+    achievementPopupDesc.textContent = achievementQ.desc;
+    achievementPopup.style.animation = "none"
+    achievementPopup.offsetHeight;
+    achievementPopup.style.animation = "poppingup 1s ease-in-out forwards"
+    setTimeout(() => {
+        achievementPopup.style.animation = "popupaway 1s ease-in-out forwards"
+    }, 1000)
+    setTimeout(() => {
+        processPopupQueue();
+    }, 3000)
+}
+
+const savedAchievements = JSON.parse(localStorage.getItem("achievements"))
+
+if(savedAchievements) {
+    achievements.forEach((achievement) => {
+        if(savedAchievements[achievement.name] !== undefined) {
+            achievement.owned = savedAchievements[achievement.name];
+        }
+    })
+}
+function saveAchievements() {
+    const savedAchievements = {};
+    achievements.forEach((achievement) => {
+        savedAchievements[achievement.name] = achievement.owned;
+    })
+    localStorage.setItem("achievements", JSON.stringify(savedAchievements))
+}
+
+
+
+
 const savedItems = localStorage.getItem("yourItems")
 if(savedItems !== null) {
     yourItems = JSON.parse(savedItems)
@@ -399,6 +535,40 @@ function displayStatistics() {
         } else {
             applause.play();
             clearInterval(calcMolesHit)
+            setTimeout(() => {
+                statisticsBox.style.animation = "fadeout 1s ease forwards"
+                scoreWrap.style.animation = "fadeout 1s ease forwards"
+                cashWrap.style.animation = "fadeout 1s ease forwards"
+                statisticsBox.style.animation = "fadeout 1s ease forwards"
+                timerWrap.style.animation = "fadeout 1s ease forwards"
+                hpWrap.style.animation = "fadeout 1s ease forwards"
+                molecontainer.style.display = "none"
+                healthPoints = 3;
+                setTimeout(() => {
+                    statisticsBox.style.display = "none"
+                    scoreWrap.style.display = "none"
+                    cashWrap.style.display = "none"
+                    timerWrap.style.display = "none"
+                    hpWrap.style.display = "none"
+                    flashbang.style.display = "none"
+                    shading.style.display = "none"
+                    timeLeft = null;
+                    gameOn = false;
+                    timeUp = null;
+                    score = 0;
+                    inGame = false;
+                    timeLeft = 0;
+                    scoreText.textContent = (`SCORE: ${score}`)
+                    timer.textContent = `TIME: ${timeLeft}`
+                    moles.forEach((mole) => {
+                        mole.element.querySelector("img").src = "images/mole.png"
+                    })
+                    startpageelements.forEach((element) => {
+                        element.style.display = ("flex")
+                        element.style.animation = ("slideleft 1s ease-in-out forwards")
+                    })
+                }, 1000)
+            }, 3000)
         }
     }, 20)
 }
@@ -813,6 +983,7 @@ continueButton.addEventListener('click', () => {
     if(justText.includes(whereAreWe)) {
         if(whereAreWe > tutorialTexts.length - 2) {
             ATutorialComplete = true;
+            updateAchievements();
             window.location.reload();
         } else {
             whereAreWe++;
@@ -866,6 +1037,9 @@ tutorialMusic.loop = true;
 tutorialMusic.volume = 0.6;
 
 startbutton.addEventListener('mousedown', () => {
+    score = 0;
+    inGame = false;
+    scoreText.textContent = (`SCORE: ${score}`)
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
     })
@@ -895,6 +1069,8 @@ startbutton.addEventListener('mousedown', () => {
 })
 
 endlessbutton.addEventListener('mousedown', () => {
+    score = 0;
+    scoreText.textContent = (`SCORE: ${score}`)
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
     })
@@ -999,51 +1175,55 @@ document.addEventListener('mousedown', async () => {
             moles.forEach((mole) => {
                 if(mole.state == "dying") return;
                 if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
-                    if(mole.state == "bury") {
-                        stun = 300;
-                        scoreText.style.animation = "none"
-                        scoreText.offsetHeight;
-                        scoreText.style.animation = "loseScore 300ms ease"
-                        cursor.querySelector("img").style.animation = "none"
-                        cursor.querySelector("img").offsetHeight;
-                        cursor.querySelector("img").style.animation = "redfilter 200ms ease"
-                        score -= 10;
-                        if(streak > 0) {
-                            endStreak();
-                        }
-                        scoreText.textContent = (`SCORE: ${score}`)
-                    } else {
-                        redFilter(mole.element);
-                        hitMole = true;
-                        if(mole.state == "up") {
-                            if(!intro) {moleHit(mole)}
-                        }
-                        if(teasing || !skipIntro || !skipIntroState) {
-                            mole.state = "hit";
-                        }
-                        if(skipIntro || skipIntroState) {
-                            if(!gameOn) {
-                                mole.element.querySelector("img").style.transform = "scale(0)"
+                    if(inGame) {
+                        if(mole.state == "bury") {
+                            stun = 300;
+                            scoreText.style.animation = "none"
+                            scoreText.offsetHeight;
+                            scoreText.style.animation = "loseScore 300ms ease"
+                            cursor.querySelector("img").style.animation = "none"
+                            cursor.querySelector("img").offsetHeight;
+                            cursor.querySelector("img").style.animation = "redfilter 200ms ease"
+                            score -= 10;
+                            if(streak > 0) {
+                                endStreak();
                             }
+                            scoreText.textContent = (`SCORE: ${score}`)
+                        } else {
+                            redFilter(mole.element);
+                            hitMole = true;
+                            if(mole.state == "up") {
+                                if(!intro) {moleHit(mole)}
+                            }
+                            if(teasing || !skipIntro || !skipIntroState) {
+                                mole.state = "hit";
+                            }
+                            if(skipIntro || skipIntroState) {
+                                if(!gameOn) {
+                                    mole.element.querySelector("img").style.transform = "scale(0)"
+                                }
+                            }
+                            clickfx();
                         }
-                        clickfx();
                     }
                 }
             })
 
-            if(hitMole == false && !intro) {
-                stun = 300;
-                cursor.querySelector("img").style.animation = "none";
-                cursor.querySelector("img").offsetHeight;
-                cursor.querySelector("img").style.animation = "redfilter 200ms ease";
-                scoreText.style.animation = "none"
-                scoreText.offsetHeight;
-                scoreText.style.animation = "loseScore 300ms ease"
-                score -= 10;
-                if(streak > 0) {
-                    endStreak();
+            if(inGame) {
+                if(hitMole == false && !intro) {
+                    stun = 300;
+                    cursor.querySelector("img").style.animation = "none";
+                    cursor.querySelector("img").offsetHeight;
+                    cursor.querySelector("img").style.animation = "redfilter 200ms ease";
+                    scoreText.style.animation = "none"
+                    scoreText.offsetHeight;
+                    scoreText.style.animation = "loseScore 300ms ease"
+                    score -= 10;
+                    if(streak > 0) {
+                        endStreak();
+                    }
+                    scoreText.textContent = (`SCORE: ${score}`)
                 }
-                scoreText.textContent = (`SCORE: ${score}`)
             }
         }
     } else {
@@ -1057,6 +1237,7 @@ const streakSaved = new Audio("audio/streaksaved.wav")
 const congrats = new Audio("audio/congrats.wav")
 function endStreak() {
     if(!timeUp) {
+        updateAchievements();
         if(yourItems[2].owned == true && streaksBroken == 0) {
             streaksBroken++;
             streakSaved.cloneNode(true).play();
@@ -1105,7 +1286,7 @@ function moleHit(mole) {
     if(mole.state !== "up") {return;}
     if(mole.state == "dying") {ASameEnemyHits++;}
     if(mole.state !== "dying") {checkQuickDraw();}
-    if(mole.spawningTimer <= 300) {AIntentional = true}
+    if(mole.spawningTimer !== null) {AIntentional = true}
     clearTimeout(mole.spawningTimer)
     if(flashbang.style.display == "inline" && flashbang.style.opacity == "1") {AHitWhileFlashbang = true;}
     mole.state = "dying";
@@ -1255,6 +1436,7 @@ function moleHit(mole) {
     }
     totalHits++;
     ATotalHits++;
+    updateAchievements();
     streakText.textContent = (`STREAK: ${streak}`)
     scoreText.textContent = (`SCORE: ${score}`)
     const moleImg = mole.element.querySelector("img")
@@ -1298,6 +1480,7 @@ function streakIncrease() {
         }
         console.log(goldenMoleChance)
     }
+    updateAchievements();
 }
 
 
@@ -1337,6 +1520,7 @@ function roundcountshow() {
     gameOn = false;
     endless = false;
     timeLeft = 120;
+    inGame = true;
     if(yourItems[3].owned == true) {
         healthPoints = 5;
     } else if(yourItems[1].owned == true) {
@@ -1348,6 +1532,9 @@ function roundcountshow() {
     groundhogsHit = 0;
     goldenMolesHit = 0;
     snakesHit = 0;
+    score = 0;
+    streak = 0;
+    scoreText.textContent = (`SCORE: ${score}`)
     armadillosHit = 0;
     totalHits = 0;
     maxStreak = 0;
@@ -1381,6 +1568,7 @@ function endlessPrep() {
     gameOn = false;
     endless = true;
     timeLeft = 0;
+    inGame = true;
     if(yourItems[3].owned == true) {
         healthPoints = 5;
     } else if(yourItems[1].owned == true) {
@@ -1392,6 +1580,9 @@ function endlessPrep() {
     groundhogsHit = 0;
     goldenMolesHit = 0;
     snakesHit = 0;
+    streak = 0;
+    score = 0;
+    scoreText.textContent = (`SCORE: ${score}`)
     armadillosHit = 0;
     totalHits = 0;
     maxStreak = 0;
@@ -1429,6 +1620,8 @@ function finishGame() {
         if(streaksBroken == 0 && score > 0) {AFlawless = true}
     }
     orchHit.play();
+    inGame = false;
+    updateAchievements();
     setTimeout(() => {
         tallyScore();
         drumroll.play();
@@ -1536,6 +1729,7 @@ let globalCooldown = 0;
 let timeUp = false;
 function gameStart() {
     intro = false;
+    inGame = true;
     gameOn = true;
     moles.forEach((mole) => {
         mole.state = "bury";
@@ -1587,6 +1781,7 @@ let endless = false;
 function endlessStart() {
     intro = false;
     gameOn = true;
+    inGame = true;
     endless = true;
     timeUp = false;
     moles.forEach((mole) => {
@@ -1684,7 +1879,7 @@ function spawnMole(mole) {
                     if(streak > 0) {
                         endStreak();
                     }
-                    if(mole.type == "goldmole") {AGoldenMiss = true;}
+                    if(mole.type == "goldmole") {AGoldenMiss = true; updateAchievements();}
                     if(endless && !timeUp) {
                         spit(mole)
                     }
@@ -1748,15 +1943,15 @@ function spawnArmadillo(mole) {
         mole.item = "null"
         moleImg.src = "images/armadillo.png"
     } else if(determineItem == 6) {
-        mole.item = "cash"
-        moleImg.src = "images/dolladillo.png"
-        /*if(stimulateEconomy) {
+        /*mole.item = "cash"
+        moleImg.src = "images/dolladillo.png"*/
+        if(economyStimulated) {
             mole.item = "cash"
             moleImg.src = "images/dolladillo.png"
         } else {
             mole.item = "null"
             moleImg.src = "images/armadillo.png"
-        }*/
+        }
     }
     mole.spawningTimer = setTimeout(() => {
         mole.state = "up";
@@ -1840,6 +2035,7 @@ function spit(mole) {
         shading.offsetHeight;
         if(mole.type == "snake") {
             ASpit++;
+            updateAchievements();
         }
         if(endless) {
             hurtPlayer();
@@ -2231,6 +2427,7 @@ talkContinueButton.addEventListener('mousedown', () => {
         }
         dialogueStep++;
     }
+    updateAchievements();
 })
 
 
@@ -2248,9 +2445,7 @@ purchaseButton.addEventListener('mousedown', () => {
         shopPrepText(shopDialogue[Math.floor(Math.random() * 5 + 40)])
         cantSelect.cloneNode(true).play();
     } else {
-        cash -= price;
-        localStorage.setItem("cash", cash)
-        shopCash.textContent = `\$${cash.toLocaleString()}`
+        
         //fix cash
         if(focusedItem == 0) {
             if(yourItems[0].owned == true) {
@@ -2259,6 +2454,7 @@ purchaseButton.addEventListener('mousedown', () => {
             } else {
                 yourItems[0].owned = true;
                 yourItems[0].q++;
+                cash -= price;
                 saveItems();
                 lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
@@ -2270,6 +2466,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
             } else {
                 yourItems[1].owned = true;
+                cash -= price;
                 yourItems[1].q++;
                 saveItems();
                 lockin.cloneNode(true).play();
@@ -2283,6 +2480,7 @@ purchaseButton.addEventListener('mousedown', () => {
             } else {
                 yourItems[2].owned = true;
                 yourItems[2].q++;
+                cash -= price;
                 saveItems();
                 lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
@@ -2295,6 +2493,7 @@ purchaseButton.addEventListener('mousedown', () => {
             } else {
                 yourItems[3].owned = true;
                 yourItems[3].q++;
+                cash -= price;
                 saveItems();
                 lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
@@ -2308,6 +2507,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[4].owned = true;
                 yourItems[4].q++;
                 saveItems();
+                cash -= price;
                 lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
@@ -2319,6 +2519,7 @@ purchaseButton.addEventListener('mousedown', () => {
             } else {
                 yourItems[5].owned = true;
                 yourItems[5].q++;
+                cash -= price;
                 saveItems();
                 lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
@@ -2331,6 +2532,7 @@ purchaseButton.addEventListener('mousedown', () => {
             } else {
                 yourItems[6].owned = true;
                 yourItems[6].q++;
+                cash -= price;
                 saveItems();
                 lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
@@ -2344,6 +2546,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[7].owned = true;
                 yourItems[7].q++;
                 saveItems();
+                cash -= price;
                 lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
@@ -2356,6 +2559,7 @@ purchaseButton.addEventListener('mousedown', () => {
             }
             yourItems[8].owned = true;
             yourItems[8].q++;
+            cash -= price;
             saveItems();
             lockin.cloneNode(true).play();
         }
@@ -2368,6 +2572,7 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[9].owned = true;
             yourItems[9].q++;
             saveItems();
+            cash -= price;
             lockin.cloneNode(true).play();
         }
         if(focusedItem == 10) {
@@ -2379,6 +2584,7 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[10].owned = true;
             yourItems[10].q++;
             saveItems();
+            cash -= price;
             lockin.cloneNode(true).play();
         }
         if(focusedItem == 11) {
@@ -2390,13 +2596,17 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[11].owned = true;
             yourItems[11].q++;
             saveItems();
+            cash -= price;
             lockin.cloneNode(true).play();
         }
         if(focusedItem == null) {
             shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 58)])
             cantSelect.cloneNode(true).play();
         }
+        localStorage.setItem("cash", cash)
+        shopCash.textContent = `\$${cash.toLocaleString()}`
     }
+    updateAchievements();
 })
 
 const talkPage = document.getElementById("talking")
@@ -2564,6 +2774,7 @@ meerkat.querySelector("img").addEventListener('mousedown', () => {
     meerkatimg.offsetHeight;
     meerkatimg.style.animation = "redfilter 400ms ease, hitMeerkat 400ms ease forwards"
     AHitMeerkat = true;
+    updateAchievements();
     shopPrepText(shopDialogue[Math.floor(Math.random() * 5 + 65)])
 })
 
@@ -2635,7 +2846,7 @@ if(yourItems[1].owned == false) {
 
 
 document.addEventListener('keydown', (event) => {
-    if(event.key = "l") {
+    if(event.key === "l") {
         yourItems = [
         {item: "antistun", owned: true, q:1},
         {item: "heart4", owned:true, q:1},
@@ -2688,16 +2899,16 @@ let quickDrawStart = null;
 let quickDrawCount = 0;
 function checkQuickDraw() {
     const now = Date.now;
-    if(quickDrawStart === null || now - quickDrawCount > 5000) {
+    if(quickDrawStart === null || now - quickDrawCount > 10000) {
         quickDrawCount = 0;
         quickDrawStart = now;
     }
     quickDrawCount++;
-    if(quickDrawCount >= 10) {AQuickDraw = true;}
+    if(quickDrawCount >= 30) {AQuickDraw = true; updateAchievements();}
 }
 
 
-
+updateAchievements();
 
 function updateAchievements() {
     if(ATutorialComplete) {grantAchievement(achievements[0])}
@@ -2769,94 +2980,51 @@ function updateAchievements() {
 
     if(AEasyFarmed >= 5) {grantAchievement(achievements[54])}
 }
-function grantAchievement(achievement) {
-    console.log(`granted ${achievement.name}`)
+
+function fixGrayscale() {
+    const achievementElements = document.querySelectorAll("#achievementboxes .achievement")
+
+    achievementElements.forEach((ach, index) => {
+        const achievement = achievements[index]
+        if(achievement.owned) {
+            ach.style.filter = "grayscale(0%)";
+        } else {
+            ach.style.filter = "grayscale(100%)"
+        }
+    });
 }
 
+fixGrayscale();
+achievementCounter = achievements.filter(achievement => achievement.owned).length
+achievementCount.textContent = `${achievementCounter}/55`
 
 
+function grantAchievement(achievement) {
+    if(!achievement.owned) {
+        console.log(`granted ${achievement.name}`)
+        achievementCounter = achievements.filter(achievement => achievement.owned).length
+        achievement.owned = true;
+        saveAchievements();
+        fixGrayscale();
+        showPopup(achievement);
+        achievementCount.textContent = `${achievementCounter}/55`
+        /*if(achievement.challenge) {
+            shinyHitSound.cloneNode(true).play();
+        } else {
+            lockin.cloneNode(true).play();
+        }*/
+    }
+}
 
+const achievementBoxes = document.getElementById("achievementboxes")
+document.querySelectorAll("#achievementboxes .achievement").forEach((ach) => {
+    ach.style.filter = "grayscale(100%)";
+});
 
-
-
-
-
-
-let achievements = [
-    {name: "Class Dismissed", requires: 1, desc: "Complete the tutorial.", challenge:false},
-    {name: "First Steps", requires:1, desc:"Play one game of classic mode.", challenge:false},
-    {name: "Giant Steps", requires:10, desc:"Play ten games of classic mode.", challenge:false},
-    {name: "Is this the best use of your time?", requires: 50, desc: "Play 50 games of classic mode.", challenge:true},
-
-    {name: "Let's-a-go! Keep it up, baby!", requires: 20000, desc: "Have a score over 20,000 in classic mode.", challenge:true},
-    {name: "The Idea", requires: 50000, desc: "Have a score over 50,000.", challenge:true},
-    {name: "The Man", requires: 250000, desc: "Have a score over 250,000.", challenge:true},
-
-    {name: "It Begins", requires: 1, desc: "Play one game of endless mode.", challenge:false},
-    {name: "Round After Round", requires: 10, desc: "Play ten games of endless mode.", challenge:false},
-    {name: "Well, that's one way to do it.", requires: 50, desc: "Play 50 games of endless mode.", challenge:true},
-    {name: "Still Alive", requires: 600, desc: "Last 10 minutes in one game of endless mode.", challenge:true},
-
-    {name: "Beginning Batter", requires: 50, desc:"Hit 50 enemies.", challenge:false},
-    {name: "Novice Knocker", requires: 500, desc: "Hit 500 enemies.", challenge:false},
-    {name: "Proficient Puncher", requires: 5000, desc: "Hit 5,000 enemies.", challenge:false},
-    {name: "Master Masher", requires: 50000, desc: "Hit 50,000 enemies. What is wrong with you.", challenge:true},
-
-    {name: "Smorgasbord", requires: 5, desc: "Hit one of each enemy consecutively (including a golden mole)", challenge:true},
-    {name: "Trigger Happy", requires: 3, desc: "Hit the same enemy three times before it disappears.", challenge:false},
-    {name: "Intentional", requires: 1, desc: "Hit an enemy within 300ms of it appearing.", challenge:true},
-    {name: "Clutched", requires: 1, desc: "Hit a mole or snake within 100ms of it disappearing.", challenge:false},
-    {name: "Quick Draw", requires: 10, desc: "Hit 10 enemies within 5 seconds.", challenge:false},
-
-    {name: "HAH!", requires: 1, desc: "YOU MISSED!", challenge:false},
-    {name: "HAH! HAH! HAH!", requires: 100, desc: "Lose 100 streaks.", challenge:false},
-
-    {name: "Begone!", requires: 10, desc: "Hit 10 enemies in a row.", challenge:false},
-    {name: "Flow State", requires: 100, desc: "Hit 100 enemies in a row.", challenge:false},
-    {name: "Generational Run", requires: 250, desc: "Hit 250 enemies in a row.", challenge:true},
-    {name: "Flawless", requires: 0, desc: "Complete a game of classic mode without losing your streak.", challenge:true},
-
-    {name: "Mountain out of a Molehill", requires: 10000, desc: "Hit 10,000 moles.", challenge:true},
-
-    {name: "Gotcha!", requires: 1, desc: "Hit a golden mole.", challenge:false},
-    {name: "My Beautiful Collection", requires: 500, desc: "Hit 500 golden moles.", challenge:true},
-    {name: "Gold Rush", requires: 10, desc: "Hit 10 golden moles in one round.", challenge:false},
-    {name: "Set For Life", requires: 50, desc: "Hit 50 golden moles in one round.", challenge:true},
-    {name: "Serendipity", requires: 3, desc: "Hit 3 consecutive golden moles.", challenge:true},
-    {name: "Wow! That was so Gold!", requires: 1, desc: "Have a high enough streak for all moles to be golden.", challenge:true},
-    {name: "Butterfingers", requires: 1, desc: "The one that got away...", challenge:false},
-
-    {name: "Shell Shocked", requires: 50, desc: "Hit 50 armadillos.", challenge:false},
-    {name: "Medic!", requires: 1, desc: "Be healed by an armadillo.", challenge:false}, 
-    {name: "MY EYES!!!", requires: 1, desc: "Get flashbanged by an armadillo.", challenge:false},
-    {name: "360 No-Scope", requires: 1, desc: "Hit an enemy while fully blinded.", challenge:false},
-    {name: "Good Returns", requires: 1, desc: "Step 2: Profit.", challenge:false},
-
-    {name: "Antivenom", requires: 50, desc: "Hit 50 snakes.", challenge:false},
-    {name: "Spit Take", requires: 1, desc: "Get spat at.", challenge:false},
-    {name: "Joke's on you, I'm into this.", requires: 100, desc: "Get spat at 100 times.", challenge:true},
-
-    {name: "Hogs and Robbers", requires: 1, desc: "Hit a groundhog.", challenge:false},
-    {name: "Highway Robbery", requires: 50, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true},
-    
-    {name: "Hello!!!", requires: 1 /*i'm not sure*/, desc: "Spend some quality time chatting with Meerkat.", challenge:true},
-    {name: "SHUT UP AND TAKE MY MONEY!", requires: 12, desc: "Buy one of every item in Meerkat's shop.", challenge:true},
-    {name: "Not So Fast!", requires: 1, desc: "Protect your wallet from thieves.", challenge:false},
-    {name: "Sharing Is Caring", requires: 1, desc: "Step 1: Stimulate the economy.", challenge:false},
-    {name: "Stop, Criminell!", requires: 1, desc: "Hit Meerkat. Sicko.", challenge:false},
-    {name: "We will, we will", requires: 1, desc: "Buy Rock.", challenge:false},
-    {name: "Rock 2", requires: 1, desc: "Buy Rock 2.", challenge:false},
-    {name: "Macondo", requires: 100, desc: "Maybe the real hackathon was the friends we made along the way.", challenge:true},
-    {name: "Charitable", requires: 1, desc: "Donate to Meerkat", challenge:true},
-    {name: "Highly Charitable", requires: 2, desc: "Do it again.", challenge:true},
-
-    {name: "Azzy hates this one simple trick", requires: 5, desc: "Exploit easy difficulty for money.", challenge:false},
-]
-
-const achievementButton = document.getElementById("achievements")
-const achievementMenu = document.getElementById("achievementbox")
-const achievementWrap = document.getElementById("achievementwrap")
 achievementButton.addEventListener('mousedown', () => {
+    fixGrayscale();
+    achievementCounter = achievements.filter(achievement => achievement.owned).length
+    achievementCount.textContent = `${achievementCounter}/55`
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
     })
@@ -2867,71 +3035,71 @@ achievementButton.addEventListener('mousedown', () => {
 
 
 /*
-Class Dismissed,  desc: "Complete the tutorial.", challenge:false,
-First Steps,  desc:"Play one game of classic mode.", challenge:false,
-Giant Steps, desc:"Play ten games of classic mode.", challenge:false,
-Is this the best use of your time?,  50, desc: "Play 50 games of classic mode.", challenge:true,
+Class Dismissed,  desc: "Complete the tutorial.", challenge:false, owned:true,
+First Steps,  desc:"Play one game of classic mode.", challenge:false, owned:true,
+Giant Steps, desc:"Play ten games of classic mode.", challenge:false, owned:true,
+Is this the best use of your time?,  50, desc: "Play 50 games of classic mode.", challenge:true, owned:true,
 
-Let's-a-go! Keep it up, baby!,  20000, desc: "Have a score over 20,000 in classic mode.", challenge:true,
-The Idea,  desc: "Have a score over 50,000.", challenge:true,
-The Man,  desc: "Have a score over 250,000.", challenge:true,
+Let's-a-go! Keep it up, baby!,  20000, desc: "Have a score over 20,000 in classic mode.", challenge:true, owned:true,
+The Idea,  desc: "Have a score over 50,000.", challenge:true, owned:true,
+The Man,  desc: "Have a score over 250,000.", challenge:true, owned:true,
 
-It Begins, desc: "Play one game of endless mode.", challenge:false,
-Round After Round,  desc: "Play ten games of endless mode.", challenge:false,
-Well, that's one way to do it., desc: "Play 50 games of endless mode.", challenge:true,
-Still Alive, desc: "Last 10 minutes in one game of endless mode.", challenge:true,
+It Begins, desc: "Play one game of endless mode.", challenge:false, owned:true,
+Round After Round,  desc: "Play ten games of endless mode.", challenge:false, owned:true,
+Well, that's one way to do it., desc: "Play 50 games of endless mode.", challenge:true, owned:true,
+Still Alive, desc: "Last 10 minutes in one game of endless mode.", challenge:true, owned:true,
 
-Beginning Batter, desc:"Hit 50 enemies.", challenge:false,
-Novice Knocker, desc: "Hit 500 enemies.", challenge:false,
-Proficient Puncher, desc: "Hit 5,000 enemies.", challenge:false,
-Master Masher, desc: "Hit 50,000 enemies. What is wrong with you.", challenge:true,
+Beginning Batter, desc:"Hit 50 enemies.", challenge:false, owned:true,
+Novice Knocker, desc: "Hit 500 enemies.", challenge:false, owned:true,
+Proficient Puncher, desc: "Hit 5,000 enemies.", challenge:false, owned:true,
+Master Masher, desc: "Hit 50,000 enemies. What is wrong with you.", challenge:true, owned:true,
 
-Smorgasbord, desc: "Hit one of each enemy consecutively (including a golden mole)", challenge:true,
-Trigger Happy, desc: "Hit the same enemy three times before it disappears.", challenge:false,
-Intentional, desc: "Hit an enemy within 300ms of it appearing.", challenge:true,
-Clutched, desc: "Hit an enemy within 100ms of it disappearing.", challenge:false,
-Quick Draw, desc: "Hit 10 enemies within 5 seconds.", challenge:false,
+Smorgasbord, desc: "Hit one of each enemy consecutively (including a golden mole)", challenge:true, owned:true,
+Trigger Happy, desc: "Hit the same enemy three times before it disappears.", challenge:false, owned:true,
+Intentional, desc: "Hit an enemy within 300ms of it appearing.", challenge:true, owned:true,
+Clutched, desc: "Hit an enemy within 100ms of it disappearing.", challenge:false, owned:true,
+Quick Draw, desc: "Hit 10 enemies within 5 seconds.", challenge:false, owned:true,
 
-HAH!, desc: "YOU MISSED!", challenge:false,
-HAH! HAH! HAH!, desc: "Lose 100 streaks.", challenge:false,
+HAH!, desc: "YOU MISSED!", challenge:false, owned:true,
+HAH! HAH! HAH!, desc: "Lose 100 streaks.", challenge:false, owned:true,
 
-Begone!, desc: "Hit 10 enemies in a row.", challenge:false,
-Flow State, desc: "Hit 100 enemies in a row.", challenge:false,
-Generational Run, desc: "Hit 250 enemies in a row.", challenge:true,
-Flawless, desc: "Complete a game of classic mode without losing your streak.", challenge:true,
+Begone!, desc: "Hit 10 enemies in a row.", challenge:false, owned:true,
+Flow State, desc: "Hit 100 enemies in a row.", challenge:false, owned:true,
+Generational Run, desc: "Hit 250 enemies in a row.", challenge:true, owned:true,
+Flawless, desc: "Complete a game of classic mode without losing your streak.", challenge:true, owned:true,
 
-Mountain out of a Molehill, desc: "Hit 10,000 moles.", challenge:true,
+Mountain out of a Molehill, desc: "Hit 10,000 moles.", challenge:true, owned:true,
 
-Gotcha!, desc: "Hit a golden mole.", challenge:false,
-My Beautiful Collection, desc: "Hit 500 golden moles.", challenge:true,
-Gold Rush, desc: "Hit 10 golden moles in one round.", challenge:false,
-Set For Life, desc: "Hit 50 golden moles in one round.", challenge:true,
-Serendipity, desc: "Hit 3 consecutive golden moles.", challenge:true,
-Wow! That was so Gold!, desc: "Have a high enough streak for all moles to be golden.", challenge:true,
-Butterfingers, desc: "The one that got away...", challenge:false,
+Gotcha!, desc: "Hit a golden mole.", challenge:false, owned:true,
+My Beautiful Collection, desc: "Hit 500 golden moles.", challenge:true, owned:true,
+Gold Rush, desc: "Hit 10 golden moles in one round.", challenge:false, owned:true,
+Set For Life, desc: "Hit 50 golden moles in one round.", challenge:true, owned:true,
+Serendipity, desc: "Hit 3 consecutive golden moles.", challenge:true, owned:true,
+Wow! That was so Gold!, desc: "Have a high enough streak for all moles to be golden.", challenge:true, owned:true,
+Butterfingers, desc: "The one that got away...", challenge:false, owned:true,
 
-Shell Shocked, desc: "Hit 50 armadillos.", challenge:false,
-Medic!, desc: "Be healed by an armadillo.", challenge:false, 
-MY EYES!!!, desc: "Get flashbanged by an armadillo.", challenge:false,
-360 No-Scope, desc: "Hit an enemy while fully blinded.", challenge:false,
-Good Returns, desc: "Step 2: Profit.", challenge:false,
+Shell Shocked, desc: "Hit 50 armadillos.", challenge:false, owned:true,
+Medic!, desc: "Be healed by an armadillo.", challenge:false, owned:true, 
+MY EYES!!!, desc: "Get flashbanged by an armadillo.", challenge:false, owned:true,
+360 No-Scope, desc: "Hit an enemy while fully blinded.", challenge:false, owned:true,
+Good Returns, desc: "Step 2: Profit.", challenge:false, owned:true,
 
-Antivenom, desc: "Hit 50 snakes.", challenge:false,
-Spit Take, desc: "Get spat at.", challenge:false,
-Joke's on you, I'm into this., desc: "Get spat at 100 times.", challenge:true,
+Antivenom, desc: "Hit 50 snakes.", challenge:false, owned:true,
+Spit Take, desc: "Get spat at.", challenge:false, owned:true,
+Joke's on you, I'm into this., desc: "Get spat at 100 times.", challenge:true, owned:true,
 
-Hogs and Robbers, desc: "Hit a groundhog.", challenge:false,
-Highway Robbery, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true,
+Hogs and Robbers, desc: "Hit a groundhog.", challenge:false, owned:true,
+Highway Robbery, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true, owned:true,
     
-Hello!!!, desc: "Spend some quality time chatting with Meerkat.", challenge:true,
-SHUT UP AND TAKE MY MONEY!, desc: "Buy one of every item in Meerkat's shop.", challenge:true,
-Not So Fast!, desc: "Protect your wallet from thieves.", challenge:false,
-Sharing Is Caring, desc: "Step 1: Stimulate the economy.", challenge:false,
-Stop, Criminell!, desc: "Hit Meerkat. Sicko.", challenge:false,
-We will, we will, desc: "Buy Rock.", challenge:false,
-Rock 2, desc: "Buy Rock 2.", challenge:false,
-Macondo, desc: "Maybe the real hackathon was the friends we made along the way.", challenge:true,
-Charitable, desc: "Donate to Meerkat", challenge:true,
-Highly Charitable, desc: "Do it again.", challenge:true,
+Hello!!!, desc: "Spend some quality time chatting with Meerkat.", challenge:true, owned:true,
+SHUT UP AND TAKE MY MONEY!, desc: "Buy one of every item in Meerkat's shop.", challenge:true, owned:true,
+Not So Fast!, desc: "Protect your wallet from thieves.", challenge:false, owned:true,
+Sharing Is Caring, desc: "Step 1: Stimulate the economy.", challenge:false, owned:true,
+Stop, Criminell!, desc: "Hit Meerkat. Sicko.", challenge:false, owned:true,
+We will, we will, desc: "Buy Rock.", challenge:false, owned:true,
+Rock 2, desc: "Buy Rock 2.", challenge:false, owned:true,
+Macondo, desc: "Maybe the real hackathon was the friends we made along the way.", challenge:true, owned:true,
+Charitable, desc: "Donate to Meerkat", challenge:true, owned:true,
+Highly Charitable, desc: "Do it again.", challenge:true, owned:true,
 
-Azzy hates this one simple trick, desc: "Exploit easy difficulty for money.", challenge:false,*/
+Azzy hates this one simple trick, desc: "Exploit easy difficulty for money.", challenge:false, owned:true,*/

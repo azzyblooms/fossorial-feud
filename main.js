@@ -13,7 +13,7 @@ let yourItems = [
     {item: "donate", owned:false, q:0}
 ]
 const savedItems = localStorage.getItem("yourItems")
-if(savedItems == null) {
+if(savedItems !== null) {
     yourItems = JSON.parse(savedItems)
 }
 function saveItems() {
@@ -247,6 +247,7 @@ let goldenMolesHit = 0;
 let snakesHit = 0;
 let armadillosHit = 0;
 let totalHits = 0;
+let streaksBroken = 0;
 let maxStreak = 0;
 
 const totalHitsText = document.getElementById("totalhits")
@@ -256,6 +257,8 @@ const snakesHitText = document.getElementById("snakehits")
 const armadillosHitText = document.getElementById("armadillohits")
 const groundhogsHitText = document.getElementById("groundhoghits")
 const maxStreakText = document.getElementById("maxstreak")
+const streaksBrokenText = document.getElementById("streaksbroken")
+const finalScore = document.getElementById("finalscore")
 const gmhnum = document.getElementById("gmh")
 
 
@@ -272,20 +275,22 @@ function displayStatistics() {
     let sh = 0;
     let ah = 0;
     let ms = 0;
+    let sb = 0;
+    let fs = 0;
     function playTone(abcde) {
         const sound = tone.cloneNode(true);
         sound.preservesPitch = false;
         sound.volume = 0.3;
-        sound.playbackRate = 1 + (abcde * 0.014);
-        if(sound.playbackRate > 15) {
-            sound.playbackRate = 15;
+        let rate = 1 + (abcde * 0.01);
+        if(rate > 12) {
+            rate = 12;
         }
+        sound.playbackRate = rate;
         sound.play();
     }
     let waiting = false;
     const calcMolesHit = setInterval(() => {
         if(waiting) {
-            toneSound.playbackRate = 1;
             return;
         }
         if(totalHitsText.textContent !== `TOTAL HITS: ${totalHits}`) {
@@ -365,6 +370,32 @@ function displayStatistics() {
                     waiting = false;
                 }, 300)
             }
+        } else if(streaksBrokenText.textContent !== `STREAKS BROKEN: ${streaksBroken}`) {
+            sb++;
+            playTone(sb);
+            streaksBrokenText.textContent = `STREAKS BROKEN: ${sb}`
+            if(sb == streaksBroken) {
+                waiting = true;
+                lockin.cloneNode(true).play();
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
+        } else if(finalScore.textContent !== `FINAL SCORE: ${score}`) {
+            const amount = score / 500;
+            fs += amount;
+            const progress = fs / score
+            playTone(progress * 300);
+            finalScore.textContent = `FINAL SCORE: ${Math.floor(fs)}`
+            if(fs >= score) {
+                fs = score;
+                waiting = true;
+                finalScore.textContent = `FINAL SCORE: ${fs}`
+                lockin.cloneNode(true).play();
+                setTimeout(() => {
+                    waiting = false;
+                }, 300)
+            }
         } else {
             applause.play();
             clearInterval(calcMolesHit)
@@ -373,18 +404,7 @@ function displayStatistics() {
 }
 
 
-function triggerFlashbang() {
-    flashbang.style.animation = ("none")
-    flashbang.style.display = "none"
-    flashbang.offsetHeight;
-    if(epilepsyFriendly == true) {
-        flashbang.style.backgroundColor = "black"
-    } else {
-        flashbang.style.backgroundColor = "white"
-    }
-    flashbang.style.animation = "flashbang 2s ease forwards"
-    flashbang.style.display = "inline";
-}
+
 epilepsyWarningToggle.addEventListener("mousedown", () => {
     epilepsyFriendly = !epilepsyFriendly;
 })
@@ -706,7 +726,7 @@ function spawnTutorialSnake() {
     tsnakeTimer = setTimeout(() => {
         tmoleimg.style.transition = "transform 350ms ease"
         tmoleimg.style.transform = "scale(0)"
-        spit();
+        spit(mole);
         whereAreWe = 5;
         setTimeout(() => {
             prepText(tutorialTexts[whereAreWe])
@@ -791,6 +811,7 @@ continueButton.addEventListener('click', () => {
     }
     if(justText.includes(whereAreWe)) {
         if(whereAreWe > tutorialTexts.length - 2) {
+            ATutorialComplete = true;
             window.location.reload();
         } else {
             whereAreWe++;
@@ -1031,13 +1052,22 @@ document.addEventListener('mousedown', async () => {
         })
     }
 })
-
+const streakSaved = new Audio("audio/streaksaved.wav")
+const congrats = new Audio("audio/congrats.wav")
 function endStreak() {
     if(!timeUp) {
-        streakEndSfx.cloneNode(true).play();
-        streak = 0;
-        goldenMoleChance = 0;
-        streakText.textContent = (`STREAK: ${streak}`)
+        if(yourItems[2].owned == true && streaksBroken == 0) {
+            streaksBroken++;
+            streakSaved.cloneNode(true).play();
+            return;
+        } else {
+            streakEndSfx.cloneNode(true).play();
+            streak = 0;
+            AStreakBreaks++;
+            streaksBroken++;
+            goldenMoleChance = 0;
+            streakText.textContent = (`STREAK: ${streak}`)
+        }
     }
 }
 
@@ -1045,25 +1075,71 @@ const scoreText = document.getElementById("score")
 const debugSound = new Audio("audio/hover.mp3")
 const streakText = document.getElementById("streak")
 const scoreWrap = document.getElementById("scorewrap")
+let flashOpac;
+function triggerFlashbang() {
+    clearTimeout(flashOpac)
+    flashOpac = setTimeout(() => {
+        flashbang.style.opacity = 0.99;
+    }, 999)
+    flashbang.style.animation = ("none")
+    flashbang.style.display = "none"
+    flashbang.offsetHeight;
+    if(epilepsyFriendly == true) {
+        flashbang.style.backgroundColor = "black"
+    } else {
+        flashbang.style.backgroundColor = "white"
+    }
+    flashbang.style.opacity = 1;
+    flashbang.style.animation = "flashbang 2s ease forwards"
+    flashbang.style.display = "inline";
+    
+}
+
+
+
 
 const ping = new Audio("audio/ding.wav")
 const healSound = new Audio("audio/heal.wav")
 function moleHit(mole) {
     if(mole.state !== "up") {return;}
+    if(mole.state == "dying") {ASameEnemyHits++;}
+    if(mole.state !== "dying") {checkQuickDraw();}
+    if(mole.spawningTimer <= 300) {AIntentional = true}
     clearTimeout(mole.spawningTimer)
+    if(flashbang.style.display == "inline" && flashbang.style.opacity == "1") {AHitWhileFlashbang = true;}
     mole.state = "dying";
     if(mole.type == "mole") {
+        if(mole.saveStreak >= 100) {AClutched = true}
         clearTimeout(mole.saveStreak)
         score += 50;
         molesHit++;
+        AMoleHits++;
+        ASerendipity = 0;
         streak++;
         streakIncrease();
         scoreText.style.animation = "none"
         scoreText.offsetHeight;
         scoreText.style.animation = "scoreBubbleUp 400ms ease"
+        if(!ASmorgasbord.includes("mole")) {
+            ASmorgasbord.push("mole")
+        } else {
+            if(ASmorgasbord.length !== 5) {
+                ASmorgasbord = [];
+            }
+        }
     } else if(mole.type == "goldmole") {
+        if(mole.saveStreak >= 100) {AClutched = true}
         clearTimeout(mole.saveStreak)
-        score += 500;
+        score += 750;
+        AGoldenMoles++;
+        ASerendipity++;
+        if(!ASmorgasbord.includes("goldmole")) {
+            ASmorgasbord.push("goldmole")
+        } else {
+            if(ASmorgasbord.length !== 5) {
+                ASmorgasbord = [];
+            }
+        }
         goldenMolesHit++;
         shinyHitSound.cloneNode(true).play();
         streak++;
@@ -1072,22 +1148,41 @@ function moleHit(mole) {
         scoreText.offsetHeight;
         scoreText.style.animation = "scoreBubbleUp 400ms ease"
     } else if(mole.type == "snake") {
+        if(mole.saveStreak >= 100) {AClutched = true}
         clearTimeout(mole.saveStreak)
-        score += 50;
+        score += 100;
         snakesHit++;
         streak++;
+        if(!ASmorgasbord.includes("snake")) {
+            ASmorgasbord.push("snake")
+        } else {
+            if(ASmorgasbord.length !== 5) {
+                ASmorgasbord = [];
+            }
+        }
+        ASerendipity = 0;
+        ASnakes++;
         streakIncrease();
         scoreText.style.animation = "none"
         scoreText.offsetHeight;
         scoreText.style.animation = "scoreBubbleUp 400ms ease"
     } else if (mole.type == "groundhog") {
         score -= 50;
+        AGroundhogs++;
         groundhogsHit++;
+        ASerendipity = 0;
+        if(!ASmorgasbord.includes("groundhog")) {
+            ASmorgasbord.push("groundhog")
+        } else {
+            if(ASmorgasbord.length !== 5) {
+                ASmorgasbord = [];
+            }
+        }
         if(streak > 0) {
             endStreak();
         }
         if(endless && !timeUp) {
-            spit()
+            spit(mole)
         }
         scoreText.style.animation = "none"
         scoreText.offsetHeight;
@@ -1095,18 +1190,29 @@ function moleHit(mole) {
         bonk.cloneNode(true).play();
     } else if (mole.type == "armadillo") {
         armadillosHit++;
+        AArmadillos++;
+        ASerendipity = 0;
+        if(!ASmorgasbord.includes("armadillo")) {
+            ASmorgasbord.push("armadillo")
+        } else {
+            if(ASmorgasbord.length !== 5) {
+                ASmorgasbord = [];
+            }
+        }
         if(mole.item == "bomb") {
             if(streak > 0) {
                 endStreak();
             }
+            AFlashbang = true;
             if(endless && !timeUp) {
-                spit()
+                spit(mole)
             }
             ping.cloneNode(true).play();
             bonk.cloneNode(true).play();
             triggerFlashbang();
         } else if(mole.item == "heal") {
             score += 50;
+            AMedic = true;
             if(healthPoints < 5) {
                 if(healthPoints == 4 && yourItems[3].owned == true) {
                     healthPoints = 5;
@@ -1126,6 +1232,7 @@ function moleHit(mole) {
         } else if(mole.item == "cash") {
             score += 100;
             cash += 1000;
+            ADolladillo = true;
             streak++;
             lockin.cloneNode(true).play();
             streakIncrease();
@@ -1146,6 +1253,7 @@ function moleHit(mole) {
         }
     }
     totalHits++;
+    ATotalHits++;
     streakText.textContent = (`STREAK: ${streak}`)
     scoreText.textContent = (`SCORE: ${score}`)
     const moleImg = mole.element.querySelector("img")
@@ -1172,13 +1280,22 @@ function streakIncrease() {
     let streakSound = ((streak - 1) % 8) + 1;
     let streakSfx = (new Audio(`audio/streak/${streakSound}.mp3`)).cloneNode(true)
     streakSfx.preservesPitch = false;
-    streakSfx.playbackRate = 1 + Math.floor((streak - 1) / 8) * 0.2;
+    let rate = 1 + Math.floor((streak - 1) / 8) * 0.2;
+    if(rate > 12) {
+        rate = 12
+    }
+    streakSfx.playbackRate = rate;
     streakSfx.play();
     if(streak > maxStreak) {
         maxStreak = streak;
     }
     if(streak > 8) {
-        goldenMoleChance = (streak / 12) / 100;
+        if(yourItems[7].owned == true) {
+            goldenMoleChance = Math.pow((streak / 12), 1.25) / 100;
+        } else {
+            goldenMoleChance = (streak / 12) / 100;
+        }
+        console.log(goldenMoleChance)
     }
 }
 
@@ -1217,6 +1334,7 @@ streakText.textContent = (`STREAK: ${streak}`)
 updateHealth();
 function roundcountshow() {
     gameOn = false;
+    endless = false;
     timeLeft = 120;
     if(yourItems[3].owned == true) {
         healthPoints = 5;
@@ -1232,6 +1350,7 @@ function roundcountshow() {
     armadillosHit = 0;
     totalHits = 0;
     maxStreak = 0;
+    streaksBroken = 0;
     updateHealth();
     timeUp = false;
     timer.textContent = `TIME: ${timeLeft}`
@@ -1275,6 +1394,7 @@ function endlessPrep() {
     armadillosHit = 0;
     totalHits = 0;
     maxStreak = 0;
+    streaksBroken = 0;
     updateHealth();
     timeUp = false;
     moleTypeText.textContent = enemyList;
@@ -1300,6 +1420,13 @@ let scoreToCash = false;
 
 const orchHit = new Audio("audio/orchhit.ogg")
 function finishGame() {
+    if(endless) {
+        AEndlessRoundsPlayed++;
+        if(difficulty == "easy") {AEasyFarmed}
+    } else {
+        AClassicRoundsPlayed++;
+        if(streaksBroken == 0 && score > 0) {AFlawless = true}
+    }
     orchHit.play();
     setTimeout(() => {
         tallyScore();
@@ -1310,46 +1437,47 @@ function finishGame() {
 const statisticsBox = document.getElementById("statisticsbox")
 
 function tallyScore() {
-    let loops = 0
+    let loops = 0;
+    let displayedScore = score;
     function playTone(abcde) {
         const sound = tone.cloneNode(true);
-        sound.volume = 0.3;
         sound.preservesPitch = false;
-        sound.playbackRate = 1 + (abcde * 0.007);
-        if(sound.playbackRate > 15) {
-            sound.playbackRate = 15;
+        sound.volume = 0.3;
+        let rate = 1 + (abcde * 0.005);
+        if(rate > 12) {
+            rate = 12;
         }
+        sound.playbackRate = rate;
         sound.play();
     }
+    const amount = score / 700
     tallyScoreMath = setInterval(() => {
-        if(score > 0 ) {
+        if(displayedScore > 0 ) {
             if (!Number.isFinite(cash)) {
                 console.warn("Invalid cash value:", storedCash);
                 cash = 0;
                 localStorage.setItem("cash", 0);
             }
-            if(score >= 10) {
-                score -= 10;
+            if(displayedScore >= amount) {
+                displayedScore -= amount;
                 loops++;
-                cash += 20;
+                cash += 2 * amount;
             } else {
-                if(score > 0) {
-                    cash += score * 2
-                    loops++;
-                }
-                score = 0;
+                cash += displayedScore * 2
+                loops++;
+                displayedScore = 0;
             }
             cashText.style.animation = "none"
             cashText.offsetHeight;
             playTone(loops)
-            cashText.textContent = `CASH: \$${cash.toLocaleString()}`
-            scoreText.textContent = `SCORE: ${score}`
+            cashText.textContent = `CASH: \$${Math.floor(cash).toLocaleString()}`
+            scoreText.textContent = `SCORE: ${Math.floor(displayedScore)}`
             cashText.style.animation = "scoreBubbleUp 400ms ease"
         }
-        if(score <= 0) {
+        if(displayedScore <= 0) {
             clearInterval(tallyScoreMath)
             localStorage.setItem("cash", cash)
-            score = 0;
+            displayedScore = 0;
             scoreToCash = true;
             applause.play();
             setTimeout(() => {
@@ -1555,8 +1683,9 @@ function spawnMole(mole) {
                     if(streak > 0) {
                         endStreak();
                     }
+                    if(mole.type == "goldmole") {AGoldenMiss = true;}
                     if(endless && !timeUp) {
-                        spit()
+                        spit(mole)
                     }
                     streakText.textContent = (`STREAK: ${streak}`)      
                 }
@@ -1699,28 +1828,36 @@ const shakeKeyFrames = [
 const hurtSound = new Audio("audio/hurt.wav")
 
 function spit(mole) {
-    clearTimeout(redScreenTimeout)
-    shading.style.backgroundColor = "red"
-    shading.style.display = "inline"
-    shading.style.animation = "none"
-    shading.offsetHeight;
-    if(endless) {
-        hurtPlayer();
+    
+    if(streaksBroken == 1 && yourItems[2].owned == true) {
+        return;      
     } else {
-        timeLeft -= 15;
-        ping.cloneNode(true).play();
-    }
-    shading.style.animation = "shaderFade 500ms ease forwards"
-    shakingElements = Array.from(document.body.querySelectorAll("*"));
-    shakingElements.forEach((element) => {
-        element.animate(shakeKeyFrames, {
-            duration:400, easing:"linear", composite: "add"
+        clearTimeout(redScreenTimeout)
+        shading.style.backgroundColor = "red"
+        shading.style.display = "inline"
+        shading.style.animation = "none"
+        shading.offsetHeight;
+        if(mole.type == "snake") {
+            ASpit++;
+        }
+        if(endless) {
+            hurtPlayer();
+        } else {
+            timeLeft -= 15;
+            ping.cloneNode(true).play();
+        }
+        shading.style.animation = "shaderFade 500ms ease forwards"
+        shakingElements = Array.from(document.body.querySelectorAll("*"));
+        shakingElements.forEach((element) => {
+            element.animate(shakeKeyFrames, {
+                duration:400, easing:"linear", composite: "add"
+            })
         })
-    })
-    redScreenTimeout = setTimeout(() => {
-        shading.style.backgroundColor = "black"
-        shading.style.display = "none"
-    }, 500)
+        redScreenTimeout = setTimeout(() => {
+            shading.style.backgroundColor = "black"
+            shading.style.display = "none"
+        }, 500)
+    }
 }
 
 let timeLeft = null;
@@ -1809,6 +1946,14 @@ const shopItems = [
     document.getElementById("shopitem5"),
     document.getElementById("shopitem6")
 ]
+const topics = [
+    document.getElementById("topic1"),
+    document.getElementById("topic2"),
+    document.getElementById("topic3"),
+    document.getElementById("topic4"),
+    document.getElementById("topic5"),
+    document.getElementById("topic6")
+]
 
 const shopDialogue = [
     //greetings
@@ -1824,23 +1969,23 @@ const shopDialogue = [
     //open shop
     "* Yeah! Buy my stuff!",
     "* Oh, hell yeah!",
-    "* Anything catch your eye?",
+    "* Anything catch yer eye?",
     //talk
     "* You wanna talk? Yeah, we can talk. Just buy something afterwards.",
     "* 'Sup?",
-    //stimulate the economy
+    //stimulate the economy 12
     "* Well, I'm the only one around here who runs a shop, I suppose it wouldn't hurt to share the wealth.",
     "* I heard those armadillos like to pick up cash. Check them out now. They might be carrying some fat stacks.",
-    //who are you
+    //who are you 14
     "* I'm the Meerkat. I collect cash.",
     "* I also collect wares, in case you were interested in buying anything today.",
     "* And for the record, I don't like the moles either. I'm just here 'cause the money's good.",
-    //golden moles
+    //golden moles 17
     "* Golden moles are elusive creatures. I've only ever seen one, and he ran out of my store before I could tie him up.",
     "* Legend has it that they're attracted to the most skilled of mole hunters. For some reason.",
     "* Ain't it a little suicidal that they only show up for the people who want them dead the most?",
-    "* Anywho, if you fetch me some golden moles, I might have something new to offer ya. Deal?",
-    //the moles
+    "* Anywho, if ya like golden moles, I got a little trinket in my shop for ya, if ya want.",
+    //the moles 21
     "* It's been about two years, give or take. Two years since I moved in.",
     "* The moles got here last month. Heh, at least life ain't so mundane anymore. But still...",
     "* To be honest, I wanted to move out. Everything seemed to get worse. Couldn't even last a day without one digging into my shop.",
@@ -1852,17 +1997,17 @@ const shopDialogue = [
     "* Heh, thanks.",
     "* Pleasure doing business with ya.",
     //stun remover (28)
-    "* Check out my Stun Remover. With this guy, when you miss a mole, sure, you'll still lose your streak, but you won't be stunned! All yours for $30,000!",
+    "* Check out my Stun Remover. With this guy, when ya miss a mole, sure, you'll still lose yer streak, but ya won't be stunned! All yours for $30,000!",
     //heart 4
-    "* You need a heart? I can tell from those soulless eyes. Increase your maximum health! Only $100,000!",
+    "* Ya need a heart? I can tell from those soulless eyes. Increase yer maximum health! Only $100,000!",
     //combo insurance
-    "* Your first combo break of the round? Nope, didn't see it. Insure your streaks for $150,000!",
+    "* Yer first combo break of the round? Nope, didn't see it. Insure yer streaks for $150,000!",
     //heart 5
     "* First one wasn't enough? God, you're greedy. Give me more money. $500,000. Take it or leave it.",
     //burrow heater
-    "* Don't you just hate cooldowns? This'll shrink 'em. $50,000. Good luck.",
+    "* Don'tcha just hate cooldowns? This'll shrink 'em. $50,000. Good luck.",
     // snake charmer's flute
-    "* Attracts snakes. Use at your own risk. Masterfully crafted for $200,000.",
+    "* Attracts snakes. Use at yer own risk. Masterfully crafted for $200,000.",
     //groundhog insurance
     "* This wallet lining makes it so groundhogs only steal 49 points. Sick, right? It's gold plated, so it's pricey at $300,000. Worth it!!!",
     //exponential gold
@@ -1878,17 +2023,30 @@ const shopDialogue = [
     // can't afford (40)
     "* Sorry, Link, I can't give credit!",
     `* That doesn't look like \$${price.toLocaleString()}...`,
-    "* You think I'm stupid or something?",
+    "* Ya think I'm stupid or something?",
     `* You only got \$${cash.toLocaleString()}.`,
     "* Don't play games with me.",
     //can't buy? (45)
-    "* You don't need any more.",
+    "* Ya don't need any more.",
     "* That was my last one.",
     "* Sorry, all out.",
-    //more than one
+    //more than one (48)
     "* Happy customer, eh?.",
     "* Yes... Good...",
     "* Stocking up?",
+
+    //moretalk (51)
+    "* Achievements? I don't know what you're talking about. You some kind of completionist?",
+    "* ...But, a little birdie told me there's an achievement for play easy-mode endless 5 times.",
+    "* Something about \"awful game design\" and \"an easy way to farm cash.\"",
+    "* I don't know why I told you that. Maybe I should get better at keeping my secrets...",
+    //55
+    "* The medic armadillos are my favourite. Kind souls. They even helped out my son when he was sick.",
+    "* Some shame the moles recuited them. I think we could've been great friends.",
+    "* Now they make them carry bombs and stuff. Little cruel if you ask me, but what do I know.",
+    //58
+    "* Shop ain't open, idiot!",
+    "* Buy what?"
 ]
 const talkButton = document.getElementById("talkbutton")
 const buyButton = document.getElementById("buybutton")
@@ -1923,8 +2081,48 @@ leaveButton.addEventListener('mousedown', () => {
         }, 3000)
     }
 })
+topics[0].addEventListener('mousedown', () => {
+    shopPrepText(shopDialogue[14])
+    if(!AOptionsTalked.includes("1")) {
+        AOptionsTalked.push("1")
+    }
+})
+topics[1].addEventListener('mousedown', () => {
+    shopPrepText(shopDialogue[12])
+    economyStimulated = true;
+    if(!AOptionsTalked.includes("2")) {
+        AOptionsTalked.push("2")
+    }
+})
+topics[2].addEventListener('mousedown', () => {
+    shopPrepText(shopDialogue[17])
+    if(!AOptionsTalked.includes("3")) {
+        AOptionsTalked.push("3")
+    }
+})
+topics[3].addEventListener('mousedown', () => {
+    shopPrepText(shopDialogue[21])
+    if(!AOptionsTalked.includes("4")) {
+        AOptionsTalked.push("4")
+    }
+})
+topics[4].addEventListener('mousedown', () => {
+    shopPrepText(shopDialogue[51])
+    if(!AOptionsTalked.includes("5")) {
+        AOptionsTalked.push("5")
+    }
+})
+topics[5].addEventListener('mousedown', () => {
+    shopPrepText(shopDialogue[55])
+    if(!AOptionsTalked.includes("6")) {
+        AOptionsTalked.push("6")
+    }
+})
 
+
+let currentDialogue = null;
 const backArrow = document.getElementById("pageback")
+const talkBackArrow = document.getElementById("talkpageback")
 const nextArrow = document.getElementById("pagenext")
 const shopButtonBox = document.getElementById("shopbuttonbox")
 const storePage = document.getElementById("buystuff")
@@ -2066,7 +2264,20 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[11].q++;
             saveItems();
         }
+        if(focusedItem == null) {
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 58)])
+        }
     }
+})
+
+const talkPage = document.getElementById("talking")
+
+talkBackArrow.addEventListener('mousedown', () => {
+    talkPage.style.display = "none"
+    shopPrepText(shopDialogue[Math.floor(Math.random() * 4)])
+    talkButton.style.display = "flex"
+    buyButton.style.display = "flex"
+    leaveButton.style.display = "flex"
 })
 
 let focusedItem = null;
@@ -2075,6 +2286,7 @@ backArrow.addEventListener('mousedown', () => {
     if(shopPage <= 0) {
         storePage.style.display = "none"
         talkButton.style.display = "flex"
+        shopPrepText(shopDialogue[Math.floor(Math.random() * 4)])
         buyButton.style.display = "flex"
         leaveButton.style.display = "flex"
     } else {
@@ -2199,6 +2411,26 @@ buyButton.addEventListener('mousedown', () => {
     buyButton.style.display = "none"
     leaveButton.style.display = "none"
     storePage.style.display = "flex"
+    focusedItem = null;
+})
+talkButton.addEventListener('mousedown', () => {
+    shopPage = 0;
+    focusedItem = null;
+    shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 10)])
+    talkButton.style.display = "none"
+    buyButton.style.display = "none"
+    leaveButton.style.display = "none"
+    talkPage.style.display = "flex"
+})
+
+const meerkat = document.getElementById("shopkeeper") 
+meerkat.querySelector("img").addEventListener('mousedown', () => {
+    clickfx();
+    let meerkatimg = meerkat.querySelector("img")
+    meerkatimg.style.animation = "none"
+    meerkatimg.offsetHeight;
+    meerkatimg.style.animation = "redfilter 400ms ease, hitMeerkat 400ms ease forwards"
+    AHitMeerkat = true;
 })
 
 function hurtPlayer() {
@@ -2288,3 +2520,271 @@ document.addEventListener('keydown', (event) => {
         ping.cloneNode(true).play();
     }
 })
+
+let ATutorialComplete = 0;
+let AClassicRoundsPlayed = 0;
+let AEndlessRoundsPlayed = 0;
+let ATotalHits = 0;
+let ASmorgasbord = [];
+let ASameEnemyHits = 0;
+let AIntentional = false;
+let AClutched = false;
+let AQuickDraw = false;
+let AStreakBreaks = 0;
+let AFlawless = false;
+let AMoleHits = 0;
+let AGoldenMoles = 0;
+let ASerendipity = false;
+let AGoldenMiss = false;
+let AArmadillos = 0;
+let AMedic = false;
+let AFlashbang = false;
+let AHitWhileFlashbang = false;
+let ADolladillo = false;
+let ASnakes = 0;
+let ASpit = 0;
+let AGroundhogs = 0;
+let AOptionsTalked = [];
+let economyStimulated = false;
+let AHitMeerkat = false;
+let AEasyFarmed = false;
+
+
+let quickDrawStart = null;
+let quickDrawCount = 0;
+function checkQuickDraw() {
+    const now = Date.now;
+    if(quickDrawStart === null || now - quickDrawCount > 5000) {
+        quickDrawCount = 0;
+        quickDrawStart = now;
+    }
+    quickDrawCount++;
+    if(quickDrawCount >= 10) {AQuickDraw = true;}
+}
+
+
+
+
+function updateAchievements() {
+    if(ATutorialComplete) {grantAchievement(achievements[0])}
+    if(AClassicRoundsPlayed >= 1) {grantAchievement(achievements[1])}
+    if(AClassicRoundsPlayed >= 10) {grantAchievement(achievements[2])}
+    if(AClassicRoundsPlayed >= 50) {grantAchievement(achievements[3])}
+
+    if(score >= 20000 && !endless) {grantAchievement(achievements[4])}
+    if(score >= 50000) {grantAchievement(achievements[5])}
+    if(score >= 250000) {grantAchievement(achievements[6])}
+
+    if(AEndlessRoundsPlayed >= 1) {grantAchievement(achievements[7])}
+    if(AEndlessRoundsPlayed >= 10) {grantAchievement(achievements[8])}
+    if(AEndlessRoundsPlayed >= 50) {grantAchievement(achievements[9])}
+    if(timeLeft >= 600 && endless) {grantAchievement(achievements[10])}
+
+    if(ATotalHits >= 50) {grantAchievement(achievements[11])}
+    if(ATotalHits >= 500) {grantAchievement(achievements[12])}
+    if(ATotalHits >= 5000) {grantAchievement(achievements[13])}
+    if(ATotalHits >= 50000) {grantAchievement(achievements[14])}
+
+    if(ASmorgasbord.length == 5) {grantAchievement(achievements[15])}
+    if(ASameEnemyHits >= 3) {grantAchievement(achievements[16])}
+    if(AIntentional) {grantAchievement(achievements[17])}
+    if(AClutched) {grantAchievement(achievements[18])}
+    if(AQuickDraw) {grantAchievement(achievements[19])}
+
+    if(AStreakBreaks >= 1) {grantAchievement(achievements[20])}
+    if(AStreakBreaks >= 100) {grantAchievement(achievements[21])}
+
+    if(streak >= 10) {grantAchievement(achievements[22])}
+    if(streak >= 100) {grantAchievement(achievements[23])}
+    if(streak >= 250) {grantAchievement(achievements[24])}
+    if(AFlawless) {grantAchievement(achievements[25])}
+
+    if(AMoleHits >= 10000) {grantAchievement(achievements[26])}
+
+    if(AGoldenMoles >= 1) {grantAchievement(achievements[27])}
+    if(AGoldenMoles >= 500) {grantAchievement(achievements[28])}
+    if(goldenMolesHit >= 10) {grantAchievement(achievements[29])}
+    if(goldenMolesHit >= 50) {grantAchievement(achievements[30])}
+    if(ASerendipity >= 3) {grantAchievement(achievements[31])}
+    if(goldenMoleChance >= 1) {grantAchievement(achievements[32])}
+    if(AGoldenMiss) {grantAchievement(achievements[33])}
+
+    if(AArmadillos >= 50) {grantAchievement(achievements[34])}
+    if(AMedic) {grantAchievement(achievements[35])}
+    if(AFlashbang) {grantAchievement(achievements[36])}
+    if(AHitWhileFlashbang) {grantAchievement(achievements[37])}
+    if(ADolladillo) {grantAchievement(achievements[38])}
+
+    if(ASnakes >= 50) {grantAchievement(achievements[39])}
+    if(ASpit >= 1) {grantAchievement(achievements[40])}
+    if(ASpit >= 50) {grantAchievement(achievements[41])}
+
+    if(AGroundhogs >= 1) {grantAchievement(achievements[42])}
+    if(AGroundhogs >= 50) {grantAchievement(achievements[43])}
+
+    if(AOptionsTalked.length == 6) {grantAchievement(achievements[44])}
+    if(yourItems.forEach((item) => item.owned)) {grantAchievement(achievements[45])}
+    if(yourItems[6].owned) {grantAchievement(achievements[46])}
+    if(economyStimulated) {grantAchievement(achievements[47])}
+    if(AHitMeerkat) {grantAchievement(achievements[48])}
+    if(yourItems[8].owned) {grantAchievement(achievements[49])}
+    if(yourItems[9].owned) {grantAchievement(achievements[50])}
+    if(yourItems[10].q >= 100) {grantAchievement(achievements[51])}
+    if(yourItems[11].owned) {grantAchievement(achievements[52])}
+    if(yourItems[11].q >= 2) {grantAchievement(achievements[53])}
+
+    if(AEasyFarmed >= 5) {grantAchievement(achievements[54])}
+}
+function grantAchievement(achievement) {
+    console.log(`granted ${achievement.name}`)
+}
+
+
+
+
+
+
+
+
+
+
+let achievements = [
+    {name: "Class Dismissed", requires: 1, desc: "Complete the tutorial.", challenge:false},
+    {name: "First Steps", requires:1, desc:"Play one game of classic mode.", challenge:false},
+    {name: "Giant Steps", requires:10, desc:"Play ten games of classic mode.", challenge:false},
+    {name: "Is this the best use of your time?", requires: 50, desc: "Play 50 games of classic mode.", challenge:true},
+
+    {name: "Let's-a-go! Keep it up, baby!", requires: 20000, desc: "Have a score over 20,000 in classic mode.", challenge:true},
+    {name: "The Idea", requires: 50000, desc: "Have a score over 50,000.", challenge:true},
+    {name: "The Man", requires: 250000, desc: "Have a score over 250,000.", challenge:true},
+
+    {name: "It Begins", requires: 1, desc: "Play one game of endless mode.", challenge:false},
+    {name: "Round After Round", requires: 10, desc: "Play ten games of endless mode.", challenge:false},
+    {name: "Well, that's one way to do it.", requires: 50, desc: "Play 50 games of endless mode.", challenge:true},
+    {name: "Still Alive", requires: 600, desc: "Last 10 minutes in one game of endless mode.", challenge:true},
+
+    {name: "Beginning Batter", requires: 50, desc:"Hit 50 enemies.", challenge:false},
+    {name: "Novice Knocker", requires: 500, desc: "Hit 500 enemies.", challenge:false},
+    {name: "Proficient Puncher", requires: 5000, desc: "Hit 5,000 enemies.", challenge:false},
+    {name: "Master Masher", requires: 50000, desc: "Hit 50,000 enemies. What is wrong with you.", challenge:true},
+
+    {name: "Smorgasbord", requires: 5, desc: "Hit one of each enemy consecutively (including a golden mole)", challenge:true},
+    {name: "Trigger Happy", requires: 3, desc: "Hit the same enemy three times before it disappears.", challenge:false},
+    {name: "Intentional", requires: 1, desc: "Hit an enemy within 300ms of it appearing.", challenge:true},
+    {name: "Clutched", requires: 1, desc: "Hit a mole or snake within 100ms of it disappearing.", challenge:false},
+    {name: "Quick Draw", requires: 10, desc: "Hit 10 enemies within 5 seconds.", challenge:false},
+
+    {name: "HAH!", requires: 1, desc: "YOU MISSED!", challenge:false},
+    {name: "HAH! HAH! HAH!", requires: 100, desc: "Lose 100 streaks.", challenge:false},
+
+    {name: "Begone!", requires: 10, desc: "Hit 10 enemies in a row.", challenge:false},
+    {name: "Flow State", requires: 100, desc: "Hit 100 enemies in a row.", challenge:false},
+    {name: "Generational Run", requires: 250, desc: "Hit 250 enemies in a row.", challenge:true},
+    {name: "Flawless", requires: 0, desc: "Complete a game of classic mode without losing your streak.", challenge:true},
+
+    {name: "Mountain out of a Molehill", requires: 10000, desc: "Hit 10,000 moles.", challenge:true},
+
+    {name: "Gotcha!", requires: 1, desc: "Hit a golden mole.", challenge:false},
+    {name: "My Beautiful Collection", requires: 500, desc: "Hit 500 golden moles.", challenge:true},
+    {name: "Gold Rush", requires: 10, desc: "Hit 10 golden moles in one round.", challenge:false},
+    {name: "Set For Life", requires: 50, desc: "Hit 50 golden moles in one round.", challenge:true},
+    {name: "Serendipity", requires: 3, desc: "Hit 3 consecutive golden moles.", challenge:true},
+    {name: "Wow! That was so Gold!", requires: 1, desc: "Have a high enough streak for all moles to be golden.", challenge:true},
+    {name: "Butterfingers", requires: 1, desc: "The one that got away...", challenge:false},
+
+    {name: "Shell Shocked", requires: 50, desc: "Hit 50 armadillos.", challenge:false},
+    {name: "Medic!", requires: 1, desc: "Be healed by an armadillo.", challenge:false}, 
+    {name: "MY EYES!!!", requires: 1, desc: "Get flashbanged by an armadillo.", challenge:false},
+    {name: "360 No-Scope", requires: 1, desc: "Hit an enemy while fully blinded.", challenge:false},
+    {name: "Good Returns", requires: 1, desc: "Step 2: Profit.", challenge:false},
+
+    {name: "Antivenom", requires: 50, desc: "Hit 50 snakes.", challenge:false},
+    {name: "Spit Take", requires: 1, desc: "Get spat at.", challenge:false},
+    {name: "Joke's on you, I'm into this.", requires: 100, desc: "Get spat at 100 times.", challenge:true},
+
+    {name: "Hogs and Robbers", requires: 1, desc: "Hit a groundhog.", challenge:false},
+    {name: "Highway Robbery", requires: 50, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true},
+    
+    {name: "Hello!!!", requires: 1 /*i'm not sure*/, desc: "Spend some quality time chatting with Meerkat.", challenge:true},
+    {name: "SHUT UP AND TAKE MY MONEY!", requires: 12, desc: "Buy one of every item in Meerkat's shop.", challenge:true},
+    {name: "Not So Fast!", requires: 1, desc: "Protect your wallet from thieves.", challenge:false},
+    {name: "Sharing Is Caring", requires: 1, desc: "Step 1: Stimulate the economy.", challenge:false},
+    {name: "Stop, Criminell!", requires: 1, desc: "Hit Meerkat. Sicko.", challenge:false},
+    {name: "We will, we will", requires: 1, desc: "Buy Rock.", challenge:false},
+    {name: "Rock 2", requires: 1, desc: "Buy Rock 2.", challenge:false},
+    {name: "Macondo", requires: 100, desc: "Maybe the real hackathon was the friends we made along the way.", challenge:true},
+    {name: "Charitable", requires: 1, desc: "Donate to Meerkat", challenge:true},
+    {name: "Highly Charitable", requires: 2, desc: "Do it again.", challenge:true},
+
+    {name: "Azzy hates this one simple trick", requires: 5, desc: "Exploit easy difficulty for money.", challenge:false},
+]
+
+/*
+Class Dismissed,  desc: "Complete the tutorial.", challenge:false,
+First Steps,  desc:"Play one game of classic mode.", challenge:false,
+Giant Steps, desc:"Play ten games of classic mode.", challenge:false,
+Is this the best use of your time?,  50, desc: "Play 50 games of classic mode.", challenge:true,
+
+Let's-a-go! Keep it up, baby!,  20000, desc: "Have a score over 20,000 in classic mode.", challenge:true,
+The Idea,  desc: "Have a score over 50,000.", challenge:true,
+The Man,  desc: "Have a score over 250,000.", challenge:true,
+
+It Begins, desc: "Play one game of endless mode.", challenge:false,
+Round After Round,  desc: "Play ten games of endless mode.", challenge:false,
+Well, that's one way to do it., desc: "Play 50 games of endless mode.", challenge:true,
+Still Alive, desc: "Last 10 minutes in one game of endless mode.", challenge:true,
+
+Beginning Batter, desc:"Hit 50 enemies.", challenge:false,
+Novice Knocker, desc: "Hit 500 enemies.", challenge:false,
+Proficient Puncher, desc: "Hit 5,000 enemies.", challenge:false,
+Master Masher, desc: "Hit 50,000 enemies. What is wrong with you.", challenge:true,
+
+Smorgasbord, desc: "Hit one of each enemy consecutively (including a golden mole)", challenge:true,
+Trigger Happy, desc: "Hit the same enemy three times before it disappears.", challenge:false,
+Intentional, desc: "Hit an enemy within 300ms of it appearing.", challenge:true,
+Clutched, desc: "Hit an enemy within 100ms of it disappearing.", challenge:false,
+Quick Draw, desc: "Hit 10 enemies within 5 seconds.", challenge:false,
+
+HAH!, desc: "YOU MISSED!", challenge:false,
+HAH! HAH! HAH!, desc: "Lose 100 streaks.", challenge:false,
+
+Begone!, desc: "Hit 10 enemies in a row.", challenge:false,
+Flow State, desc: "Hit 100 enemies in a row.", challenge:false,
+Generational Run, desc: "Hit 250 enemies in a row.", challenge:true,
+Flawless, desc: "Complete a game of classic mode without losing your streak.", challenge:true,
+
+Mountain out of a Molehill, desc: "Hit 10,000 moles.", challenge:true,
+
+Gotcha!, desc: "Hit a golden mole.", challenge:false,
+My Beautiful Collection, desc: "Hit 500 golden moles.", challenge:true,
+Gold Rush, desc: "Hit 10 golden moles in one round.", challenge:false,
+Set For Life, desc: "Hit 50 golden moles in one round.", challenge:true,
+Serendipity, desc: "Hit 3 consecutive golden moles.", challenge:true,
+Wow! That was so Gold!, desc: "Have a high enough streak for all moles to be golden.", challenge:true,
+Butterfingers, desc: "The one that got away...", challenge:false,
+
+Shell Shocked, desc: "Hit 50 armadillos.", challenge:false,
+Medic!, desc: "Be healed by an armadillo.", challenge:false, 
+MY EYES!!!, desc: "Get flashbanged by an armadillo.", challenge:false,
+360 No-Scope, desc: "Hit an enemy while fully blinded.", challenge:false,
+Good Returns, desc: "Step 2: Profit.", challenge:false,
+
+Antivenom, desc: "Hit 50 snakes.", challenge:false,
+Spit Take, desc: "Get spat at.", challenge:false,
+Joke's on you, I'm into this., desc: "Get spat at 100 times.", challenge:true,
+
+Hogs and Robbers, desc: "Hit a groundhog.", challenge:false,
+Highway Robbery, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true,
+    
+Hello!!!, desc: "Spend some quality time chatting with Meerkat.", challenge:true,
+SHUT UP AND TAKE MY MONEY!, desc: "Buy one of every item in Meerkat's shop.", challenge:true,
+Not So Fast!, desc: "Protect your wallet from thieves.", challenge:false,
+Sharing Is Caring, desc: "Step 1: Stimulate the economy.", challenge:false,
+Stop, Criminell!, desc: "Hit Meerkat. Sicko.", challenge:false,
+We will, we will, desc: "Buy Rock.", challenge:false,
+Rock 2, desc: "Buy Rock 2.", challenge:false,
+Macondo, desc: "Maybe the real hackathon was the friends we made along the way.", challenge:true,
+Charitable, desc: "Donate to Meerkat", challenge:true,
+Highly Charitable, desc: "Do it again.", challenge:true,
+
+Azzy hates this one simple trick, desc: "Exploit easy difficulty for money.", challenge:false,*/

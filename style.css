@@ -133,12 +133,106 @@ html::-webkit-scrollbar {
     padding:10px;
     border:8px solid rgb(134, 45, 45);
     background-color: rgb(100, 22, 22);
-    width:200px;
+    width:250px;
     justify-self: center;
     transition:transform 300ms ease;
 }
 #shop:hover {
     transform:scale(1.2);
+}
+#achievements {
+    display:flex;
+    font-size:40px;
+    align-items: center;
+    justify-content: center;
+    margin-top:30px;
+    padding:10px;
+    border:8px solid rgb(134, 45, 45);
+    background-color: rgb(100, 22, 22);
+    width:250px;
+    justify-self: center;
+    transition:transform 300ms ease;
+}
+#achievements:hover {
+    transform:scale(1.2);
+}
+
+#achievementbox {
+    display:flex;
+    overflow-y:scroll;
+    width:500px;
+    height:800px;
+    border:4px solid white;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: brown;
+    flex-direction: column;
+}
+#achievementtitle {
+    width:300px;
+    margin-top:10px;
+    text-align: center;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-size:50px;
+    height:50px;
+    padding:10px;
+    border:4px solid white;
+    background-color:rgb(114, 17, 17);
+
+}
+.achievement {
+    width:450px;
+    padding:10px;
+    background-color: rgb(114, 17, 17);
+    display:flex;
+    margin-top:10px;
+    flex-direction: row;
+    border:4px solid white;
+}
+#achievementboxes {
+    margin-top:20px;
+    display:flex;
+    flex-direction: column;
+}
+.achievement img {
+    border:4px solid white;
+}
+.achievementtext {
+    display:flex;
+    flex-direction: column;
+    margin-left:10px;
+}
+.achsubtitle {
+    font-size:13px;
+    color:rgb(206, 206, 206);
+}
+.achtitle {
+    font-size:30px;
+    color:white;
+}
+#achievementstat {
+    width:100px;
+    height:20px;
+    z-index:2;
+    font-size:30px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    text-align:center;
+    padding:10px;
+    border:4px solid white;
+    border-top:none;
+    margin-top:-4px;
+    background-color:rgb(114, 17, 17);
+}
+#achievementwrap {
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    position:fixed;
+    display:none;
 }
 
 #difficulty {
@@ -497,6 +591,13 @@ html::-webkit-scrollbar {
 }
 
 #startbuttonwrap {
+    display:flex;
+    flex-direction: row;
+    gap:30px;
+    justify-content: center;
+    align-items: center;
+}
+#othermenuwrap {
     display:flex;
     flex-direction: row;
     gap:30px;

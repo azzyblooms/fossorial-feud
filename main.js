@@ -504,6 +504,7 @@ const startpageelements = [
     document.getElementById("pagetitle"),
     document.getElementById("difficulty"),
     document.getElementById("settings"),
+    document.getElementById("achievements"),
     document.getElementById("tutorial"),
     document.getElementById("evilbutton"),
     document.getElementById("shop"),
@@ -678,7 +679,7 @@ function type() {
     const char = chars[current].textContent;
     chars[current].classList.add("visible")
     current++;
-    if(/[a-zA-z]/.test(char)) {
+    if(/[a-zA-z0-9]/.test(char)) {
         const speakSound = (new Audio(`audio/speech/${(char.toUpperCase())}.wav`)).cloneNode(true);
         speakSound.playbackRate = Math.random() * 0.2 + 1.3;
         speakSound.preservesPitch = false;
@@ -1433,7 +1434,7 @@ function finishGame() {
         drumroll.play();
     }, 2000)
 }
-
+let currentDialogue = null;
 const statisticsBox = document.getElementById("statisticsbox")
 
 function tallyScore() {
@@ -1924,7 +1925,7 @@ function shopType() {
     const char = chars[current].textContent;
     chars[current].classList.add("visible")
     current++;
-    if(/[a-zA-z]/.test(char)) {
+    if(/[a-zA-z0-9]/.test(char)) {
         const speakSound = (new Audio(`audio/speech/${(char.toUpperCase())}.wav`)).cloneNode(true);
         speakSound.playbackRate = Math.random() * 0.2 + 0.9;
         speakSound.preservesPitch = false;
@@ -1964,7 +1965,7 @@ const shopDialogue = [
     //leaving
     "* See ya.",
     "* Same time tomorrow?",
-    "* Come back when you're a little more, mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm, richer!",
+    "* Come back when you're a little more, mmmmmmmmmmmmmmmmmmmmmmmmmmm, richer!",
 
     //open shop
     "* Yeah! Buy my stuff!",
@@ -2037,7 +2038,7 @@ const shopDialogue = [
 
     //moretalk (51)
     "* Achievements? I don't know what you're talking about. You some kind of completionist?",
-    "* ...But, a little birdie told me there's an achievement for play easy-mode endless 5 times.",
+    "* ...But, a little birdie told me there's an achievement for playing easy-mode endless 5 times.",
     "* Something about \"awful game design\" and \"an easy way to farm cash.\"",
     "* I don't know why I told you that. Maybe I should get better at keeping my secrets...",
     //55
@@ -2046,7 +2047,19 @@ const shopDialogue = [
     "* Now they make them carry bombs and stuff. Little cruel if you ask me, but what do I know.",
     //58
     "* Shop ain't open, idiot!",
-    "* Buy what?"
+    "* Buy what?",
+    //60
+    "* I never said anything.",
+    "* huh ?",
+    "* Continue what?",
+    "* Nothin' else to say.",
+    "* I'm done.",
+    //hit him (65)
+    "* Fuck you.",
+    "* The hell was that for?",
+    "* Prices have been raised 500%.",
+    "* Is that all you got?",
+    "* Heh, my mom hits me harder than you!"
 ]
 const talkButton = document.getElementById("talkbutton")
 const buyButton = document.getElementById("buybutton")
@@ -2086,6 +2099,8 @@ topics[0].addEventListener('mousedown', () => {
     if(!AOptionsTalked.includes("1")) {
         AOptionsTalked.push("1")
     }
+    currentDialogue = 1;
+    dialogueStep = 1;
 })
 topics[1].addEventListener('mousedown', () => {
     shopPrepText(shopDialogue[12])
@@ -2093,41 +2108,140 @@ topics[1].addEventListener('mousedown', () => {
     if(!AOptionsTalked.includes("2")) {
         AOptionsTalked.push("2")
     }
+    currentDialogue = 2;
+    dialogueStep = 1;
 })
 topics[2].addEventListener('mousedown', () => {
     shopPrepText(shopDialogue[17])
     if(!AOptionsTalked.includes("3")) {
         AOptionsTalked.push("3")
     }
+    currentDialogue = 3;
+    dialogueStep = 1;
 })
 topics[3].addEventListener('mousedown', () => {
     shopPrepText(shopDialogue[21])
     if(!AOptionsTalked.includes("4")) {
         AOptionsTalked.push("4")
     }
+    currentDialogue = 4;
+    dialogueStep = 1;
 })
 topics[4].addEventListener('mousedown', () => {
     shopPrepText(shopDialogue[51])
     if(!AOptionsTalked.includes("5")) {
         AOptionsTalked.push("5")
     }
+    currentDialogue = 5;
+    dialogueStep = 1;
 })
 topics[5].addEventListener('mousedown', () => {
     shopPrepText(shopDialogue[55])
     if(!AOptionsTalked.includes("6")) {
         AOptionsTalked.push("6")
     }
+    currentDialogue = 6;
+    dialogueStep = 1;
+})
+currentDialogue = null;
+const talkContinueButton = document.getElementById("closepurchase")
+talkContinueButton.addEventListener('mousedown', () => {
+    if(currentDialogue == null) {
+        shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 60)])
+        cantSelect.cloneNode(true).play();
+    }
+    if(currentDialogue == 1) {
+        if(dialogueStep == 1) {
+            shopPrepText(shopDialogue[15])
+        }
+        if(dialogueStep == 2) {
+            shopPrepText(shopDialogue[16])
+        }
+        if(dialogueStep > 2) {
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 62)])
+        }
+        dialogueStep++;
+    } 
+    if(currentDialogue == 2) {
+        if(dialogueStep == 1) {
+            shopPrepText(shopDialogue[13])
+        }
+        if(dialogueStep > 1) {
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 62)])
+        }
+        dialogueStep++;
+    }
+    if(currentDialogue == 3) {
+        if(dialogueStep == 1) {
+            shopPrepText(shopDialogue[18])
+        }
+        if(dialogueStep == 2) {
+            shopPrepText(shopDialogue[19])
+        }
+        if(dialogueStep == 3) {
+            shopPrepText(shopDialogue[20])
+        }
+        if(dialogueStep > 3) {
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 62)])
+        }
+        dialogueStep++;
+    }
+    if(currentDialogue == 4) {
+        if(dialogueStep == 1) {
+            shopPrepText(shopDialogue[22])
+        }
+        if(dialogueStep == 2) {
+            shopPrepText(shopDialogue[23])
+        }
+        if(dialogueStep == 3) {
+            shopPrepText(shopDialogue[24])
+        }
+        if(dialogueStep == 4) {
+            shopPrepText(shopDialogue[25])
+        }
+        if(dialogueStep > 4) {
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 62)])
+        }
+        dialogueStep++;
+    }
+    if(currentDialogue == 5) {
+        if(dialogueStep == 1) {
+            shopPrepText(shopDialogue[52])
+        }
+        if(dialogueStep == 2) {
+            shopPrepText(shopDialogue[53])
+        }
+        if(dialogueStep == 3) {
+            shopPrepText(shopDialogue[54])
+        }
+        if(dialogueStep > 3) {
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 62)])
+        }
+        dialogueStep++;
+    }
+    if(currentDialogue == 6) {
+        if(dialogueStep == 1) {
+            shopPrepText(shopDialogue[56])
+        }
+        if(dialogueStep == 2) {
+            shopPrepText(shopDialogue[57])
+        }
+        if(dialogueStep > 2) {
+            shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 62)])
+        }
+        dialogueStep++;
+    }
 })
 
 
-let currentDialogue = null;
+
 const backArrow = document.getElementById("pageback")
 const talkBackArrow = document.getElementById("talkpageback")
 const nextArrow = document.getElementById("pagenext")
 const shopButtonBox = document.getElementById("shopbuttonbox")
 const storePage = document.getElementById("buystuff")
 const purchaseButton = document.getElementById("purchase")
-const cancelPurchaseButton = document.getElementById("closepurchase")
+
 
 purchaseButton.addEventListener('mousedown', () => {
     if(cash < price) {
@@ -2135,6 +2249,8 @@ purchaseButton.addEventListener('mousedown', () => {
         cantSelect.cloneNode(true).play();
     } else {
         cash -= price;
+        localStorage.setItem("cash", cash)
+        shopCash.textContent = `\$${cash.toLocaleString()}`
         //fix cash
         if(focusedItem == 0) {
             if(yourItems[0].owned == true) {
@@ -2144,6 +2260,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[0].owned = true;
                 yourItems[0].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2155,6 +2272,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[1].owned = true;
                 yourItems[1].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2166,6 +2284,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[2].owned = true;
                 yourItems[2].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2177,6 +2296,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[3].owned = true;
                 yourItems[3].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2188,6 +2308,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[4].owned = true;
                 yourItems[4].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2199,6 +2320,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[5].owned = true;
                 yourItems[5].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2210,6 +2332,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[6].owned = true;
                 yourItems[6].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2221,6 +2344,7 @@ purchaseButton.addEventListener('mousedown', () => {
                 yourItems[7].owned = true;
                 yourItems[7].q++;
                 saveItems();
+                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
         }
@@ -2233,6 +2357,7 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[8].owned = true;
             yourItems[8].q++;
             saveItems();
+            lockin.cloneNode(true).play();
         }
         if(focusedItem == 9) {
             if(yourItems[9].owned == true) {
@@ -2243,6 +2368,7 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[9].owned = true;
             yourItems[9].q++;
             saveItems();
+            lockin.cloneNode(true).play();
         }
         if(focusedItem == 10) {
             if(yourItems[10].owned == true) {
@@ -2253,6 +2379,7 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[10].owned = true;
             yourItems[10].q++;
             saveItems();
+            lockin.cloneNode(true).play();
         }
         if(focusedItem == 11) {
             if(yourItems[11].owned == true) {
@@ -2263,9 +2390,11 @@ purchaseButton.addEventListener('mousedown', () => {
             yourItems[11].owned = true;
             yourItems[11].q++;
             saveItems();
+            lockin.cloneNode(true).play();
         }
         if(focusedItem == null) {
             shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 58)])
+            cantSelect.cloneNode(true).play();
         }
     }
 })
@@ -2278,12 +2407,14 @@ talkBackArrow.addEventListener('mousedown', () => {
     talkButton.style.display = "flex"
     buyButton.style.display = "flex"
     leaveButton.style.display = "flex"
+    currentDialogue = null;
 })
 
 let focusedItem = null;
 let shopPage = 0
 backArrow.addEventListener('mousedown', () => {
     if(shopPage <= 0) {
+        currentDialogue = null;
         storePage.style.display = "none"
         talkButton.style.display = "flex"
         shopPrepText(shopDialogue[Math.floor(Math.random() * 4)])
@@ -2409,12 +2540,14 @@ buyButton.addEventListener('mousedown', () => {
     shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 7)])
     talkButton.style.display = "none"
     buyButton.style.display = "none"
+    currentDialogue = null;
     leaveButton.style.display = "none"
     storePage.style.display = "flex"
     focusedItem = null;
 })
 talkButton.addEventListener('mousedown', () => {
     shopPage = 0;
+    currentDialogue = null;
     focusedItem = null;
     shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 10)])
     talkButton.style.display = "none"
@@ -2431,6 +2564,7 @@ meerkat.querySelector("img").addEventListener('mousedown', () => {
     meerkatimg.offsetHeight;
     meerkatimg.style.animation = "redfilter 400ms ease, hitMeerkat 400ms ease forwards"
     AHitMeerkat = true;
+    shopPrepText(shopDialogue[Math.floor(Math.random() * 5 + 65)])
 })
 
 function hurtPlayer() {
@@ -2718,6 +2852,19 @@ let achievements = [
 
     {name: "Azzy hates this one simple trick", requires: 5, desc: "Exploit easy difficulty for money.", challenge:false},
 ]
+
+const achievementButton = document.getElementById("achievements")
+const achievementMenu = document.getElementById("achievementbox")
+const achievementWrap = document.getElementById("achievementwrap")
+achievementButton.addEventListener('mousedown', () => {
+    startpageelements.forEach((element) => {
+        element.style.animation = ("wipeleft 1s ease-in-out forwards")
+    })
+    achievementMenu.style.animation = ("slideleft 1s ease-in-out forwards")
+    achievementMenu.style.display = "flex";
+    achievementWrap.style.display = "flex"
+})
+
 
 /*
 Class Dismissed,  desc: "Complete the tutorial.", challenge:false,

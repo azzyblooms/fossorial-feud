@@ -756,10 +756,6 @@ html::-webkit-scrollbar {
     display:none;
     justify-content: center;
     align-items: center;
-    position:fixed;
-    transform:translate(-50%, -50%);
-    top:15%;
-    left:50%;
 }
 #score {
     padding:10px;
@@ -772,10 +768,6 @@ html::-webkit-scrollbar {
     display:none;
     justify-content: center;
     align-items: center;
-    position:fixed;
-    transform:translateY(-50%);
-    top:15%;
-    left:75%;
 }
 #timer {
     padding:10px;
@@ -789,10 +781,6 @@ html::-webkit-scrollbar {
     display:none;
     justify-content: center;
     align-items: center;
-    position:fixed;
-    transform:translateY(-50%);
-    top:15%;
-    left:5%;
 }
 #cash {
     padding:10px;
@@ -856,20 +844,30 @@ html::-webkit-scrollbar {
 }
 
 #streakwrap {
-    display:flex;
+    display:none;
     justify-content: center;
     align-items: center;
-    position:fixed;
-    transform:translate(-50%, -50%);
-    top:90%;
-    left:75%;
 }
 #streak {
     padding:10px;
     border:4px solid white;
-    background-color: rgb(105, 207, 211);
+    background-color: rgb(143, 125, 44);
     border-radius:5px;
-    font-size:20px;
+    font-size:50px;
+}
+#guiwrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 30px;
+    margin-left: 10px;
+    justify-self:center;
+    margin-right: 10px;
+}
+
+#guiwrap > * {
+    width: 350px;
+    text-align: center;
 }
 
 #statisticsbox {

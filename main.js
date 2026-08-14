@@ -631,6 +631,7 @@ function displayStatistics() {
                 statisticsBox.style.animation = "fadeout 1s ease forwards"
                 scoreWrap.style.animation = "fadeout 1s ease forwards"
                 cashWrap.style.animation = "fadeout 1s ease forwards"
+                streakWrap.style.animation = "fadeout 1s ease forwards"
                 statisticsBox.style.animation = "fadeout 1s ease forwards"
                 timerWrap.style.animation = "fadeout 1s ease forwards"
                 hpWrap.style.animation = "fadeout 1s ease forwards"
@@ -640,6 +641,7 @@ function displayStatistics() {
                     statisticsBox.style.display = "none"
                     scoreWrap.style.display = "none"
                     cashWrap.style.display = "none"
+                    streakWrap.style.display = "none"
                     timerWrap.style.display = "none"
                     hpWrap.style.display = "none"
                     flashbang.style.display = "none"
@@ -1126,6 +1128,8 @@ tutorialButton.addEventListener('mousedown', async () => {
         scoreWrap.style.animation = ("fadein 1.2s ease forwards")
         cashWrap.style.display = "flex"
         cashWrap.style.animation = ("fadein 1.2s ease forwards")
+        streakWrap.style.display = "flex"
+        streakWrap.style.animation = ("fadein 1.2s ease forwards")
         timerWrap.style.display = "flex"
         timerWrap.style.animation = ("fadein 1.2s ease forwards")
         setTimeout(() => {
@@ -1159,6 +1163,8 @@ startbutton.addEventListener('mousedown', () => {
             scoreWrap.style.animation = ("fadein 1.2s ease forwards")
             cashWrap.style.display = "flex"
             cashWrap.style.animation = ("fadein 1.2s ease forwards")
+            streakWrap.style.display = "flex"
+            streakWrap.style.animation = ("fadein 1.2s ease forwards")
             timerWrap.style.display = "flex"
             timerWrap.style.animation = ("fadein 1.2s ease forwards")
             setTimeout(() => {
@@ -1206,6 +1212,8 @@ endlessbutton.addEventListener('mousedown', () => {
         updateHealth();
         cashWrap.style.display = "flex"
         cashWrap.style.animation = ("fadein 1.2s ease forwards")
+        streakWrap.style.display = "flex"
+        streakWrap.style.animation = ("fadein 1.2s ease forwards")
         timerWrap.style.display = "flex"
         timerWrap.style.animation = ("fadein 1.2s ease forwards")
         setTimeout(() => {
@@ -1233,6 +1241,8 @@ epilepsyProceed.addEventListener('mousedown', () => {
         scoreWrap.style.animation = ("fadein 1.2s ease forwards") 
         cashWrap.style.display = "flex"
         cashWrap.style.animation = ("fadein 1.2s ease forwards")
+        streakWrap.style.display = "flex"
+        streakWrap.style.animation = ("fadein 1.2s ease forwards")
         timerWrap.style.display = "flex"
         timerWrap.style.animation = ("fadein 1.2s ease forwards")
         setTimeout(() => {
@@ -1739,6 +1749,7 @@ function endlessPrep() {
 let cash = Number(localStorage.getItem("cash")) || 0;
 let cashWrap = document.getElementById("cashwrap")
 let cashText = document.getElementById("cash")
+const streakWrap = document.getElementById("streakwrap")
 let tallyScoreMath;
 let scoreToCash = false;
 

@@ -4,9 +4,9 @@ let yourItems = [
     {item: "combosave", owned:false, q:0},
     {item: "heart5", owned:false, q:0},
     {item: "anticooldown", owned:false, q:0},
-    {item: "snakeflute", owned:false, q:0},
-    {item: "hogsave", owned:false, q:0},
     {item: "gmoleexp", owned:false, q:0},
+    {item: "hogsave", owned:false, q:0},
+    {item: "estrogen", owned:false, q:0},
     {item: "rock", owned:false, q:0},
     {item: "rock2", owned:false, q:0},
     {item: "fruit", owned:false, q:0},
@@ -55,7 +55,7 @@ let achievements = [
     {name: "Begone!", requires: 10, desc: "Hit 10 enemies in a row.", challenge:false, owned:false, img:"streak1"},
     {name: "Flow State", requires: 100, desc: "Hit 100 enemies in a row.", challenge:false, owned:false, img:"streak2"},
     {name: "Generational Run", requires: 250, desc: "Hit 250 enemies in a row.", challenge:true, owned:false, img:"streak3"},
-    {name: "Flawless", requires: 0, desc: "Complete a game of classic mode without losing your streak.", challenge:true, owned:false, img:"flawless"},
+    {name: "Flawless", requires: 0, desc: "Complete a game of classic mode without breaking your streak.", challenge:true, owned:false, img:"flawless"},
 
     {name: "Mountain out of a Molehill", requires: 10000, desc: "Hit 10,000 moles.", challenge:true, owned:false, img:"molehill"},
 
@@ -63,8 +63,8 @@ let achievements = [
     {name: "My Beautiful Collection", requires: 500, desc: "Hit 500 golden moles.", challenge:true, owned:false, img:"beautifulcollection"},
     {name: "Gold Rush", requires: 10, desc: "Hit 10 golden moles in one round.", challenge:false, owned:false, img:"gmole2"},
     {name: "Set For Life", requires: 50, desc: "Hit 50 golden moles in one round.", challenge:true, owned:false, img:"gmole3"},
-    {name: "Serendipity", requires: 3, desc: "Hit 3 consecutive golden moles.", challenge:true, owned:false, img:"serem"},
-    {name: "Wow! That was so Gold!", requires: 1, desc: "Have a high enough streak for all moles to be golden.", challenge:true, owned:false, img:"sogold"},
+    {name: "Serendipity", requires: 3, desc: "Hit three golden moles in a row.", challenge:true, owned:false, img:"serem"},
+    {name: "Wow! That was so Gold!", requires: "100%", desc: "Have a high enough streak for all moles to be golden.", challenge:true, owned:false, img:"sogold"},
     {name: "Butterfingers", requires: 1, desc: "The one that got away...", challenge:false, owned:false, img:"gotaway"},
 
     {name: "Shell Shocked", requires: 50, desc: "Hit 50 armadillos.", challenge:false, owned:false, img:"armadillo"},
@@ -81,7 +81,7 @@ let achievements = [
     {name: "Highway Robbery", requires: 50, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true, owned:false, img:"groundhog2"},
     
     {name: "Hello!!!", requires: 1 /*i'm not sure*/, desc: "Spend some quality time chatting with Meerkat.", challenge:true, owned:false, img:"talk"},
-    {name: "SHUT UP AND TAKE MY MONEY!", requires: 12, desc: "Buy one of every item in Meerkat's shop.", challenge:true, owned:false, img:"buyeverything"},
+    {name: "SHUT UP AND TAKE MY MONEY!", requires: 12, desc: "Buy everything in the shop.", challenge:true, owned:false, img:"buyeverything"},
     {name: "Sharing Is Caring", requires: 1, desc: "Step 1: Stimulate the economy.", challenge:false, owned:false, img:"economy"},
     {name: "Stop, Criminell!", requires: 1, desc: "Hit Meerkat. Jerk.", challenge:false, owned:false, img:"hittalk"},
     {name: "We will, we will", requires: 1, desc: "Buy Rock.", challenge:false, owned:false, img:"rock"},
@@ -90,7 +90,7 @@ let achievements = [
     {name: "Charitable", requires: 1, desc: "Donate to Meerkat", challenge:true, owned:false, img:"donate"},
     {name: "Highly Charitable", requires: 2, desc: "Do it again.", challenge:true, owned:false, img:"donate2"},
 
-    {name: "Azzy hates this one simple trick", requires: 5, desc: "Exploit easy difficulty for money.", challenge:false, owned:false, img:"azzy"},
+    {name: "Azzy hates this one simple trick", requires: 5, desc: "Try to exploit easy difficulty for easy money.", challenge:false, owned:false, img:"azzy"},
 ]
 
 const achievementPopup = document.getElementById("achievementpopup")
@@ -149,6 +149,15 @@ function saveAchievements() {
     localStorage.setItem("achievements", JSON.stringify(savedAchievements))
 }
 
+/*
+AEndlessTime
+AStreak
+AGoldenGame
+AGoldenChance
+*/
+
+
+
 let ATutorialComplete = 0;
 let ASameEnemyHits = 0;
 let AIntentional = false;
@@ -165,7 +174,12 @@ let ADolladillo = false;
 let economyStimulated = false;
 let AHitMeerkat = false;
 let AArmadillos = Number(localStorage.getItem("AArmadillos") || 0)
+let AEndlessTime = Number(localStorage.getItem("AEndlessTime") || 0)
+let AStreak = Number(localStorage.getItem("AStreak") || 0)
+let AGoldenGame = Number(localStorage.getItem("AGoldenGame") || 0)
+let AGoldenChance = Number(localStorage.getItem("AGoldenChance") || 0)
 let AClassicRoundsPlayed = Number(localStorage.getItem("AClassicRoundsPlayed") || 0)
+let AClassicScore = Number(localStorage.getItem("AClassicScore") || 0)
 let AEasyFarmed = Number(localStorage.getItem("AEasyFarmed") || 0)
 let AEndlessRoundsPlayed = Number(localStorage.getItem("AEndlessRoundsPlayed") || 0)
 let AGoldenMoles = Number(localStorage.getItem("AGoldenMoles") || 0)
@@ -173,6 +187,7 @@ let AGroundhogs = Number(localStorage.getItem("AGroundhogs") || 0)
 let AMoleHits = Number(localStorage.getItem("AMoleHits") || 0)
 let ATotalHits = Number(localStorage.getItem("ATotalHits") || 0)
 let AOptionsTalked = [];
+let AScore = Number(localStorage.getItem("AScore") || 0)
 let ASnakes = Number(localStorage.getItem("ASnakes") || 0)
 let ASpit = Number(localStorage.getItem("ASpit") || 0)
 let AStreakBreaks = Number(localStorage.getItem("AStreakBreaks") || 0)
@@ -180,28 +195,40 @@ let AStreakBreaks = Number(localStorage.getItem("AStreakBreaks") || 0)
 function saveGlobalStats() {
     localStorage.setItem("AArmadillos", AArmadillos)
     localStorage.setItem("AClassicRoundsPlayed", AClassicRoundsPlayed)
+    localStorage.setItem("AClassicScore", AClassicScore)
     localStorage.setItem("AEasyFarmed", AEasyFarmed)
     localStorage.setItem("AEndlessRoundsPlayed", AEndlessRoundsPlayed)
     localStorage.setItem("AGoldenMoles", AGoldenMoles)
     localStorage.setItem("AGroundhogs", AGroundhogs)
     localStorage.setItem("AMoleHits", AMoleHits)
     localStorage.setItem("ATotalHits", ATotalHits)
+    localStorage.setItem("AScore", AScore)
     localStorage.setItem("ASnakes", ASnakes)
     localStorage.setItem("ASpit", ASpit)
     localStorage.setItem("AStreakBreaks", AStreakBreaks)
+    localStorage.setItem("AStreak", AStreak)
+    localStorage.setItem("AEndlessTime", AEndlessTime)
+    localStorage.setItem("AGoldenGame", AGoldenGame)
+    localStorage.setItem("AGoldenChance", AGoldenChance)
 }
 function loadGlobalStats() {
     AArmadillos = Number(localStorage.getItem("AArmadillos"))
     AClassicRoundsPlayed = Number(localStorage.getItem("AClassicRoundsPlayed"))
+    AClassicScore = Number(localStorage.getItem("AClassicScore"))
     AEasyFarmed = Number(localStorage.getItem("AEasyFarmed"))
     AEndlessRoundsPlayed = Number(localStorage.getItem("AEndlessRoundsPlayed"))
     AGoldenMoles = Number(localStorage.getItem("AGoldenMoles"))
     AGroundhogs = Number(localStorage.getItem("AGroundhogs"))
     AMoleHits = Number(localStorage.getItem("AMoleHits"))
     ATotalHits = Number(localStorage.getItem("ATotalHits"))
+    AScore = Number(localStorage.getItem("AScore"))
     ASnakes = Number(localStorage.getItem("ASnakes"))
     ASpit = Number(localStorage.getItem("ASpit"))
     AStreakBreaks = Number(localStorage.getItem("AStreakBreaks"))
+    AEndlessTime = Number(localStorage.getItem("AEndlessTime"))
+    AStreak = Number(localStorage.getItem("AStreak"))
+    AGoldenGame = Number(localStorage.getItem("AGoldenGame"))
+    AGoldenChance = Number(localStorage.getItem("AGoldenChance"))
 }
 loadGlobalStats();
 const savedItems = localStorage.getItem("yourItems")
@@ -390,10 +417,10 @@ toggleMouseHitbox.addEventListener('mousedown', () => {
     if(settings[2].isOn) {cursorhb.style.opacity = "0"} else {cursorhb.style.opacity = "1"}
 })
 
+
+
+
 const tutorialButton = document.getElementById("tutorial")
-
-
-
 const moleGrid = document.getElementById("molegrid")
 molespawn5.style.display = "none";
 molespawn6.style.display = "none";
@@ -583,7 +610,7 @@ function displayStatistics() {
                 }, 300)
             }
         } else if(finalScore.textContent !== `FINAL SCORE: ${score}`) {
-            const amount = score / 500;
+            const amount = score / 250;
             fs += amount;
             const progress = fs / score
             playTone(progress * 300);
@@ -1026,7 +1053,11 @@ function tmoleHit(mole) {
         scoreText.offsetHeight;
         scoreText.style.animation = "scoreBubbleUp 400ms ease"
     } else if (tmoletype == "groundhog") {
-        score -= 50;
+        if(yourItems[6].owned) {
+            score -= 49;
+        } else {
+            score -= 50;
+        }
         if(streak > 0) {
             endStreak();
         }
@@ -1262,7 +1293,9 @@ document.addEventListener('mousedown', async () => {
                 if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
                     if(inGame) {
                         if(mole.state == "bury") {
-                            stun = 300;
+                            if(!yourItems[0].owned) {
+                                stun = 500;
+                            }
                             scoreText.style.animation = "none"
                             scoreText.offsetHeight;
                             scoreText.style.animation = "loseScore 300ms ease"
@@ -1295,8 +1328,10 @@ document.addEventListener('mousedown', async () => {
             })
 
             if(inGame) {
-                if(hitMole == false && !intro) {
-                    stun = 300;
+                if(hitMole == false && !intro) {     
+                    if(!yourItems[0].owned) {
+                        stun = 500;
+                    }
                     cursor.querySelector("img").style.animation = "none";
                     cursor.querySelector("img").offsetHeight;
                     cursor.querySelector("img").style.animation = "redfilter 200ms ease";
@@ -1435,7 +1470,11 @@ function moleHit(mole) {
         scoreText.offsetHeight;
         scoreText.style.animation = "scoreBubbleUp 400ms ease"
     } else if (mole.type == "groundhog") {
-        score -= 50;
+        if(yourItems[6].owned) {
+            score -= 49;
+        } else {
+            score -= 50;
+        }
         AGroundhogs++;
         groundhogsHit++;
         ASerendipity = 0;
@@ -1509,7 +1548,7 @@ function moleHit(mole) {
             scoreText.style.animation = "scoreBubbleUp 400ms ease"
             cashText.style.animation = "none"
             cashText.offsetHeight;
-            cashText.textContent = `CASH: \$${cash.toLocaleString()}`
+            cashText.textContent = `CASH: \$${Math.floor(cash).toLocaleString()}`
             cashText.style.animation = "scoreBubbleUp 400ms ease"
         } else {
             score += 50;
@@ -1532,7 +1571,11 @@ function moleHit(mole) {
         setTimeout(() => {
             mole.state = "bury";
         }, 350)
-        mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+        if(yourItems[4].owned) {
+            mole.cooldown = Math.floor(Math.random() * 500 + 150);
+        } else {
+            mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+        }
     }
 }
 
@@ -1556,6 +1599,7 @@ function streakIncrease() {
     }
     streakSfx.playbackRate = rate;
     streakSfx.play();
+    if(streak > AStreak) {AStreak = streak}
     if(streak > maxStreak) {
         maxStreak = streak;
     }
@@ -1565,7 +1609,7 @@ function streakIncrease() {
         } else {
             goldenMoleChance = (streak / 12) / 100;
         }
-        console.log(goldenMoleChance)
+        if(Math.floor(goldenMoleChance * 100) > AGoldenChance) {AGoldenChance = Math.floor(goldenMoleChance * 100)}
     }
     saveGlobalStats();
     updateAchievements();
@@ -1702,11 +1746,13 @@ const orchHit = new Audio("audio/orchhit.ogg")
 function finishGame() {
     if(endless) {
         AEndlessRoundsPlayed++;
-        if(difficulty == "easy") {AEasyFarmed}
+        if(AEndlessTime < timeLeft) {AEndlessTime = timeLeft}
+        if(difficulty == "easy") {AEasyFarmed++;}
     } else {
         AClassicRoundsPlayed++;
         if(streaksBroken == 0 && score > 0) {AFlawless = true}
     }
+    if(AGoldenGame > goldenMolesHit) {AGoldenGame = goldenMolesHit}
     orchHit.play();
     inGame = false;
     updateAchievements();
@@ -1714,6 +1760,8 @@ function finishGame() {
     setTimeout(() => {
         tallyScore();
         drumroll.play();
+        if(!endless || AClassicScore < score) {AClassicScore = score}
+        if(AScore < score) {AScore = score}
     }, 2000)
 }
 let currentDialogue = null;
@@ -1741,14 +1789,38 @@ function tallyScore() {
                 cash = 0;
                 localStorage.setItem("cash", 0);
             }
-            if(displayedScore >= amount) {
-                displayedScore -= amount;
-                loops++;
-                cash += 2 * amount;
-            } else {
-                cash += displayedScore * 2
-                loops++;
-                displayedScore = 0;
+            if(difficulty == "easy") {
+                if(displayedScore >= amount) {
+                    displayedScore -= amount;
+                    loops++;
+                    cash += 0.5 * amount;
+                } else {
+                    cash += displayedScore * 0.5
+                    loops++;
+                    displayedScore = 0;
+                }
+            }
+            if(difficulty == "normal") {
+                if(displayedScore >= amount) {
+                    displayedScore -= amount;
+                    loops++;
+                    cash += amount;
+                } else {
+                    cash += displayedScore
+                    loops++;
+                    displayedScore = 0;
+                }
+            }
+            if(difficulty == "hard") {
+                if(displayedScore >= amount) {
+                    displayedScore -= amount;
+                    loops++;
+                    cash += 2 * amount;
+                } else {
+                    cash += displayedScore * 2
+                    loops++;
+                    displayedScore = 0;
+                }
             }
             cashText.style.animation = "none"
             cashText.offsetHeight;
@@ -1793,7 +1865,7 @@ evilbutton.addEventListener("click", () => {
         evilbutton.textContent = "evil button that deletes your save file"
         weirdSound.cloneNode(true).play();
         localStorage.setItem("cash", 0)
-        cashText.textContent = `CASH: \$${cash.toLocaleString()}`
+        cashText.textContent = `CASH: \$${Math.floor(cash).toLocaleString()}`
         ATutorialComplete = 0;
         AClassicRoundsPlayed = 0;
         AEndlessRoundsPlayed = 0;
@@ -1802,6 +1874,12 @@ evilbutton.addEventListener("click", () => {
         ASameEnemyHits = 0;
         AIntentional = false;
         AClutched = false;
+        AEndlessTime = 0;
+        AClassicScore = 0;
+        AScore = 0;
+        AGoldenChance = 0;
+        AGoldenGame = 0;
+        AStreak = 0;
         AQuickDraw = false;
         AStreakBreaks = 0;
         AFlawless = false;
@@ -1820,17 +1898,24 @@ evilbutton.addEventListener("click", () => {
         AOptionsTalked = [];
         economyStimulated = false;
         AHitMeerkat = false;
-        AEasyFarmed = false;
+        AEasyFarmed = 0;
         achievements.forEach((achievement) => {
             achievement.owned = false;
         })
+        yourItems.forEach((item) => {
+            item.owned = false;
+            item.q = 0;
+        })
         saveAchievements();
+        fixGrayscale();
+        saveItems();
         saveGlobalStats();
+        genderChange();
         triggerFlashbang();
     }
 })
 
-cashText.textContent = `CASH: \$${cash.toLocaleString()}`
+cashText.textContent = `CASH: \$${Math.floor(cash).toLocaleString()}`
 if (!Number.isFinite(cash)) {
     console.warn("Invalid cash value:", localStorage.getItem("cash"));
     cash = 0;
@@ -1993,7 +2078,11 @@ function spawnMole(mole) {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
                 mole.state = "bury";
-                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                if(yourItems[4].owned) {
+                    mole.cooldown = Math.floor(Math.random() * 500 + 150);
+                } else {
+                    mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                }
             }, 350)
             mole.saveStreak = setTimeout(() => {
                 if(mole.state !== "dying") {
@@ -2032,7 +2121,11 @@ function spawnGroundhog(mole) {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
                 mole.state = "bury";
-                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                if(yourItems[4].owned) {
+                    mole.cooldown = Math.floor(Math.random() * 500 + 150);
+                } else {
+                    mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                }
             }, 350)
         }
     }, Math.random() * 1500 + 300)
@@ -2084,7 +2177,11 @@ function spawnArmadillo(mole) {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
                 mole.state = "bury";
-                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                if(yourItems[4].owned) {
+                    mole.cooldown = Math.floor(Math.random() * 500 + 150);
+                } else {
+                    mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                }
             }, 350)
         }
     }, Math.random() * 1000 + 400)
@@ -2112,7 +2209,11 @@ function spawnSnake(mole) {
             moleImg.style.transform = "scale(0)"
             setTimeout(() => {
                 mole.state = "bury";
-                mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                if(yourItems[4].owned) {
+                    mole.cooldown = Math.floor(Math.random() * 500 + 150);
+                } else {
+                    mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                }
             }, 350)
             mole.saveStreak = setTimeout(() => {
                 if(mole.state !== "dying") {
@@ -2191,7 +2292,7 @@ const shopCash = document.getElementById("yourcash")
 shopButton.addEventListener("mousedown", () => {
     if(!shopOpen) {
         shopOpen = true;
-        shopCash.textContent = `\$${cash.toLocaleString()}`
+        shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
         shading.style.display = "flex"
         shading.style.animation = "epicflash 2.8s ease forwards"
         setTimeout(() => {
@@ -2325,12 +2426,12 @@ const shopDialogue = [
     "* First one wasn't enough? God, you're greedy. Give me more money. $500,000. Take it or leave it.",
     //burrow heater
     "* Don'tcha just hate cooldowns? This'll shrink 'em. $50,000. Good luck.",
-    // snake charmer's flute
-    "* Attracts snakes. Use at yer own risk. Masterfully crafted for $200,000.",
+    // exponential gold
+    "* This little trinket makes golden moles become exponentially more common! Lower streak means WAY lower, higher streak means WAY higher. They're golden moles, so it's $250,000.",
     //groundhog insurance
     "* This wallet lining makes it so groundhogs only steal 49 points. Sick, right? It's gold plated, so it's pricey at $300,000. Worth it!!!",
-    //exponential gold
-    "* This little trinket makes golden moles become exponentially more common! Lower streak means WAY lower, higher streak means WAY higher. They're golden moles, so it's $250,000.",
+    // estrogen
+    "* \"She was helping MINORS to get HRT!! (its free btw :3)\"",
     // rock 1 (useless)
     "* It's a rock. $1,000.",
     // rock 2 (useless)
@@ -2663,16 +2764,15 @@ purchaseButton.addEventListener('mousedown', () => {
         }
         if(focusedItem == 7) {
             if(yourItems[7].owned == true) {
-                cantSelect.cloneNode(true).play();
-                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 45)])
+                shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 48)])
             } else {
-                yourItems[7].owned = true;
-                yourItems[7].q++;
-                saveItems();
-                cash -= price;
-                lockin.cloneNode(true).play();
                 shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 26)])
             }
+            yourItems[7].owned = true;
+            yourItems[7].q++;
+            saveItems();
+            genderChange();
+            lockin.cloneNode(true).play();
         }
         if(focusedItem == 8) {
             if(yourItems[8].owned == true) {
@@ -2727,7 +2827,7 @@ purchaseButton.addEventListener('mousedown', () => {
             cantSelect.cloneNode(true).play();
         }
         localStorage.setItem("cash", cash)
-        shopCash.textContent = `\$${cash.toLocaleString()}`
+        shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
     }
     updateAchievements();
 })
@@ -2774,10 +2874,10 @@ function updateShopItems() {
         shopItems[2].textContent = "ComboInsure"
         shopItems[3].textContent = "HeartPlusUp"
         shopItems[4].textContent = "BurrowHeater"
-        shopItems[5].textContent = "SnakeFlute"
+        shopItems[5].textContent = "GoldenGoose"
     } else {
         shopItems[0].textContent = "WalletLining"
-        shopItems[1].textContent = "GoldenGoose"
+        shopItems[1].textContent = "Estrogen"
         shopItems[2].textContent = "Rock"
         shopItems[3].textContent = "Rock2"
         shopItems[4].textContent = "Fruit"
@@ -2806,7 +2906,7 @@ shopItems[1].addEventListener('mousedown', () => {
         focusedItem = 1;
     } else {
         shopPrepText(shopDialogue[35])
-        price = 250000;
+        price = 0;
         shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
         focusedItem = 7;
     }
@@ -2853,7 +2953,7 @@ shopItems[4].addEventListener('mousedown', () => {
 shopItems[5].addEventListener('mousedown', () => {
     if(shopPage <= 0) {
         shopPrepText(shopDialogue[33])
-        price = 200000;
+        price = 250000;
         shopDialogue[41] = `* That doesn't look like \$${price.toLocaleString()}...`
         focusedItem = 5;
     } else {
@@ -2976,9 +3076,9 @@ document.addEventListener('keydown', (event) => {
         {item: "combosave", owned:true, q:1},
         {item: "heart5", owned:true, q:1},
         {item: "anticooldown", owned:true, q:1},
-        {item: "snakeflute", owned:true, q:1},
-        {item: "hogsave", owned:true, q:1},
         {item: "gmoleexp", owned:true, q:1},
+        {item: "hogsave", owned:true, q:1},
+        {item: "estrogen", owned:true, q:1},
         {item: "rock", owned:true, q:1},
         {item: "rock2", owned:true, q:1},
         {item: "fruit", owned:true, q:1},
@@ -3082,12 +3182,115 @@ function fixGrayscale() {
 
     achievementElements.forEach((ach, index) => {
         const achievement = achievements[index]
-        if(achievement.owned) {
+        if(yourItems[7].owned) {
+            if(achievement.owned) {
             ach.style.filter = "grayscale(0%)";
-        } else {
+            ach.style.borderColor = "rgb(206, 77, 163)"
+            ach.style.backgroundColor = "rgb(134, 44, 104)"
+            ach.querySelector("img").style.borderColor = "rgb(206, 77, 163)"
+                } else {
             ach.style.filter = "grayscale(100%)"
+            }
+        } else {
+            if(achievement.owned) {
+                ach.style.filter = "grayscale(0%)";
+            } else {
+                ach.style.filter = "grayscale(100%)"
+            }
+        }
+        const numerator = ach.querySelector(".numerator")
+        const denominator = ach.querySelector(".denominator")
+        if(denominator) {
+            denominator.textContent = achievement.requires.toLocaleString();
+        }
+        if(numerator) {
+            if(index === 2) {
+                numerator.textContent = AClassicRoundsPlayed.toLocaleString();
+            }
+            if(index === 3) {
+                numerator.textContent = AClassicRoundsPlayed.toLocaleString();
+            }
+            if(index === 4) {
+                numerator.textContent = AClassicScore.toLocaleString();
+            }
+            if(index === 5) {
+                numerator.textContent = AScore.toLocaleString();
+            }
+            if(index === 6) {
+                numerator.textContent = AScore.toLocaleString();
+            }
+            if(index === 8) {
+                numerator.textContent = AEndlessRoundsPlayed.toLocaleString();
+            }
+            if(index === 9) {
+                numerator.textContent = AEndlessRoundsPlayed.toLocaleString();
+            }
+            if(index === 10) {
+                numerator.textContent = AEndlessTime.toLocaleString();
+            }
+            if(index === 11) {
+                numerator.textContent = ATotalHits.toLocaleString();
+            }
+            if(index === 12) {
+                numerator.textContent = ATotalHits.toLocaleString();
+            }
+            if(index === 13) {
+                numerator.textContent = ATotalHits.toLocaleString();
+            }
+            if(index === 14) {
+                numerator.textContent = ATotalHits.toLocaleString();
+            }
+            if(index === 21) {
+                numerator.textContent = AStreakBreaks.toLocaleString();
+            }
+            if(index === 22) {
+                numerator.textContent = AStreak.toLocaleString();
+            }
+            if(index === 23) {
+                numerator.textContent = AStreak.toLocaleString();
+            }
+            if(index === 24) {
+                numerator.textContent = AStreak.toLocaleString();
+            }
+            if(index === 26) {
+                numerator.textContent = AMoleHits.toLocaleString();
+            }
+            if(index === 28) {
+                numerator.textContent = AGoldenMoles.toLocaleString();
+            }
+            if(index === 29) {
+                numerator.textContent = AGoldenGame.toLocaleString();
+            }
+            if(index === 30) {
+                numerator.textContent = AGoldenGame.toLocaleString();
+            }
+            if(index === 32) {
+                numerator.textContent = `${AGoldenChance.toLocaleString()}%`;
+            }
+            if(index === 34) {
+                numerator.textContent = AArmadillos.toLocaleString();
+            }
+            if(index === 39) {
+                numerator.textContent = ASnakes.toLocaleString();
+            }
+            if(index === 41) {
+                numerator.textContent = ASpit.toLocaleString();
+            }
+            if(index === 43) {
+                numerator.textContent = AGroundhogs.toLocaleString();
+            }
+            if(index === 45) {
+                numerator.textContent = yourItems.filter(item => item.owned).length;
+            }
+            if(index === 52) {
+                numerator.textContent = yourItems[11].q;
+            }
+            if(index === 53) {
+                numerator.textContent = AEasyFarmed;
+            }
         }
     });
+
 }
 
 fixGrayscale();
@@ -3128,74 +3331,49 @@ achievementButton.addEventListener('mousedown', () => {
     achievementMenu.style.display = "flex";
     achievementWrap.style.display = "flex"
 })
-
-
-/*
-Class Dismissed,  desc: "Complete the tutorial.", challenge:false, owned:true,
-First Steps,  desc:"Play one game of classic mode.", challenge:false, owned:true,
-Giant Steps, desc:"Play ten games of classic mode.", challenge:false, owned:true,
-Is this the best use of your time?,  50, desc: "Play 50 games of classic mode.", challenge:true, owned:true,
-
-Let's-a-go! Keep it up, baby!,  20000, desc: "Have a score over 20,000 in classic mode.", challenge:true, owned:true,
-The Idea,  desc: "Have a score over 50,000.", challenge:true, owned:true,
-The Man,  desc: "Have a score over 250,000.", challenge:true, owned:true,
-
-It Begins, desc: "Play one game of endless mode.", challenge:false, owned:true,
-Round After Round,  desc: "Play ten games of endless mode.", challenge:false, owned:true,
-Well, that's one way to do it., desc: "Play 50 games of endless mode.", challenge:true, owned:true,
-Still Alive, desc: "Last 10 minutes in one game of endless mode.", challenge:true, owned:true,
-
-Beginning Batter, desc:"Hit 50 enemies.", challenge:false, owned:true,
-Novice Knocker, desc: "Hit 500 enemies.", challenge:false, owned:true,
-Proficient Puncher, desc: "Hit 5,000 enemies.", challenge:false, owned:true,
-Master Masher, desc: "Hit 50,000 enemies. What is wrong with you.", challenge:true, owned:true,
-
-Smorgasbord, desc: "Hit one of each enemy consecutively (including a golden mole)", challenge:true, owned:true,
-Trigger Happy, desc: "Hit the same enemy three times before it disappears.", challenge:false, owned:true,
-Intentional, desc: "Hit an enemy within 300ms of it appearing.", challenge:true, owned:true,
-Clutched, desc: "Hit an enemy within 100ms of it disappearing.", challenge:false, owned:true,
-Quick Draw, desc: "Hit 10 enemies within 5 seconds.", challenge:false, owned:true,
-
-HAH!, desc: "YOU MISSED!", challenge:false, owned:true,
-HAH! HAH! HAH!, desc: "Lose 100 streaks.", challenge:false, owned:true,
-
-Begone!, desc: "Hit 10 enemies in a row.", challenge:false, owned:true,
-Flow State, desc: "Hit 100 enemies in a row.", challenge:false, owned:true,
-Generational Run, desc: "Hit 250 enemies in a row.", challenge:true, owned:true,
-Flawless, desc: "Complete a game of classic mode without losing your streak.", challenge:true, owned:true,
-
-Mountain out of a Molehill, desc: "Hit 10,000 moles.", challenge:true, owned:true,
-
-Gotcha!, desc: "Hit a golden mole.", challenge:false, owned:true,
-My Beautiful Collection, desc: "Hit 500 golden moles.", challenge:true, owned:true,
-Gold Rush, desc: "Hit 10 golden moles in one round.", challenge:false, owned:true,
-Set For Life, desc: "Hit 50 golden moles in one round.", challenge:true, owned:true,
-Serendipity, desc: "Hit 3 consecutive golden moles.", challenge:true, owned:true,
-Wow! That was so Gold!, desc: "Have a high enough streak for all moles to be golden.", challenge:true, owned:true,
-Butterfingers, desc: "The one that got away...", challenge:false, owned:true,
-
-Shell Shocked, desc: "Hit 50 armadillos.", challenge:false, owned:true,
-Medic!, desc: "Be healed by an armadillo.", challenge:false, owned:true, 
-MY EYES!!!, desc: "Get flashbanged by an armadillo.", challenge:false, owned:true,
-360 No-Scope, desc: "Hit an enemy while fully blinded.", challenge:false, owned:true,
-Good Returns, desc: "Step 2: Profit.", challenge:false, owned:true,
-
-Antivenom, desc: "Hit 50 snakes.", challenge:false, owned:true,
-Spit Take, desc: "Get spat at.", challenge:false, owned:true,
-Joke's on you, I'm into this., desc: "Get spat at 100 times.", challenge:true, owned:true,
-
-Hogs and Robbers, desc: "Hit a groundhog.", challenge:false, owned:true,
-Highway Robbery, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true, owned:true,
-    
-Hello!!!, desc: "Spend some quality time chatting with Meerkat.", challenge:true, owned:true,
-SHUT UP AND TAKE MY MONEY!, desc: "Buy one of every item in Meerkat's shop.", challenge:true, owned:true,
-Not So Fast!, desc: "Protect your wallet from thieves.", challenge:false, owned:true,
-Sharing Is Caring, desc: "Step 1: Stimulate the economy.", challenge:false, owned:true,
-Stop, Criminell!, desc: "Hit Meerkat. Sicko.", challenge:false, owned:true,
-We will, we will, desc: "Buy Rock.", challenge:false, owned:true,
-Rock 2, desc: "Buy Rock 2.", challenge:false, owned:true,
-Macondo, desc: "Maybe the real hackathon was the friends we made along the way.", challenge:true, owned:true,
-Charitable, desc: "Donate to Meerkat", challenge:true, owned:true,
-Highly Charitable, desc: "Do it again.", challenge:true, owned:true,
-
-Azzy hates this one simple trick, desc: "Exploit easy difficulty for money.", challenge:false, owned:true,*/
+if(yourItems[7].owned) {
+    genderChange();
+}
+function genderChange() {
+    const girlfilter = document.getElementById("girlfilter")
+    const achievementTitle = document.getElementById("achievementtitle")
+    if(yourItems[7].owned) {
+        girlfilter.style.display = "flex"
+        startpageelements.forEach((element) => {
+            element.style.backgroundColor = "rgb(114, 27, 63)"
+            element.style.borderColor = "rgb(80, 17, 43)"  
+        })
+        settingsButton.style.borderColor = "rgb(80, 17, 43)"
+        settingsMenu.style.borderColor = "rgb(80, 17, 43)"
+        settingsButton.style.backgroundColor = "rgb(114, 27, 63)"
+        settingsMenu.style.backgroundColor = "rgb(114, 27, 63)"
+        scoreText.style.color = "black"
+        scoreText.style.backgroundColor = "white"
+        scoreText.style.borderColor = "black"
+        timer.style.backgroundColor = "rgb(140, 235, 238)"
+        cashText.style.backgroundColor = "rgb(230, 167, 238)"
+        achievementMenu.style.backgroundColor = "rgb(114, 27, 63)"
+        achievementMenu.style.borderColor = "rgb(80, 17, 43)"
+        achievementBack.style.borderColor = "rgb(63, 13, 34)"
+        achievementBack.style.backgroundColor = "rgb(80, 19, 44)"
+        achievementCount.style.backgroundColor = "rgb(114, 27, 63)"
+        achievementCount.style.borderColor = "rgb(80, 17, 43)"
+        achievementTitle.style.backgroundColor = "rgb(114, 27, 63)"
+        achievementTitle.style.borderColor = "rgb(80, 17, 43)"
+    } else {
+        girlfilter.style = ""
+        startpageelements.forEach((element) => {
+            element.style = ""
+            element.style = ""  
+        })
+        settingsMenu.style = ""
+        settingsButton.style = ""
+        scoreText.style = ""
+        timer.style = ""
+        cashText.style = ""
+        achievementMenu.style = ""
+        achievementBack.style = ""
+        achievementCount.style = ""
+        achievementTitle.style = ""
+    }
+}

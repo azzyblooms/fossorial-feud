@@ -1577,15 +1577,10 @@ function moleHit(mole) {
         } else if(mole.item == "heal") {
             score += 50;
             AMedic = true;
-            if(healthPoints < 5) {
-                if(healthPoints == 4 && yourItems[3].owned == true) {
-                    healthPoints = 5;
-                } else if(healthPoints == 3 && yourItems[1].owned == true) {
-                    healthPoints = 4;
-                } else {
-                    healthPoints++;
-                }
-            }
+            if(healthPoints == 4 && yourItems[3].owned) {healthPoints++;}
+            if(healthPoints == 3 && yourItems[1].owned) {healthPoints++;}
+            if(healthPoints == 2) {healthPoints++;}
+            if(healthPoints == 1) {healthPoints++;}
             updateHealth();
             streak++;
             healSound.cloneNode(true).play();
@@ -1801,6 +1796,7 @@ let scoreToCash = false;
 
 const orchHit = new Audio("audio/orchhit.ogg")
 function finishGame() {
+    stopLoopingMusic();
     if(endless) {
         AEndlessRoundsPlayed++;
         if(AEndlessTime < timeLeft) {AEndlessTime = timeLeft}
@@ -1991,7 +1987,9 @@ let randomMole;
 let gameOn = false;
 let globalCooldown = 0;
 let timeUp = false;
-function gameStart() {
+async function gameStart() {
+    await setupAudio('audio/molefight.mp3');
+    playLoopingMusic();
     intro = false;
     inGame = true;
     gameOn = true;
@@ -2042,8 +2040,11 @@ function gameStart() {
 
 let endless = false;
 
-function endlessStart() {
+async function endlessStart() {
+    
     intro = false;
+    await setupAudio('audio/molefight.mp3');
+    playLoopingMusic();
     gameOn = true;
     inGame = true;
     endless = true;
@@ -2203,6 +2204,7 @@ function spawnArmadillo(mole) {
     mole.type = "armadillo"
     mole.state = "up";
     const moleImg = mole.element.querySelector("img")
+    mole.item = null;
     moleImg.style.filter = "contrast(1)"
     moleImg.src = "images/armadillo.png"
     moleImg.style.transition = "transform 350ms ease"
@@ -2217,11 +2219,11 @@ function spawnArmadillo(mole) {
             mole.item = "heal"
             moleImg.src = "images/immahealyou.png"
         } else {
-            mole.item = "null"
+            mole.item = null;
             moleImg.src = "images/armadillo.png"
         }
     } else if(determineItem == 5) {
-        mole.item = "null"
+        mole.item = null;
         moleImg.src = "images/armadillo.png"
     } else if(determineItem == 6) {
         /*mole.item = "cash"
@@ -2230,7 +2232,7 @@ function spawnArmadillo(mole) {
             mole.item = "cash"
             moleImg.src = "images/dolladillo.png"
         } else {
-            mole.item = "null"
+            mole.item = null;;
             moleImg.src = "images/armadillo.png"
         }
     }
@@ -2247,11 +2249,11 @@ function spawnArmadillo(mole) {
                     mole.item = "heal"
                     moleImg.src = "images/immahealyou.png"
                 } else {
-                    mole.item = "null"
+                    mole.item = null;
                     moleImg.src = "images/armadillo.png"
                 }
             } else if(determineItem == 5) {
-                mole.item = "null"
+                mole.item = null;
                 moleImg.src = "images/armadillo.png"
             } else if(determineItem == 6) {
                 /*mole.item = "cash"
@@ -2260,7 +2262,7 @@ function spawnArmadillo(mole) {
                     mole.item = "cash"
                     moleImg.src = "images/dolladillo.png"
                 } else {
-                    mole.item = "null"
+                    mole.item = null;
                     moleImg.src = "images/armadillo.png"
                 }
             }

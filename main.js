@@ -733,6 +733,7 @@ function displayStatistics() {
                     timeUp = null;
                     score = 0;
                     inGame = false;
+                    roundCountFailSafe = false;
                     timeLeft = 0;
                     scoreText.textContent = (`SCORE: ${score}`)
                     timer.textContent = `TIME: ${timeLeft}`
@@ -889,7 +890,6 @@ function tease() {
         moles.forEach((mole) => {
             mole.element.querySelector("img").style.opacity = ("1")
         })
-        roundcountshow();
         return;
     }
 
@@ -926,7 +926,7 @@ function tease() {
 
     setTimeout(tease, 3000)
 }
-
+roundCountFailSafe = false;
 function grr() {
 
     if(!skipIntro || !skipIntroState) {
@@ -948,7 +948,10 @@ function grr() {
                 moles.forEach((mole) => {
                     mole.element.querySelector("img").style.transform = ("scale(0)")
                 })
-                roundcountshow();
+                if(!roundCountFailSafe) {
+                    roundcountshow();
+                    roundCountFailSafe = true;
+                }
             }, 2500)
         }, 1000)
     } else {
@@ -957,7 +960,6 @@ function grr() {
         moles.forEach((mole) => {
             mole.element.querySelector("img").style.transform = ("scale(0)")
         })
-        roundcountshow();
     }
 
 }
@@ -1309,7 +1311,15 @@ startbutton.addEventListener('mousedown', () => {
             timerWrap.style.display = "flex"
             timerWrap.style.animation = ("fadein 1.2s ease forwards")
             setTimeout(() => {
-                tease();
+                if(skipIntro || skipIntroState) {
+                    moles.forEach((mole) => {
+                        mole.element.querySelector("img").style.opacity = 1;
+                        mole.element.querySelector("img").style.transform = "scale(1)"
+                    })
+                    roundcountshow();
+                } else {
+                    tease();
+                }
             }, 1300)
         }, 1000)
     }
@@ -1444,7 +1454,7 @@ document.addEventListener('mousedown', async () => {
                     return;
                 }
                 if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
-                    if(teasing || !skipIntro || !skipIntroState) {
+                    if(teasing && !skipIntro && !skipIntroState) {
                         mole.state = "hit";
                         redFilter(mole.element);
                         hitMole = true;
@@ -1811,7 +1821,11 @@ let streak = 0;
 scoreText.textContent = (`SCORE: ${score}`)
 streakText.textContent = (`STREAK: ${streak}`)
 updateHealth();
-function roundcountshow() {
+async function roundcountshow() {
+    if(settings[3].isOn) {
+        await setupAudio('audio/molefight.mp3');
+        playLoopingMusic();
+    }
     gameOn = false;
     timer.classList.remove("flashing")
     endless = false;
@@ -1863,7 +1877,11 @@ function roundcountshow() {
     }, 3500)
 }
 
-function endlessPrep() {
+async function endlessPrep() {
+    if(settings[3].isOn) {
+        await setupAudio('audio/molefight.mp3');
+        playLoopingMusic();
+    }
     gameOn = false;
     timer.classList.remove("flashing")
     endless = true;
@@ -2108,10 +2126,6 @@ let gameOn = false;
 let globalCooldown = 0;
 let timeUp = false;
 async function gameStart() {
-    if(settings[3].isOn) {
-        await setupAudio('audio/molefight.mp3');
-        playLoopingMusic();
-    }
     intro = false;
     inGame = true;
     gameOn = true;
@@ -2163,12 +2177,7 @@ async function gameStart() {
 let endless = false;
 
 async function endlessStart() {
-    
     intro = false;
-    if(settings[3].isOn) {
-        await setupAudio('audio/molefight.mp3');
-        playLoopingMusic();
-    }
     gameOn = true;
     inGame = true;
     endless = true;

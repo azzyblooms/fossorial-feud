@@ -845,6 +845,15 @@ html::-webkit-scrollbar {
         transform:scale(1)
     }
 }
+@keyframes estroScore {
+    from {
+        background-color: rgb(134, 5, 255);
+        transform:scale(0.8)
+    } to {
+        background-color: rgb(255, 255, 255);
+        transform:scale(1)
+    }
+}
 
 #streakwrap {
     display:none;
@@ -936,6 +945,7 @@ html::-webkit-scrollbar {
     width:100vw;
     height:50vh;
     display:none;
+    justify-content: space-evenly;
     flex-direction: row;
     border-top:4px solid rgb(44, 44, 44);
 }

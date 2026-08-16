@@ -316,7 +316,6 @@ const growlSound = new Audio("audio/grrr.mp3")
 
 
 let intro = true;
-let difficulty = "easy";
 let skipIntro = false;
 if(localStorage.getItem("skipIntroState") === null) {
     localStorage.setItem("skipIntroState", false)
@@ -327,11 +326,20 @@ if(localStorage.getItem("brightFlashesState") === null) {
 if(localStorage.getItem("showMouseHitboxState") === null) {
     localStorage.setItem("showMouseHitboxState", true)
 }
+if(localStorage.getItem("musicState") === null) {
+    localStorage.setItem("musicState", true)
+}
+
+if(localStorage.getItem("difficulty") === null) {
+    localStorage.setItem("difficulty", "easy")
+}
+let difficulty = localStorage.getItem("difficulty");
 
 skipIntroState = localStorage.getItem("skipIntroState") === "true"
 brightFlashesState = localStorage.getItem("brightFlashesState") === "true"
 showMouseHitboxState = localStorage.getItem("showMouseHitboxState") === "true"
-if(showMouseHitboxState == true) {cursorhb.style.opacity = "0"} else {cursorhb.style.opacity = "1"}
+musicState = localStorage.getItem("musicState") === "true"
+if(showMouseHitboxState == true) {cursorhb.style.opacity = "1"} else {cursorhb.style.opacity = "0"}
 
 let moles = [
     {element: molespawn1, busy:false, state:"ok", hideTimer:null, cooldown:0, type:null, spawningTimer:null, saveStreak:null, timeAlive:null, sameHits:0},
@@ -362,11 +370,13 @@ const enemyTypes = [
 const toggleBrightFlashes = document.getElementById("epilepsybutton")
 const toggleSkipIntro = document.getElementById("introbutton")
 const toggleMouseHitbox = document.getElementById("mousehitboxbutton")
+const toggleMusic = document.getElementById("musicbutton")
 
 const settings = [
     {setting: "brightFlashes", isOn: brightFlashesState, button: toggleBrightFlashes},
     {setting: "skipIntro", isOn: skipIntroState, button: toggleSkipIntro},
-    {setting: "showMouseHitbox", isOn: showMouseHitboxState, button: toggleMouseHitbox}
+    {setting: "showMouseHitbox", isOn: showMouseHitboxState, button: toggleMouseHitbox},
+    {setting: "music", isOn: musicState, button: toggleMusic}
 ]
 
 settings.forEach((button) => {
@@ -405,9 +415,17 @@ toggleMouseHitbox.addEventListener('mousedown', () => {
         if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
         if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
     })
-    if(settings[2].isOn) {cursorhb.style.opacity = "0"} else {cursorhb.style.opacity = "1"}
+    if(settings[2].isOn) {cursorhb.style.opacity = "1"} else {cursorhb.style.opacity = "0"}
 })
-
+toggleMusic.addEventListener('mousedown', () => {
+    settings[3].isOn = !settings[3].isOn;
+    localStorage.setItem("musicState", settings[3].isOn)
+    settings.forEach((button) => {
+        if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
+        if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
+    })
+    
+})
 
 
 
@@ -513,9 +531,17 @@ function displayStatistics() {
             return;
         }
         if(totalHitsText.textContent !== `TOTAL HITS: ${totalHits}`) {
-            th++;
-            totalHitsText.textContent = `TOTAL HITS: ${th}`
-            playTone(th);
+            if(totalHits > 200) {
+                const amount = totalHits / 200;
+                th += amount;
+                const progress = th / totalHits
+                playTone(progress * 200);
+            } else {
+                th++;
+                playTone(th);
+            }
+            if (th > totalHits) {th = totalHits}
+            totalHitsText.textContent = `TOTAL HITS: ${Math.floor(th)}`
             if(th == totalHits) {
                 lockin.cloneNode(true).play();
                 waiting = true;
@@ -524,9 +550,17 @@ function displayStatistics() {
                 }, 300)
             }
         } else if(molesHitText.textContent !== `MOLES HIT: ${molesHit}`) {
-            mh++;
-            molesHitText.textContent = `MOLES HIT: ${mh}`
-            playTone(mh);
+            if(molesHit > 200) {
+                const amount = molesHit / 200;
+                mh += amount;
+                const progress = mh / molesHit
+                playTone(progress * 200);
+            } else {
+                mh++;
+                playTone(mh);
+            }
+            if (mh > molesHit) {mh = molesHit}
+            molesHitText.textContent = `MOLES HIT: ${Math.floor(mh)}`
             if(mh == molesHit) {
                 lockin.cloneNode(true).play();
                 waiting = true;
@@ -535,9 +569,17 @@ function displayStatistics() {
                 }, 300)
             }
         } else if(gmhnum.textContent !== `${goldenMolesHit}`) {
-            gmh++;
-            gmhnum.textContent = `${gmh}`
-            playTone(gmh);
+            if(goldenMolesHit > 200) {
+                const amount = goldenMolesHit / 200;
+                gmh += amount;
+                const progress = gmh / goldenMolesHit
+                playTone(progress * 200);
+            } else {
+                gmh++;
+                playTone(gmh);
+            }
+            if (gmh > goldenMolesHit) {gmh = goldenMolesHit}
+            gmhnum.textContent = `${Math.floor(gmh)}`
             if(gmh == goldenMolesHit) {
                 lockin.cloneNode(true).play();
                 waiting = true;
@@ -546,9 +588,17 @@ function displayStatistics() {
                 }, 300)
             }
         } else if(snakesHitText.textContent !== `SNAKES HIT: ${snakesHit}`) {
-            sh++;
-            playTone(sh);
-            snakesHitText.textContent = `SNAKES HIT: ${sh}`
+            if(snakesHit > 200) {
+                const amount = snakesHit / 200;
+                sh += amount;
+                const progress = sh / snakesHit
+                playTone(progress * 200);
+            } else {
+                sh++;
+                playTone(sh);
+            }
+            if (sh > snakesHit) {sh = snakesHit}
+            snakesHitText.textContent = `SNAKES HIT: ${Math.floor(sh)}`
             if(sh == snakesHit) {
                 lockin.cloneNode(true).play();
                 waiting = true;
@@ -557,45 +607,77 @@ function displayStatistics() {
                 }, 300)
             }
         } else if(groundhogsHitText.textContent !== `GROUNDHOGS HIT: ${groundhogsHit}`) {
-            gh++;
-            playTone(gh);
-            groundhogsHitText.textContent = `GROUNDHOGS HIT: ${gh}`
+            if(groundhogsHit > 200) {
+                const amount = groundhogsHit / 200;
+                gh += amount;
+                const progress = gh / groundhogsHit
+                playTone(progress * 200);
+            } else {
+                gh++;
+                playTone(gh);
+            }
+            if (gh > groundhogsHit) {gh = groundhogsHit}
+            groundhogsHitText.textContent = `GROUNDHOGS HIT: ${Math.floor(gh)}`
             if(gh == groundhogsHit) {
-                waiting = true;
                 lockin.cloneNode(true).play();
+                waiting = true;
                 setTimeout(() => {
                     waiting = false;
                 }, 300)
             }
         } else if(armadillosHitText.textContent !== `ARMADILLOS HIT: ${armadillosHit}`) {
-            ah++;
-            playTone(ah);
-            armadillosHitText.textContent = `ARMADILLOS HIT: ${ah}`
+            if(armadillosHit > 200) {
+                const amount = armadillosHit / 200;
+                ah += amount;
+                const progress = ah / armadillosHit
+                playTone(progress * 200);
+            } else {
+                ah++;
+                playTone(ah);
+            }
+            if (ah > armadillosHit) {ah = armadillosHit}
+            armadillosHitText.textContent = `ARMADILLOS HIT: ${Math.floor(ah)}`
             if(ah == armadillosHit) {
-                waiting = true;
                 lockin.cloneNode(true).play();
+                waiting = true;
                 setTimeout(() => {
                     waiting = false;
                 }, 300)
             }
         } else if(maxStreakText.textContent !== `HIGHEST STREAK: ${maxStreak}`) {
-            ms++;
-            playTone(ms);
-            maxStreakText.textContent = `HIGHEST STREAK: ${ms}`
+            if(maxStreak > 200) {
+                const amount = maxStreak / 200;
+                ms += amount;
+                const progress = ms / maxStreak
+                playTone(progress * 200);
+            } else {
+                ms++;
+                playTone(ms);
+            }
+            if (ms > maxStreak) {ms = maxStreak}
+            maxStreakText.textContent = `HIGHEST STREAK: ${Math.floor(ms)}`
             if(ms == maxStreak) {
-                waiting = true;
                 lockin.cloneNode(true).play();
+                waiting = true;
                 setTimeout(() => {
                     waiting = false;
                 }, 300)
             }
         } else if(streaksBrokenText.textContent !== `STREAKS BROKEN: ${streaksBroken}`) {
-            sb++;
-            playTone(sb);
-            streaksBrokenText.textContent = `STREAKS BROKEN: ${sb}`
+            if(streaksBroken > 200) {
+                const amount = streaksBroken / 200;
+                sb += amount;
+                const progress = sb / streaksBroken
+                playTone(progress * 200);
+            } else {
+                sb++;
+                playTone(sb);
+            }
+            if (sb > streaksBroken) {sb = streaksBroken}
+            streaksBrokenText.textContent = `STREAKS BROKEN: ${Math.floor(sb)}`
             if(sb == streaksBroken) {
-                waiting = true;
                 lockin.cloneNode(true).play();
+                waiting = true;
                 setTimeout(() => {
                     waiting = false;
                 }, 300)
@@ -658,7 +740,10 @@ function displayStatistics() {
                         mole.element.querySelector("img").src = "images/mole.png"
                     })
                     startpageelements.forEach((element) => {
-                        element.style.display = ("flex")
+                        element.style = ("")
+                    })
+                    genderChange();
+                    startpageelements.forEach((element) => {
                         element.style.animation = ("slideleft 1s ease-in-out forwards")
                     })
                 }, 1000)
@@ -667,7 +752,7 @@ function displayStatistics() {
     }, 20)
 }
 
-
+difficultyChange();
 
 epilepsyWarningToggle.addEventListener("mousedown", () => {
     epilepsyFriendly = !epilepsyFriendly;
@@ -758,6 +843,7 @@ function difficultyChange() {
         molespawn16.style.display = "flex";
         moleGrid.style.gridTemplateColumns = ("repeat(4, 1fr)")
     }
+    difficultyButton.textContent = (`DIFFICULTY: ${difficulty.toUpperCase()}`)
 }
 
 
@@ -778,10 +864,13 @@ const startpageelements = [
 difficultyButton.addEventListener('mousedown', () => {
     if(difficulty == "easy") {
         difficulty = "normal";
+        localStorage.setItem("difficulty", "normal")
     } else if(difficulty == "normal") {
         difficulty = "hard";
+        localStorage.setItem("difficulty", "hard")
     } else {
         difficulty = "easy"
+        localStorage.setItem("difficulty", "easy")
     }
     difficultyChange();
     difficultyButton.textContent = (`DIFFICULTY: ${difficulty.toUpperCase()}`)
@@ -1056,7 +1145,11 @@ function tmoleHit(mole) {
         }
         scoreText.style.animation = "none"
         scoreText.offsetHeight;
-        scoreText.style.animation = "loseScore 400ms ease"
+        if(yourItems[7].owned) {
+            scoreText.style.animation = "estroScore 300ms ease"
+        } else {
+            scoreText.style.animation = "loseScore 300ms ease"
+        }
         bonk.cloneNode(true).play();
     } else if (tmoletype == "armadillo") {
         if(streak > 0) {
@@ -1130,7 +1223,10 @@ continueButton.addEventListener('click', () => {
                         mole.element.querySelector("img").src = "images/mole.png"
                     })
                     startpageelements.forEach((element) => {
-                        element.style.display = ("flex")
+                        element.style.animation = ("slideleft 1s ease-in-out forwards")
+                    })
+                    genderChange();
+                    startpageelements.forEach((element) => {
                         element.style.animation = ("slideleft 1s ease-in-out forwards")
                     })
                 }, 1000)
@@ -1159,8 +1255,10 @@ tutorialButton.addEventListener('mousedown', async () => {
             element.style.display = ("none")
         })
     }, 1000)
-    await setupAudio('audio/practice.mp3');
-    playLoopingMusic();
+    if(settings[3].isOn) {
+        await setupAudio('audio/practice.mp3');
+        playLoopingMusic();
+    }
     tmoleimg.style.transform = "scale(0)"
     tutorialBox.style.display = ("flex")
     tutorialBox.style.animation = ("slideleft 1s ease-in-out forwards")
@@ -1346,6 +1444,12 @@ document.addEventListener('mousedown', async () => {
                     return;
                 }
                 if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
+                    if(teasing || !skipIntro || !skipIntroState) {
+                        mole.state = "hit";
+                        redFilter(mole.element);
+                        hitMole = true;
+                        clickfx();
+                    }
                     if(inGame) {
                         if(mole.state == "bury") {
                             if(!yourItems[0].owned) {
@@ -1353,7 +1457,11 @@ document.addEventListener('mousedown', async () => {
                             }
                             scoreText.style.animation = "none"
                             scoreText.offsetHeight;
-                            scoreText.style.animation = "loseScore 300ms ease"
+                            if(yourItems[7].owned) {
+                                scoreText.style.animation = "estroScore 300ms ease"
+                            } else {
+                                scoreText.style.animation = "loseScore 300ms ease"
+                            }
                             cursor.querySelector("img").style.animation = "none"
                             cursor.querySelector("img").offsetHeight;
                             cursor.querySelector("img").style.animation = "redfilter 200ms ease"
@@ -1369,10 +1477,6 @@ document.addEventListener('mousedown', async () => {
                             hitMole = true;
                             if(mole.state == "up") {
                                 if(!intro) {moleHit(mole)}
-                            }
-
-                            if(teasing || !skipIntro || !skipIntroState) {
-                                mole.state = "hit";
                             }
                             if(skipIntro || skipIntroState) {
                                 if(!gameOn) {
@@ -1395,7 +1499,11 @@ document.addEventListener('mousedown', async () => {
                     cursor.querySelector("img").style.animation = "redfilter 200ms ease";
                     scoreText.style.animation = "none"
                     scoreText.offsetHeight;
-                    scoreText.style.animation = "loseScore 300ms ease"
+                    if(yourItems[7].owned) {
+                        scoreText.style.animation = "estroScore 300ms ease"
+                    } else {
+                        scoreText.style.animation = "loseScore 300ms ease"
+                    }
                     score -= 10;
                     if(streak > 0) {
                         endStreak();
@@ -1550,7 +1658,11 @@ function moleHit(mole) {
         }
         scoreText.style.animation = "none"
         scoreText.offsetHeight;
-        scoreText.style.animation = "loseScore 400ms ease"
+        if(yourItems[7].owned) {
+            scoreText.style.animation = "estroScore 300ms ease"
+        } else {
+            scoreText.style.animation = "loseScore 300ms ease"
+        }
         bonk.cloneNode(true).play();
     } else if (mole.type == "armadillo") {
         armadillosHit++;
@@ -1722,6 +1834,10 @@ function roundcountshow() {
     armadillosHit = 0;
     totalHits = 0;
     maxStreak = 0;
+    moles.forEach((mole) => {
+        const moleImg = mole.element.querySelector("img")
+        moleImg.style.filter = "contrast(1)"
+    })
     streaksBroken = 0;
     updateHealth();
     timeUp = false;
@@ -1753,6 +1869,10 @@ function endlessPrep() {
     endless = true;
     timeLeft = 0;
     inGame = true;
+    moles.forEach((mole) => {
+        const moleImg = mole.element.querySelector("img")
+        moleImg.style.filter = "contrast(1)"
+    })
     if(yourItems[3].owned == true) {
         healthPoints = 5;
     } else if(yourItems[1].owned == true) {
@@ -1988,8 +2108,10 @@ let gameOn = false;
 let globalCooldown = 0;
 let timeUp = false;
 async function gameStart() {
-    await setupAudio('audio/molefight.mp3');
-    playLoopingMusic();
+    if(settings[3].isOn) {
+        await setupAudio('audio/molefight.mp3');
+        playLoopingMusic();
+    }
     intro = false;
     inGame = true;
     gameOn = true;
@@ -2043,8 +2165,10 @@ let endless = false;
 async function endlessStart() {
     
     intro = false;
-    await setupAudio('audio/molefight.mp3');
-    playLoopingMusic();
+    if(settings[3].isOn) {
+        await setupAudio('audio/molefight.mp3');
+        playLoopingMusic();
+    }
     gameOn = true;
     inGame = true;
     endless = true;
@@ -2391,6 +2515,7 @@ const shopCash = document.getElementById("yourcash")
 shopButton.addEventListener("mousedown", () => {
     if(!shopOpen) {
         shopOpen = true;
+        shopPrepText("")
         shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
         shading.style.display = "flex"
         shading.style.animation = "epicflash 2.8s ease forwards"
@@ -2408,8 +2533,10 @@ shopButton.addEventListener("mousedown", () => {
         opendoor.cloneNode(true).play();
         shading.addEventListener('animationend', async () => {
             shading.style.display = "none"
-            await setupAudio('audio/shop.mp3');
-            playLoopingMusic();
+            if(settings[3].isOn) {
+                await setupAudio('audio/shop.mp3');
+                playLoopingMusic();
+            }
             shopPrepText(shopDialogue[Math.floor(Math.random() * 4)])
         }, {once:true})
     }
@@ -2587,9 +2714,9 @@ let leavingShop = false;
 leaveButton.addEventListener('mousedown', () => {
     if(!leavingShop) {
         shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 4)])
+        leavingShop = true;
         setTimeout(() => {
             shopOpen = false;
-            leavingShop = true;
             shading.style.display = "flex"
             shading.style.animation = "epicflash 2.8s ease forwards"
             opendoor.cloneNode(true).play();
@@ -2602,9 +2729,10 @@ leaveButton.addEventListener('mousedown', () => {
                 leavingShop = false;
                 shopBackground.style.display = "none"
                 startpageelements.forEach((element) => {
-                    element.style.display = "flex"
+                    element.style = ""
                 })
                 streakText.style.display = "flex"
+                genderChange();
             }, 1000)
             shading.addEventListener('animationend', async () => {
                 shading.style.display = "none"
@@ -3290,12 +3418,22 @@ function fixGrayscale() {
             ach.style.borderColor = "rgb(206, 77, 163)"
             ach.style.backgroundColor = "rgb(134, 44, 104)"
             ach.querySelector("img").style.borderColor = "rgb(206, 77, 163)"
-                } else {
-            ach.style.filter = "grayscale(100%)"
+            if(achievement.challenge) {
+                ach.style.borderColor = "rgb(126, 53, 175)"
+                ach.style.backgroundColor = "rgb(85, 24, 100)"
+                ach.querySelector("img").style.borderColor = "rgb(165, 92, 233)"
+            }
+            } else {
+                ach.style.filter = "grayscale(100%)"
             }
         } else {
             if(achievement.owned) {
                 ach.style.filter = "grayscale(0%)";
+                if(achievement.challenge) {
+                    ach.style.borderColor = "rgb(126, 53, 175)"
+                    ach.style.backgroundColor = "rgb(85, 24, 100)"
+                    ach.querySelector("img").style.borderColor = "rgb(165, 92, 233)"
+                }
             } else {
                 ach.style.filter = "grayscale(100%)"
             }
@@ -3453,6 +3591,7 @@ function genderChange() {
         scoreText.style.backgroundColor = "white"
         scoreText.style.borderColor = "black"
         timer.style.backgroundColor = "rgb(140, 235, 238)"
+        streakText.style.backgroundColor = "rgb(218, 80, 126)"
         cashText.style.backgroundColor = "rgb(230, 167, 238)"
         achievementMenu.style.backgroundColor = "rgb(114, 27, 63)"
         achievementMenu.style.borderColor = "rgb(80, 17, 43)"
@@ -3475,6 +3614,7 @@ function genderChange() {
         settingsButton.style = ""
         scoreText.style = ""
         timer.style = ""
+        streakText.style = ""
         cashText.style = ""
         achievementMenu.style = ""
         achievementBack.style = ""

@@ -1290,6 +1290,9 @@ tutorialMusic.volume = 0.6;
 
 startbutton.addEventListener('mousedown', () => {
     score = 0;
+    if(!skipIntro && !skipIntroState) {
+        teasing = true
+    }
     inGame = false;
     scoreText.textContent = (`SCORE: ${score}`)
     startpageelements.forEach((element) => {
@@ -1311,13 +1314,14 @@ startbutton.addEventListener('mousedown', () => {
             timerWrap.style.display = "flex"
             timerWrap.style.animation = ("fadein 1.2s ease forwards")
             setTimeout(() => {
+                moles.forEach((mole) => {
+                    mole.element.querySelector("img").style.opacity = 1;
+                    mole.element.querySelector("img").style.transform = "scale(1)"
+                })
                 if(skipIntro || skipIntroState) {
-                    moles.forEach((mole) => {
-                        mole.element.querySelector("img").style.opacity = 1;
-                        mole.element.querySelector("img").style.transform = "scale(1)"
-                    })
                     roundcountshow();
                 } else {
+                    teasing = true;
                     tease();
                 }
             }, 1300)

@@ -417,13 +417,14 @@ toggleMouseHitbox.addEventListener('mousedown', () => {
     })
     if(settings[2].isOn) {cursorhb.style.opacity = "1"} else {cursorhb.style.opacity = "0"}
 })
-toggleMusic.addEventListener('mousedown', () => {
+toggleMusic.addEventListener('mousedown', async () => {
     settings[3].isOn = !settings[3].isOn;
     localStorage.setItem("musicState", settings[3].isOn)
     settings.forEach((button) => {
         if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
         if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
     })
+    if(!settings[3].isOn) {stopLoopingMusic();} else {await setupAudio('audio/mischevious.mp3'); playLoopingMusic();}
     
 })
 
@@ -495,7 +496,7 @@ const gmhnum = document.getElementById("gmh")
 
 const tone = new Audio("audio/tone.wav")
 const lockin = new Audio("audio/lockin.wav")
-function displayStatistics() {
+async function displayStatistics() {
     let th = 0;
     let mh = 0;
     let gmh = 0;
@@ -929,7 +930,7 @@ function tease() {
 roundCountFailSafe = false;
 function grr() {
 
-    if(!skipIntro || !skipIntroState) {
+    if(!skipIntro || !skipIntroState && !endless) {
         setTimeout(() => {
             for(let i = 0; i < 5; i++) {
             setTimeout(() => {
@@ -1290,7 +1291,7 @@ tutorialMusic.volume = 0.6;
 
 startbutton.addEventListener('mousedown', () => {
     score = 0;
-    if(!skipIntro && !skipIntroState) {
+    if(!skipIntro && !skipIntroState && !endless) {
         teasing = true
     }
     inGame = false;
@@ -1458,7 +1459,7 @@ document.addEventListener('mousedown', async () => {
                     return;
                 }
                 if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
-                    if(teasing && !skipIntro && !skipIntroState) {
+                    if(teasing && !skipIntro && !skipIntroState && !endless) {
                         mole.state = "hit";
                         redFilter(mole.element);
                         hitMole = true;
@@ -1952,8 +1953,13 @@ function finishGame() {
     inGame = false;
     updateAchievements();
     saveGlobalStats();
-    setTimeout(() => {
+    setTimeout( async () => {
         tallyScore();
+        stopLoopingMusic();
+        if(settings[3].isOn) {
+            await setupAudio('audio/mischevious.mp3');
+            playLoopingMusic();
+        }
         drumroll.play();
         if(!endless || AClassicScore < score) {AClassicScore = score}
         if(AScore < score) {AScore = score}
@@ -2724,7 +2730,7 @@ const buyButton = document.getElementById("buybutton")
 const leaveButton = document.getElementById("leavebutton")
 let leavingShop = false;
 
-leaveButton.addEventListener('mousedown', () => {
+leaveButton.addEventListener('mousedown', async () => {
     if(!leavingShop) {
         shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 4)])
         leavingShop = true;
@@ -2733,12 +2739,16 @@ leaveButton.addEventListener('mousedown', () => {
             shading.style.display = "flex"
             shading.style.animation = "epicflash 2.8s ease forwards"
             opendoor.cloneNode(true).play();
-            setTimeout(() => {
+            setTimeout( async () => {
                 shopElements.forEach((element) => {
                     element.style.display = "none"
                 })
                 background.style.display = "inline"
                 stopLoopingMusic();
+                if(settings[3].isOn) {
+                    await setupAudio('audio/mischevious.mp3');
+                    playLoopingMusic();
+                }
                 leavingShop = false;
                 shopBackground.style.display = "none"
                 startpageelements.forEach((element) => {

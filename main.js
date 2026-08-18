@@ -111,10 +111,17 @@ let bountyList = [
     {name: "Benjamin", reward:100000, img:"benjamin", hunts:0, minTime:350, maxTime:50, color:"rgb(29, 4, 4)"}
 ]
 
-let currentBounty = undefined;
+let currentBounty = null;
 let bounty1 = undefined;
 let bounty2 = undefined;
 let bounty3 = undefined;
+
+function saveBounties() {
+    localStorage.setItem("bounty1", JSON.stringify(bounty1))
+    localStorage.setItem("bounty2", JSON.stringify(bounty2))
+    localStorage.setItem("bounty3", JSON.stringify(bounty3))
+    localStorage.setItem("currentBounty", JSON.stringify(currentBounty))
+}
 
 
 function setBounties() {
@@ -133,9 +140,23 @@ function setBounties() {
             bounty3 = bountyList[Math.floor(Math.random() * 10)]
         } while (bounty3 === bounty1 || bounty3 === bounty2)
     }
+    saveBounties();
 }
-setBounties();
+loadBounties();
 
+function loadBounties() {
+    const saved = JSON.parse(localStorage.getItem("activeBounties"));
+
+    if(saved === null) {
+        setBounties();
+        return;
+    }
+
+    bounty1 = JSON.parse(localStorage.getItem("bounty1"))
+    bounty2 = JSON.parse(localStorage.getItem("bounty2"))
+    bounty3 = JSON.parse(localStorage.getItem("bounty3"))
+    currentBounty = JSON.parse(localStorage.getItem("currentBounty"))
+}
 
 
 
@@ -2259,7 +2280,7 @@ async function gameStart() {
                 console.log("attempted bounty spawn")
                 if(!bountyClaimable) {
                     if(Math.floor(Math.random() * 5) == 0) {
-                        if(currentBounty !== undefined) {
+                        if(currentBounty !== null) {
                             spawnBounty(randomMole)
                             console.log("successful bounty spawn")
                         } else {
@@ -2325,7 +2346,7 @@ async function endlessStart() {
                 console.log("attempted bounty spawn")
                 if(!bountyClaimable) {
                     if(Math.floor(Math.random() * 5) == 0) {
-                        if(currentBounty !== undefined) {
+                        if(currentBounty !== null) {
                             spawnBounty(randomMole)
                             console.log("successful bounty spawn")
                         } else {
@@ -3377,7 +3398,7 @@ shopItems[5].addEventListener('mousedown', () => {
 
 buyButton.addEventListener('mousedown', () => {
     shopPage = 0;
-    bountyPage = 1;
+    bountyPageNum = 1;
     shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 7)])
     talkButton.style.display = "none"
     buyButton.style.display = "none"
@@ -3389,7 +3410,7 @@ buyButton.addEventListener('mousedown', () => {
 })
 talkButton.addEventListener('mousedown', () => {
     shopPage = 0;
-    bountyPage = 1;
+    bountyPageNum = 1;
     currentDialogue = null;
     focusedItem = null;
     shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 10)])
@@ -3457,11 +3478,11 @@ function updateBountyPage() {
         bountyReward.textContent = `\$${bounty1.reward.toLocaleString()}`
         bountyImg.style.backgroundColor = `${bounty1.color}`
         bountyName.style.color = `${bounty1.color}`
-        if(bountyClaimable && currentBounty == bounty1) {
+        if(bountyClaimable && currentBounty.name == bounty1.name) {
             bountyClaimButton.textContent = "CLAIM"
-        } else if(currentBounty == bounty1) {
+        } else if(currentBounty.name == bounty1.name) {
             bountyClaimButton.textContent = "IN PROGRESS"
-        } else if(currentBounty !== undefined) {
+        } else if(currentBounty !== null) {
             bountyClaimButton.textContent = "CAN'T START"
         } else {
             bountyClaimButton.textContent = "HUNT"
@@ -3473,11 +3494,11 @@ function updateBountyPage() {
         bountyReward.textContent = `\$${bounty2.reward.toLocaleString()}`
         bountyImg.style.backgroundColor = `${bounty2.color}`
         bountyName.style.color = `${bounty2.color}`
-        if(bountyClaimable && currentBounty == bounty2) {
+        if(bountyClaimable && currentBounty.name == bounty2.name) {
             bountyClaimButton.textContent = "CLAIM"
-        } else if(currentBounty == bounty2) {
+        } else if(currentBounty.name == bounty2.name) {
             bountyClaimButton.textContent = "IN PROGRESS"
-        } else if(currentBounty !== undefined) {
+        } else if(currentBounty !== null) {
             bountyClaimButton.textContent = "CAN'T START"
         } else {
             bountyClaimButton.textContent = "HUNT"
@@ -3489,11 +3510,11 @@ function updateBountyPage() {
         bountyReward.textContent = `\$${bounty3.reward.toLocaleString()}`
         bountyImg.style.backgroundColor = `${bounty3.color}`
         bountyName.style.color = `${bounty3.color}`
-        if(bountyClaimable && currentBounty == bounty3) {
+        if(bountyClaimable && currentBounty.name == bounty3.name) {
             bountyClaimButton.textContent = "CLAIM"
-        } else if(currentBounty == bounty3) {
+        } else if(currentBounty.name == bounty3.name) {
             bountyClaimButton.textContent = "IN PROGRESS"
-        } else if(currentBounty !== undefined) {
+        } else if(currentBounty !== null) {
             bountyClaimButton.textContent = "CAN'T START"
         } else {
             bountyClaimButton.textContent = "HUNT"
@@ -3502,7 +3523,7 @@ function updateBountyPage() {
 }
 
 bountyClaimButton.addEventListener('mousedown', () => {
-    if(bountyClaimable && currentBounty == bounty1 && bountyPageNum == 1) {
+    if(bountyClaimable && currentBounty.name == bounty1.name && bountyPageNum == 1) {
         ABounties++;
         cash += currentBounty.reward;
         shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
@@ -3511,11 +3532,11 @@ bountyClaimButton.addEventListener('mousedown', () => {
         shinyHitSound.cloneNode(true).play();
         saveGlobalStats();
         updateAchievements();
-        currentBounty = undefined;
+        currentBounty = null;
         bounty1 = undefined;
         setBounties();
         updateBountyPage();
-    } else if(bountyClaimable && currentBounty == bounty2 && bountyPageNum == 2) {
+    } else if(bountyClaimable && currentBounty.name == bounty2.name && bountyPageNum == 2) {
         ABounties++;
         cash += currentBounty.reward;
         shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
@@ -3524,11 +3545,11 @@ bountyClaimButton.addEventListener('mousedown', () => {
         shinyHitSound.cloneNode(true).play();
         saveGlobalStats();
         updateAchievements();
-        currentBounty = undefined;
+        currentBounty = null;
         bounty2 = undefined;
         setBounties();
         updateBountyPage();
-    } else if(bountyClaimable && currentBounty == bounty3 && bountyPageNum == 3) {
+    } else if(bountyClaimable && currentBounty.name == bounty3.name && bountyPageNum == 3) {
         ABounties++;
         cash += currentBounty.reward;
         shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
@@ -3537,11 +3558,11 @@ bountyClaimButton.addEventListener('mousedown', () => {
         shinyHitSound.cloneNode(true).play();
         saveGlobalStats();
         updateAchievements();
-        currentBounty = undefined;
+        currentBounty = null;
         bounty3 = undefined;
         setBounties();
         updateBountyPage();
-    } else if(currentBounty !== undefined) {
+    } else if(currentBounty !== null) {
         cantSelect.cloneNode(true).play();
     } else {
         shinyHitSound.cloneNode(true).play();
@@ -3556,6 +3577,7 @@ bountyClaimButton.addEventListener('mousedown', () => {
         }
         updateBountyPage();
     }
+    saveBounties();
 })
 
 

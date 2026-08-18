@@ -1261,14 +1261,14 @@ tutorialButton.addEventListener('mousedown', async () => {
         tutorialState = true;
     })
     setTimeout(() => {
-        startpageelements.forEach((element) => {
+        startpageelements.forEach(async (element) => {
             element.style.display = ("none")
+            if(settings[3].isOn) {
+                await setupAudio('audio/practice.mp3');
+                playLoopingMusic();
+            }
         })
     }, 1000)
-    if(settings[3].isOn) {
-        await setupAudio('audio/practice.mp3');
-        playLoopingMusic();
-    }
     tmoleimg.style.transform = "scale(0)"
     tutorialBox.style.display = ("flex")
     tutorialBox.style.animation = ("slideleft 1s ease-in-out forwards")
@@ -1290,11 +1290,6 @@ tutorialButton.addEventListener('mousedown', async () => {
 })
 
 const timerWrap = document.getElementById("timerwrap")
-
-
-const tutorialMusic = new Audio("audio/practice.mp3")
-tutorialMusic.loop = true;
-tutorialMusic.volume = 0.6;
 
 startbutton.addEventListener('mousedown', () => {
     score = 0;
@@ -1425,13 +1420,6 @@ function clickfx() {
 let firstInput = false;
 
 document.addEventListener('mousemove', async (event) => {
-    if(!firstInput) {
-        firstInput = true;
-        if(settings[3].isOn) {
-            await setupAudio('audio/mischevious.mp3');
-            playLoopingMusic();
-        }
-    }
     cursor.style.left = (`${event.clientX}px`)
     cursor.style.top = (`${event.clientY}px`)
     cursorhb.style.left = (`${event.clientX}px`)
@@ -1449,6 +1437,16 @@ document.addEventListener('mouseup', async () => {
 })
 
 document.addEventListener('mousedown', async () => {
+    if(!firstInput) {
+        firstInput = true;
+        if(settings[3].isOn) {
+            await setupAudio('audio/mischevious.mp3');
+            playLoopingMusic();
+        }
+    }
+})
+
+document.addEventListener('mousedown', () => {
     if(!timeUp) {
         if(stun > 0) {
             const stunSound = new Audio('audio/hover.mp3')

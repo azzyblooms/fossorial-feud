@@ -47,12 +47,12 @@ let achievements = [
     {name: "Trigger Happy", requires: 3, desc: "Hit the same enemy three times before it disappears.", challenge:false, owned:false, img:"triggerhappy"},
     {name: "Intentional", requires: 1, desc: "Hit an enemy within 300ms of it appearing.", challenge:true, owned:false, img:"intentional"},
     {name: "Clutched", requires: 1, desc: "Hit a mole or snake within 100ms of it disappearing.", challenge:false, owned:false, img:"clutched"},
-    {name: "Quick Draw", requires: 10, desc: "Hit 30 enemies within 10 seconds.", challenge:false, owned:false, img:"quickdraw"},
+    {name: "Quick Draw", requires: 25, desc: "Hit 25 enemies within 10 seconds.", challenge:false, owned:false, img:"quickdraw"},
 
     {name: "HAH!", requires: 1, desc: "YOU MISSED!", challenge:false, owned:false, img:"hah"},
     {name: "HAH! HAH! HAH!", requires: 100, desc: "Lose 100 streaks.", challenge:false, owned:false, img:"hah2"},
 
-    {name: "Begone!", requires: 10, desc: "Hit 10 enemies in a row.", challenge:false, owned:false, img:"streak1"},
+    {name: "That's not how you play the game", requires: 1, desc: "Have a score in the negatives.", challenge:false, owned:false, img:"negative"},
     {name: "Flow State", requires: 100, desc: "Hit 100 enemies in a row.", challenge:false, owned:false, img:"streak2"},
     {name: "Generational Run", requires: 250, desc: "Hit 250 enemies in a row.", challenge:true, owned:false, img:"streak3"},
     {name: "Flawless", requires: 0, desc: "Complete a game of classic mode without breaking your streak.", challenge:true, owned:false, img:"flawless"},
@@ -116,6 +116,11 @@ function processPopupQueue() {
     }
     popupShowing = true;
     const achievementQ = popupQueue.shift();
+    if(achievementQ.challenge) {
+        challengeSound.cloneNode(true).play();
+    } else {
+        achievementSound.cloneNode(true).play();
+    }
     achievementPopupImg.src = `images/icons/${achievementQ.img}.png`
     achievementPopupTitle.textContent = achievementQ.name;
     achievementPopupDesc.textContent = achievementQ.desc;
@@ -162,8 +167,8 @@ let AMedic = false;
 let AFlashbang = false;
 let AHitWhileFlashbang = false;
 let ADolladillo = false;
-let economyStimulated = false;
 let AHitMeerkat = false;
+let AEconomy = localStorage.getItem("AEconomy") === "true";
 let AArmadillos = Number(localStorage.getItem("AArmadillos") || 0)
 let AEndlessTime = Number(localStorage.getItem("AEndlessTime") || 0)
 let AStreak = Number(localStorage.getItem("AStreak") || 0)
@@ -189,6 +194,7 @@ function saveGlobalStats() {
     localStorage.setItem("AClassicScore", AClassicScore)
     localStorage.setItem("AEasyFarmed", AEasyFarmed)
     localStorage.setItem("AEndlessRoundsPlayed", AEndlessRoundsPlayed)
+    localStorage.setItem("AEconomy", AEconomy)
     localStorage.setItem("AGoldenMoles", AGoldenMoles)
     localStorage.setItem("AGroundhogs", AGroundhogs)
     localStorage.setItem("AMoleHits", AMoleHits)
@@ -208,6 +214,7 @@ function loadGlobalStats() {
     AClassicScore = Number(localStorage.getItem("AClassicScore"))
     AEasyFarmed = Number(localStorage.getItem("AEasyFarmed"))
     AEndlessRoundsPlayed = Number(localStorage.getItem("AEndlessRoundsPlayed"))
+    AEconomy = (localStorage.getItem("AEconomy") === "true")
     AGoldenMoles = Number(localStorage.getItem("AGoldenMoles"))
     AGroundhogs = Number(localStorage.getItem("AGroundhogs"))
     AMoleHits = Number(localStorage.getItem("AMoleHits"))
@@ -1415,16 +1422,21 @@ function clickfx() {
     hits[currentHit].cloneNode(true).play();
 }
 
-document.addEventListener('mousemove', (event) => {
+let firstInput = false;
+
+document.addEventListener('mousemove', async (event) => {
+    if(!firstInput) {
+        firstInput = true;
+        if(settings[3].isOn) {
+            await setupAudio('audio/mischevious.mp3');
+            playLoopingMusic();
+        }
+    }
     cursor.style.left = (`${event.clientX}px`)
     cursor.style.top = (`${event.clientY}px`)
-})
-
-document.addEventListener('mousemove', (event) => {
     cursorhb.style.left = (`${event.clientX}px`)
     cursorhb.style.top = (`${event.clientY}px`)
 })
-
 let stun = 0;
 let tap1 = new Audio("audio/dstap1.mp3")
 let tap2 = new Audio("audio/dstap2.mp3")
@@ -1455,9 +1467,6 @@ document.addEventListener('mousedown', async () => {
             let hitMole = false;
 
             moles.forEach((mole) => {
-                if(mole.state == "dying") {
-                    return;
-                }
                 if(clickCollision(mole.element.querySelector("img"), cursorhb)) {
                     if(teasing && !skipIntro && !skipIntroState && !endless) {
                         mole.state = "hit";
@@ -1481,6 +1490,7 @@ document.addEventListener('mousedown', async () => {
                             cursor.querySelector("img").offsetHeight;
                             cursor.querySelector("img").style.animation = "redfilter 200ms ease"
                             score -= 10;
+                            updateAchievements();
                             if(streak > 0) {
                                 endStreak();
                             }
@@ -1520,6 +1530,7 @@ document.addEventListener('mousedown', async () => {
                         scoreText.style.animation = "loseScore 300ms ease"
                     }
                     score -= 10;
+                    updateAchievements();
                     if(streak > 0) {
                         endStreak();
                     }
@@ -1534,6 +1545,8 @@ document.addEventListener('mousedown', async () => {
         })
     }
 })
+const achievementSound = new Audio("audio/achievement.mp3")
+const challengeSound = new Audio("audio/rareachievement.mp3")
 const streakSaved = new Audio("audio/streaksaved.wav")
 const congrats = new Audio("audio/congrats.wav")
 function endStreak() {
@@ -1961,8 +1974,6 @@ function finishGame() {
             playLoopingMusic();
         }
         drumroll.play();
-        if(!endless || AClassicScore < score) {AClassicScore = score}
-        if(AScore < score) {AScore = score}
     }, 2000)
 }
 let currentDialogue = null;
@@ -2035,6 +2046,15 @@ function tallyScore() {
             localStorage.setItem("cash", cash)
             displayedScore = 0;
             scoreToCash = true;
+            if(endless && AScore < score) {
+                AScore = score;
+                congrats.play();
+            }
+            if(!endless && AClassicScore < score) {
+                AClassicScore = score;
+                congrats.play();
+            }
+            saveGlobalStats();
             applause.play();
             setTimeout(() => {
                 molecontainer.style.animation = ("fadeout 1.2s ease forwards")
@@ -2070,6 +2090,7 @@ evilbutton.addEventListener("click", () => {
         ATutorialComplete = 0;
         AClassicRoundsPlayed = 0;
         AEndlessRoundsPlayed = 0;
+        AEconomy = false;
         timer.classList.remove("flashing")
         ATotalHits = 0;
         ASmorgasbord = [];
@@ -2098,7 +2119,6 @@ evilbutton.addEventListener("click", () => {
         ASpit = 0;
         AGroundhogs = 0;
         AOptionsTalked = [];
-        economyStimulated = false;
         AHitMeerkat = false;
         AEasyFarmed = 0;
         achievements.forEach((achievement) => {
@@ -2304,7 +2324,7 @@ function spawnMole(mole) {
         }
     }, Math.random() * 2000 + 500)
 }
-
+const splat = new Audio("audio/splat.wav")
 function spawnGroundhog(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
     clearTimeout(mole.hideTimer)
@@ -2371,7 +2391,7 @@ function spawnArmadillo(mole) {
     } else if(determineItem == 6) {
         /*mole.item = "cash"
         moleImg.src = "images/dolladillo.png"*/
-        if(economyStimulated) {
+        if(AEconomy) {
             mole.item = "cash"
             moleImg.src = "images/dolladillo.png"
         } else {
@@ -2401,7 +2421,7 @@ function spawnArmadillo(mole) {
             } else if(determineItem == 6) {
                 /*mole.item = "cash"
                 moleImg.src = "images/dolladillo.png"*/
-                if(economyStimulated) {
+                if(AEconomy) {
                     mole.item = "cash"
                     moleImg.src = "images/dolladillo.png"
                 } else {
@@ -2506,7 +2526,7 @@ function spit(mole) {
             hurtPlayer();
         } else {
             timeLeft -= 15;
-            ping.cloneNode(true).play();
+            splat.cloneNode(true).play();
         }
         shading.style.animation = "shaderFade 500ms ease forwards"
         shakingElements = Array.from(document.body.querySelectorAll("*"));
@@ -2653,7 +2673,7 @@ const shopDialogue = [
     //the moles 21
     "* It's been about two years, give or take. Two years since I moved in.",
     "* The moles got here last month. Heh, at least life ain't so mundane anymore. But still...",
-    "* To be honest, I wanted to move out. Everything seemed to get worse. Couldn't even last a day without one digging into my shop.",
+    "* To be honest, I wanted to move out. Everything seemed to get worse. Business went down the toilet. Couldn't even last a day without one digging into my shop.",
     "* But then, hunters showed up. Hunters like you. That helped a lot.",
     "* Now, the moles tend to keep to their burrows. Things flared up once they recruited the snakes and armadillos, but not much has come out of it.",
     
@@ -2773,7 +2793,8 @@ topics[0].addEventListener('mousedown', () => {
 })
 topics[1].addEventListener('mousedown', () => {
     shopPrepText(shopDialogue[12])
-    economyStimulated = true;
+    AEconomy = true;
+    saveGlobalStats();
     if(!AOptionsTalked.includes("2")) {
         AOptionsTalked.push("2")
     }
@@ -3348,13 +3369,13 @@ document.addEventListener('keydown', (event) => {
 let quickDrawStart = null;
 let quickDrawCount = 0;
 function checkQuickDraw() {
-    const now = Date.now;
-    if(quickDrawStart === null || now - quickDrawCount > 10000) {
+    const now = Date.now();
+    if(quickDrawStart === null || now - quickDrawStart > 10000) {
         quickDrawCount = 0;
         quickDrawStart = now;
     }
     quickDrawCount++;
-    if(quickDrawCount >= 30) {AQuickDraw = true; updateAchievements();}
+    if(quickDrawCount >= 25) {AQuickDraw = true; updateAchievements();}
 }
 
 
@@ -3367,8 +3388,8 @@ function updateAchievements() {
     if(AClassicRoundsPlayed >= 50) {grantAchievement(achievements[3])}
 
     if(score >= 20000 && !endless) {grantAchievement(achievements[4])}
-    if(score >= 50000) {grantAchievement(achievements[5])}
-    if(score >= 250000) {grantAchievement(achievements[6])}
+    if(score >= 50000 || AScore >= 50000) {grantAchievement(achievements[5])}
+    if(score >= 250000 || AScore >= 250000) {grantAchievement(achievements[6])}
 
     if(AEndlessRoundsPlayed >= 1) {grantAchievement(achievements[7])}
     if(AEndlessRoundsPlayed >= 10) {grantAchievement(achievements[8])}
@@ -3389,7 +3410,7 @@ function updateAchievements() {
     if(AStreakBreaks >= 1) {grantAchievement(achievements[20])}
     if(AStreakBreaks >= 100) {grantAchievement(achievements[21])}
 
-    if(streak >= 10) {grantAchievement(achievements[22])}
+    if(score < 0) {grantAchievement(achievements[22])}
     if(streak >= 100) {grantAchievement(achievements[23])}
     if(streak >= 250) {grantAchievement(achievements[24])}
     if(AFlawless) {grantAchievement(achievements[25])}
@@ -3419,7 +3440,7 @@ function updateAchievements() {
 
     if(AOptionsTalked.length == 6) {grantAchievement(achievements[44])}
     if(yourItems.filter(item => item.owned).length == 12) {grantAchievement(achievements[45])}
-    if(economyStimulated) {grantAchievement(achievements[46])}
+    if(AEconomy) {grantAchievement(achievements[46])}
     if(AHitMeerkat) {grantAchievement(achievements[47])}
     if(yourItems[8].owned) {grantAchievement(achievements[48])}
     if(yourItems[9].owned) {grantAchievement(achievements[49])}
@@ -3506,9 +3527,6 @@ function fixGrayscale() {
             if(index === 21) {
                 numerator.textContent = AStreakBreaks.toLocaleString();
             }
-            if(index === 22) {
-                numerator.textContent = AStreak.toLocaleString();
-            }
             if(index === 23) {
                 numerator.textContent = AStreak.toLocaleString();
             }
@@ -3570,11 +3588,6 @@ function grantAchievement(achievement) {
         fixGrayscale();
         showPopup(achievement);
         achievementCount.textContent = `${achievementCounter}/54`
-        if(achievement.challenge) {
-            shinyHitSound.cloneNode(true).play();
-        } else {
-            lockin.cloneNode(true).play();
-        }
     }
 }
 

@@ -63,7 +63,7 @@ let achievements = [
     {name: "My Beautiful Collection", requires: 500, desc: "Hit 500 golden moles.", challenge:true, owned:false, img:"beautifulcollection"},
     {name: "Gold Rush", requires: 10, desc: "Hit 10 golden moles in one round.", challenge:false, owned:false, img:"gmole2"},
     {name: "Set For Life", requires: 50, desc: "Hit 50 golden moles in one round.", challenge:true, owned:false, img:"gmole3"},
-    {name: "Serendipity", requires: 3, desc: "Hit three golden moles in a row.", challenge:true, owned:false, img:"serem"},
+    {name: "Serendipity", requires: 3, desc: "Hit three golden moles in a row.", challenge:true, owned:false, img:"seren"},
     {name: "Wow! That was so Gold!", requires: "100%", desc: "Have a high enough streak for all moles to be golden.", challenge:true, owned:false, img:"sogold"},
     {name: "Butterfingers", requires: 1, desc: "The one that got away...", challenge:false, owned:false, img:"gotaway"},
 
@@ -80,7 +80,7 @@ let achievements = [
     {name: "Hogs and Robbers", requires: 1, desc: "Hit a groundhog.", challenge:false, owned:false, img:"groundhog"},
     {name: "Highway Robbery", requires: 50, desc: "Hit 50 groundhogs. Not like they steal much anyways.", challenge:true, owned:false, img:"groundhog2"},
     
-    {name: "Hello!!!", requires: 1 /*i'm not sure*/, desc: "Spend some quality time chatting with Meerkat.", challenge:true, owned:false, img:"talk"},
+    {name: "Hello!!!", requires: 6, desc: "Spend some quality time chatting with Meerkat.", challenge:true, owned:false, img:"talk"},
     {name: "SHUT UP AND TAKE MY MONEY!", requires: 12, desc: "Buy everything in the shop.", challenge:true, owned:false, img:"buyeverything"},
     {name: "Sharing Is Caring", requires: 1, desc: "Step 1: Stimulate the economy.", challenge:false, owned:false, img:"economy"},
     {name: "Stop, Criminell!", requires: 1, desc: "Hit Meerkat. Jerk.", challenge:false, owned:false, img:"hittalk"},
@@ -91,7 +91,53 @@ let achievements = [
     {name: "Highly Charitable", requires: 2, desc: "Do it again.", challenge:true, owned:false, img:"donate2"},
 
     {name: "Azzy hates this one simple trick", requires: 5, desc: "Try to exploit easy difficulty for easy money.", challenge:false, owned:false, img:"azzy"},
+
+    {name: "Mercenary", requires: 1, desc: "Complete your first bounty.", challenge:false, owned:false, img:"azzy"},
+    {name: "\"It's honest work.\"", requires: 25, desc: "Complete 25 bounties.", challenge:true, owned:false, img:"azzy"},
+    {name: "Benji", requires: 1, desc: "Find Benjamin.", challenge:true, owned:false, img:"azzy"},
+    
 ]
+
+let bountyList = [
+    {name: "Pumpernickel", reward:2500, img:"pumpernickel", hunts:0, minTime:500, maxTime:350, color:"rgb(98, 24, 112)"},
+    {name: "Gerald", reward:5000, img:"gerald", hunts:0, minTime:450, maxTime:300, color:"rgb(65, 72, 112)"},
+    {name: "Fiddlebert", reward:5000, img:"fiddlebert", hunts:0, minTime:450, maxTime:300, color:"rgb(15, 99, 22)"},
+    {name: "Nora", reward:7500, img:"nora", hunts:0, minTime:450, maxTime:250, color:"rgb(58, 58, 58)"},
+    {name: "Maurice", reward:10000, img:"maurice", hunts:0, minTime:400, maxTime:200, color:"rgb(231, 123, 182)"},
+    {name: "Sneers", reward:12500, img:"sneers", hunts:0, minTime:350, maxTime:200, color:"rgb(68, 133, 158)"},
+    {name: "Terrible Ted", reward:15000, img:"terribleted", hunts:0, minTime:350, maxTime:150, color:"rgb(48, 14, 8)"},
+    {name: "Kingfisher", reward:20000, img:"kingfisher", hunts:0, minTime:350, maxTime:150, color:"rgb(160, 152, 78)"},
+    {name: "Midas", reward:50000, img:"midas", hunts:0, minTime:350, maxTime:100, color:"rgb(255, 174, 0)"},
+    {name: "Benjamin", reward:100000, img:"benjamin", hunts:0, minTime:350, maxTime:50, color:"rgb(29, 4, 4)"}
+]
+
+let currentBounty = undefined;
+let bounty1 = undefined;
+let bounty2 = undefined;
+let bounty3 = undefined;
+
+
+function setBounties() {
+    if(bounty1 == undefined) {
+        do {
+            bounty1 = bountyList[Math.floor(Math.random() * 10)]
+        } while (bounty1 === bounty3 || bounty1 === bounty2)
+    }
+    if(bounty2 == undefined) {
+        do {
+            bounty2 = bountyList[Math.floor(Math.random() * 10)]
+        } while (bounty2 === bounty3 || bounty2 === bounty1)
+    }
+    if(bounty3 == undefined) {
+        do {
+            bounty3 = bountyList[Math.floor(Math.random() * 10)]
+        } while (bounty3 === bounty1 || bounty3 === bounty2)
+    }
+}
+setBounties();
+
+
+
 
 const achievementPopup = document.getElementById("achievementpopup")
 const achievementPopupImg = document.getElementById("popupimg")
@@ -187,9 +233,11 @@ let AScore = Number(localStorage.getItem("AScore") || 0)
 let ASnakes = Number(localStorage.getItem("ASnakes") || 0)
 let ASpit = Number(localStorage.getItem("ASpit") || 0)
 let AStreakBreaks = Number(localStorage.getItem("AStreakBreaks") || 0)
+let ABounties = Number(localStorage.getItem("ABounties") || 0)
 
 function saveGlobalStats() {
     localStorage.setItem("AArmadillos", AArmadillos)
+    localStorage.setItem("ABounties", ABounties)
     localStorage.setItem("AClassicRoundsPlayed", AClassicRoundsPlayed)
     localStorage.setItem("AClassicScore", AClassicScore)
     localStorage.setItem("AEasyFarmed", AEasyFarmed)
@@ -210,6 +258,7 @@ function saveGlobalStats() {
 }
 function loadGlobalStats() {
     AArmadillos = Number(localStorage.getItem("AArmadillos"))
+    ABounties = Number(localStorage.getItem("ABounties"))
     AClassicRoundsPlayed = Number(localStorage.getItem("AClassicRoundsPlayed"))
     AClassicScore = Number(localStorage.getItem("AClassicScore"))
     AEasyFarmed = Number(localStorage.getItem("AEasyFarmed"))
@@ -1602,7 +1651,20 @@ function moleHit(mole) {
     clearTimeout(mole.spawningTimer)
     if(flashbang.style.display == "inline" && flashbang.style.opacity == "1") {AHitWhileFlashbang = true;}
     mole.state = "dying";
-    if(mole.type == "mole") {
+    if(mole.type == "bounty") {
+        clearTimeout(mole.saveStreak)
+        score += currentBounty.reward / 5;
+        ASerendipity = 0;
+        streak++;
+        bountyClaimable = true;
+        shinyHitSound.cloneNode(true).play();
+        streakIncrease();
+        scoreText.style.animation = "none"
+        if(currentBounty.name == "Benjamin") {grantAchievement(achievements[56])}
+        scoreText.offsetHeight;
+        scoreText.style.animation = "scoreBubbleUp 400ms ease"
+        ASmorgasbord = [];
+    } else if(mole.type == "mole") {
         if(mole.saveStreak >= 100) {AClutched = true}
         clearTimeout(mole.saveStreak)
         score += 50;
@@ -1768,7 +1830,7 @@ function moleHit(mole) {
         }
     }
 }
-
+let bountyClaimable = false;
 function clickCollision(divA, divB) {
     const a = divA.getBoundingClientRect();
     const b = divB.getBoundingClientRect();
@@ -2101,6 +2163,7 @@ evilbutton.addEventListener("click", () => {
         AGoldenChance = 0;
         AGoldenGame = 0;
         AStreak = 0;
+        ABounties = 0;
         AQuickDraw = false;
         AStreakBreaks = 0;
         AFlawless = false;
@@ -2179,18 +2242,33 @@ async function gameStart() {
         if (available.length > 0) {
             const randomMole = available[Math.floor(Math.random() * available.length)];
             //spawnMole(randomMole)
-            const moleType = Math.floor(Math.random() * 23)
+            const moleType = Math.floor(Math.random() * 24)
             if(moleType >= 0 && moleType <= 14) {
                 spawnMole(randomMole)
             }
-            if(moleType >= 15 && moleType <= 18) {
+            if(moleType >= 15 && moleType <= 17) {
                 spawnGroundhog(randomMole)
             }
-            if(moleType >= 19 && moleType <= 20) {
+            if(moleType >= 18 && moleType <= 19) {
                 spawnArmadillo(randomMole)
             }
-            if(moleType >= 21 && moleType <= 22) {
+            if(moleType >= 20 && moleType <= 22) {
                 spawnSnake(randomMole)
+            }
+            if(moleType >= 23) {
+                console.log("attempted bounty spawn")
+                if(!bountyClaimable) {
+                    if(Math.floor(Math.random() * 5) == 0) {
+                        if(currentBounty !== undefined) {
+                            spawnBounty(randomMole)
+                            console.log("successful bounty spawn")
+                        } else {
+                            spawnMole(randomMole)
+                        }
+                    } else {
+                        spawnMole(randomMole)
+                    }
+                }
             }
             globalCooldown = Math.random() * 100 + 50;
         }
@@ -2230,18 +2308,33 @@ async function endlessStart() {
         if (available.length > 0) {
             const randomMole = available[Math.floor(Math.random() * available.length)];
             //spawnMole(randomMole)
-            const moleType = Math.floor(Math.random() * 23)
+            const moleType = Math.floor(Math.random() * 24)
             if(moleType >= 0 && moleType <= 14) {
                 spawnMole(randomMole)
             }
-            if(moleType >= 15 && moleType <= 18) {
+            if(moleType >= 15 && moleType <= 17) {
                 spawnGroundhog(randomMole)
             }
-            if(moleType >= 19 && moleType <= 20) {
+            if(moleType >= 18 && moleType <= 19) {
                 spawnArmadillo(randomMole)
             }
-            if(moleType >= 21 && moleType <= 22) {
+            if(moleType >= 20 && moleType <= 22) {
                 spawnSnake(randomMole)
+            }
+            if(moleType >= 23) {
+                console.log("attempted bounty spawn")
+                if(!bountyClaimable) {
+                    if(Math.floor(Math.random() * 5) == 0) {
+                        if(currentBounty !== undefined) {
+                            spawnBounty(randomMole)
+                            console.log("successful bounty spawn")
+                        } else {
+                            spawnMole(randomMole)
+                        }
+                    } else {
+                        spawnMole(randomMole)
+                    }
+                }
             }
             globalCooldown = Math.random() * 100 + 50;
         }
@@ -2322,6 +2415,49 @@ function spawnMole(mole) {
         }
     }, Math.random() * 2000 + 500)
 }
+
+function spawnBounty(mole) {
+    if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
+    if(currentBounty.img === "midas" || currentBounty.img === "benjamin") {
+        if(Math.random() < goldenMoleChance) {
+            return;
+        }
+    }
+    clearTimeout(mole.hideTimer)
+    mole.item = null;
+    mole.sameHits = 0;
+    shinySound.cloneNode(true).play();
+    clearTimeout(mole.spawningTimer)
+    clearTimeout(mole.saveStreak)
+    mole.type = "bounty";
+    mole.state = "up";
+    const moleImg = mole.element.querySelector("img")
+    moleImg.src = `images/bounties/${currentBounty.img}.png`
+    moleImg.style.filter = `drop-shadow(0 0 10px ${currentBounty.color})`;
+    moleImg.style.transition = "transform 350ms ease"
+    moleImg.style.transform = "scale(1)"
+    mole.spawningTimer = setTimeout(() => {
+        mole.state = "up";
+        moleImg.style.transform = "scale(1)"
+        mole.spawningTimer = null;
+    }, 50)
+    mole.hideTimer = setTimeout(() => {
+        if(mole.state == "up") {
+            moleImg.style.transform = "scale(0)"
+            setTimeout(() => {
+                mole.state = "bury";
+                if(yourItems[4].owned) {
+                    mole.cooldown = Math.floor(Math.random() * 500 + 150);
+                } else {
+                    mole.cooldown = Math.floor(Math.random() * 1500 + 350);
+                }
+                
+            }, 350)
+        }
+    }, Math.random() * currentBounty.maxTime + currentBounty.minTime)
+}
+
+
 const splat = new Audio("audio/splat.wav")
 function spawnGroundhog(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
@@ -3109,6 +3245,7 @@ talkBackArrow.addEventListener('mousedown', () => {
     talkButton.style.display = "flex"
     buyButton.style.display = "flex"
     leaveButton.style.display = "flex"
+    bountyButton.style.display = "flex"
     currentDialogue = null;
 })
 
@@ -3119,6 +3256,7 @@ backArrow.addEventListener('mousedown', () => {
         currentDialogue = null;
         storePage.style.display = "none"
         talkButton.style.display = "flex"
+        bountyButton.style.display = "flex"
         shopPrepText(shopDialogue[Math.floor(Math.random() * 4)])
         buyButton.style.display = "flex"
         leaveButton.style.display = "flex"
@@ -3239,24 +3377,187 @@ shopItems[5].addEventListener('mousedown', () => {
 
 buyButton.addEventListener('mousedown', () => {
     shopPage = 0;
+    bountyPage = 1;
     shopPrepText(shopDialogue[Math.floor(Math.random() * 3 + 7)])
     talkButton.style.display = "none"
     buyButton.style.display = "none"
     currentDialogue = null;
     leaveButton.style.display = "none"
     storePage.style.display = "flex"
+    bountyButton.style.display = "none"
     focusedItem = null;
 })
 talkButton.addEventListener('mousedown', () => {
     shopPage = 0;
+    bountyPage = 1;
     currentDialogue = null;
     focusedItem = null;
     shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 10)])
     talkButton.style.display = "none"
     buyButton.style.display = "none"
     leaveButton.style.display = "none"
+    bountyButton.style.display = "none"
     talkPage.style.display = "flex"
 })
+
+const bountyButton = document.getElementById("bountybutton")
+const bountyPage = document.getElementById("bounties")
+const bountyBackArrow = document.getElementById("bountyback")
+const bountyNextArrow = document.getElementById("bountynext")
+
+bountyButton.addEventListener('mousedown', () => {
+    shopPage = 0;
+    setBounties();
+    bountyPageNum = 1;
+    currentDialogue = null;
+    focusedItem = null;
+    shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 10)])
+    talkButton.style.display = "none"
+    buyButton.style.display = "none"
+    leaveButton.style.display = "none"
+    bountyButton.style.display = "none"
+    bountyPage.style.display = "flex"
+    updateBountyPage();
+    talkPage.style.display = "none"
+})
+
+bountyBackArrow.addEventListener('mousedown', () => {
+    if(bountyPageNum <= 1) {
+        currentDialogue = null;
+        storePage.style.display = "none"
+        talkButton.style.display = "flex"
+        bountyPage.style.display = "none"
+        bountyButton.style.display = "flex"
+        shopPrepText(shopDialogue[Math.floor(Math.random() * 4)])
+        buyButton.style.display = "flex"
+        leaveButton.style.display = "flex"
+    } else {
+        bountyPageNum--;
+        updateBountyPage();
+    }
+})
+bountyNextArrow.addEventListener('mousedown', () => {
+    if(bountyPageNum <= 2) {
+        bountyPageNum++;
+        updateBountyPage();
+    } else {
+        cantSelect.cloneNode(true).play();
+    }
+})
+
+const bountyImg = document.getElementById("bountyimg")
+const bountyName = document.getElementById("bountyname")
+const bountyReward = (document.getElementById("reward")).querySelector("span")
+const bountyClaimButton = document.getElementById("bountyclaim")
+
+function updateBountyPage() {
+    if(bountyPageNum == 1) {
+        bountyImg.src = `images/bounties/${bounty1.img}.png`
+        bountyName.textContent = bounty1.name;
+        bountyReward.textContent = `\$${bounty1.reward.toLocaleString()}`
+        bountyImg.style.backgroundColor = `${bounty1.color}`
+        bountyName.style.color = `${bounty1.color}`
+        if(bountyClaimable && currentBounty == bounty1) {
+            bountyClaimButton.textContent = "CLAIM"
+        } else if(currentBounty == bounty1) {
+            bountyClaimButton.textContent = "IN PROGRESS"
+        } else if(currentBounty !== undefined) {
+            bountyClaimButton.textContent = "CAN'T START"
+        } else {
+            bountyClaimButton.textContent = "HUNT"
+        }
+    }
+    if(bountyPageNum == 2) {
+        bountyImg.src = `images/bounties/${bounty2.img}.png`
+        bountyName.textContent = bounty2.name;
+        bountyReward.textContent = `\$${bounty2.reward.toLocaleString()}`
+        bountyImg.style.backgroundColor = `${bounty2.color}`
+        bountyName.style.color = `${bounty2.color}`
+        if(bountyClaimable && currentBounty == bounty2) {
+            bountyClaimButton.textContent = "CLAIM"
+        } else if(currentBounty == bounty2) {
+            bountyClaimButton.textContent = "IN PROGRESS"
+        } else if(currentBounty !== undefined) {
+            bountyClaimButton.textContent = "CAN'T START"
+        } else {
+            bountyClaimButton.textContent = "HUNT"
+        }
+    }
+    if(bountyPageNum == 3) {
+        bountyImg.src = `images/bounties/${bounty3.img}.png`
+        bountyName.textContent = bounty3.name;
+        bountyReward.textContent = `\$${bounty3.reward.toLocaleString()}`
+        bountyImg.style.backgroundColor = `${bounty3.color}`
+        bountyName.style.color = `${bounty3.color}`
+        if(bountyClaimable && currentBounty == bounty3) {
+            bountyClaimButton.textContent = "CLAIM"
+        } else if(currentBounty == bounty3) {
+            bountyClaimButton.textContent = "IN PROGRESS"
+        } else if(currentBounty !== undefined) {
+            bountyClaimButton.textContent = "CAN'T START"
+        } else {
+            bountyClaimButton.textContent = "HUNT"
+        }
+    }
+}
+
+bountyClaimButton.addEventListener('mousedown', () => {
+    if(bountyClaimable && currentBounty == bounty1 && bountyPageNum == 1) {
+        ABounties++;
+        cash += currentBounty.reward;
+        shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
+        localStorage.setItem("cash", cash)
+        bountyClaimable = false;
+        shinyHitSound.cloneNode(true).play();
+        saveGlobalStats();
+        updateAchievements();
+        currentBounty = undefined;
+        bounty1 = undefined;
+        setBounties();
+        updateBountyPage();
+    } else if(bountyClaimable && currentBounty == bounty2 && bountyPageNum == 2) {
+        ABounties++;
+        cash += currentBounty.reward;
+        shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
+        localStorage.setItem("cash", cash)
+        bountyClaimable = false;
+        shinyHitSound.cloneNode(true).play();
+        saveGlobalStats();
+        updateAchievements();
+        currentBounty = undefined;
+        bounty2 = undefined;
+        setBounties();
+        updateBountyPage();
+    } else if(bountyClaimable && currentBounty == bounty3 && bountyPageNum == 3) {
+        ABounties++;
+        cash += currentBounty.reward;
+        shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
+        localStorage.setItem("cash", cash)
+        bountyClaimable = false;
+        shinyHitSound.cloneNode(true).play();
+        saveGlobalStats();
+        updateAchievements();
+        currentBounty = undefined;
+        bounty3 = undefined;
+        setBounties();
+        updateBountyPage();
+    } else if(currentBounty !== undefined) {
+        cantSelect.cloneNode(true).play();
+    } else {
+        shinyHitSound.cloneNode(true).play();
+        if(bountyPageNum == 1) {
+            currentBounty = bounty1
+        }
+        if(bountyPageNum == 2) {
+            currentBounty = bounty2
+        }
+        if(bountyPageNum == 3) {
+            currentBounty = bounty3
+        }
+        updateBountyPage();
+    }
+})
+
 
 const meerkat = document.getElementById("shopkeeper") 
 meerkat.querySelector("img").addEventListener('mousedown', () => {
@@ -3447,6 +3748,10 @@ function updateAchievements() {
     if(yourItems[11].q >= 2) {grantAchievement(achievements[52])}
 
     if(AEasyFarmed >= 5) {grantAchievement(achievements[53])}
+
+    if(ABounties >= 1) {grantAchievement(achievements[54])}
+    if(ABounties >= 25) {grantAchievement(achievements[55])}
+    //if(ABounties >= 1) {grantAchievement(achievements[56])}
 }
 
 function fixGrayscale() {
@@ -3567,6 +3872,12 @@ function fixGrayscale() {
             if(index === 53) {
                 numerator.textContent = AEasyFarmed;
             }
+            if(index === 54) {
+                numerator.textContent = ABounties;
+            }
+            if(index === 55) {
+                numerator.textContent = ABounties;
+            }
         }
     });
 
@@ -3574,7 +3885,7 @@ function fixGrayscale() {
 
 fixGrayscale();
 achievementCounter = achievements.filter(achievement => achievement.owned).length
-achievementCount.textContent = `${achievementCounter}/54`
+achievementCount.textContent = `${achievementCounter}/57`
 
 
 function grantAchievement(achievement) {
@@ -3585,7 +3896,7 @@ function grantAchievement(achievement) {
         saveAchievements();
         fixGrayscale();
         showPopup(achievement);
-        achievementCount.textContent = `${achievementCounter}/54`
+        achievementCount.textContent = `${achievementCounter}/57`
     }
 }
 
@@ -3597,7 +3908,7 @@ document.querySelectorAll("#achievementboxes .achievement").forEach((ach) => {
 achievementButton.addEventListener('mousedown', () => {
     fixGrayscale();
     achievementCounter = achievements.filter(achievement => achievement.owned).length
-    achievementCount.textContent = `${achievementCounter}/54`
+    achievementCount.textContent = `${achievementCounter}/57`
     startpageelements.forEach((element) => {
         element.style.animation = ("wipeleft 1s ease-in-out forwards")
     })

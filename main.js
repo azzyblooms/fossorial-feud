@@ -92,23 +92,23 @@ let achievements = [
 
     {name: "Azzy hates this one simple trick", requires: 5, desc: "Try to exploit easy difficulty for easy money.", challenge:false, owned:false, img:"azzy"},
 
-    {name: "Mercenary", requires: 1, desc: "Complete your first bounty.", challenge:false, owned:false, img:"azzy"},
-    {name: "\"It's honest work.\"", requires: 25, desc: "Complete 25 bounties.", challenge:true, owned:false, img:"azzy"},
-    {name: "Benji", requires: 1, desc: "Find Benjamin.", challenge:true, owned:false, img:"azzy"},
+    {name: "Mercenary", requires: 1, desc: "Complete your first bounty.", challenge:false, owned:false, img:"bounty1"},
+    {name: "\"It's honest work.\"", requires: 25, desc: "Complete 25 bounties.", challenge:true, owned:false, img:"bounty2"},
+    {name: "Benji", requires: 1, desc: "Find Benjamin.", challenge:true, owned:false, img:"benji"},
     
 ]
 
 let bountyList = [
-    {name: "Pumpernickel", reward:2500, img:"pumpernickel", hunts:0, minTime:500, maxTime:350, color:"rgb(98, 24, 112)"},
-    {name: "Gerald", reward:5000, img:"gerald", hunts:0, minTime:450, maxTime:300, color:"rgb(65, 72, 112)"},
-    {name: "Fiddlebert", reward:5000, img:"fiddlebert", hunts:0, minTime:450, maxTime:300, color:"rgb(15, 99, 22)"},
-    {name: "Nora", reward:7500, img:"nora", hunts:0, minTime:450, maxTime:250, color:"rgb(58, 58, 58)"},
-    {name: "Maurice", reward:10000, img:"maurice", hunts:0, minTime:400, maxTime:200, color:"rgb(231, 123, 182)"},
-    {name: "Sneers", reward:12500, img:"sneers", hunts:0, minTime:350, maxTime:200, color:"rgb(68, 133, 158)"},
-    {name: "Terrible Ted", reward:15000, img:"terribleted", hunts:0, minTime:350, maxTime:150, color:"rgb(48, 14, 8)"},
-    {name: "Kingfisher", reward:20000, img:"kingfisher", hunts:0, minTime:350, maxTime:150, color:"rgb(160, 152, 78)"},
-    {name: "Midas", reward:50000, img:"midas", hunts:0, minTime:350, maxTime:100, color:"rgb(255, 174, 0)"},
-    {name: "Benjamin", reward:100000, img:"benjamin", hunts:0, minTime:350, maxTime:50, color:"rgb(29, 4, 4)"}
+    {name: "Pumpernickel", reward:2500, img:"pumpernickel", hunts:0, dialogue:71, minTime:500, maxTime:350, color:"rgb(98, 24, 112)"},
+    {name: "Gerald", reward:5000, img:"gerald", hunts:0, dialogue:72, minTime:450, maxTime:300, color:"rgb(65, 72, 112)"},
+    {name: "Fiddlebert", reward:5000, img:"fiddlebert", hunts:0, dialogue:73, minTime:450, maxTime:300, color:"rgb(15, 99, 22)"},
+    {name: "Nora", reward:7500, img:"nora", hunts:0, dialogue:74, minTime:450, maxTime:250, color:"rgb(58, 58, 58)"},
+    {name: "Maurice", reward:10000, img:"maurice", hunts:0, dialogue:75, minTime:400, maxTime:200, color:"rgb(231, 123, 182)"},
+    {name: "Sneers", reward:12500, img:"sneers", hunts:0, dialogue:76, minTime:350, maxTime:200, color:"rgb(68, 133, 158)"},
+    {name: "Terrible Ted", reward:15000, img:"terribleted", hunts:0, dialogue:77, minTime:350, maxTime:150, color:"rgb(48, 14, 8)"},
+    {name: "Kingfisher", reward:20000, img:"kingfisher", hunts:0, dialogue:78, minTime:350, maxTime:150, color:"rgb(160, 152, 78)"},
+    {name: "Midas", reward:50000, img:"midas", hunts:0, dialogue:79, minTime:350, maxTime:100, color:"rgb(255, 174, 0)"},
+    {name: "Benjamin", reward:100000, img:"benjamin", hunts:0, dialogue:80, minTime:350, maxTime:50, color:"rgb(29, 4, 4)"}
 ]
 
 let currentBounty = null;
@@ -121,6 +121,7 @@ function saveBounties() {
     localStorage.setItem("bounty2", JSON.stringify(bounty2))
     localStorage.setItem("bounty3", JSON.stringify(bounty3))
     localStorage.setItem("currentBounty", JSON.stringify(currentBounty))
+    localStorage.setItem("bountyList", JSON.stringify(bountyList))
 }
 
 
@@ -128,17 +129,17 @@ function setBounties() {
     if(bounty1 == undefined) {
         do {
             bounty1 = bountyList[Math.floor(Math.random() * 10)]
-        } while (bounty1 === bounty3 || bounty1 === bounty2)
+        } while ((bounty1 === bounty3 || bounty1 === bounty2) || bounty1.name === previousBounty)
     }
     if(bounty2 == undefined) {
         do {
             bounty2 = bountyList[Math.floor(Math.random() * 10)]
-        } while (bounty2 === bounty3 || bounty2 === bounty1)
+        } while ((bounty2 === bounty3 || bounty2 === bounty1) || bounty2.name === previousBounty)
     }
     if(bounty3 == undefined) {
         do {
             bounty3 = bountyList[Math.floor(Math.random() * 10)]
-        } while (bounty3 === bounty1 || bounty3 === bounty2)
+        } while ((bounty3 === bounty1 || bounty3 === bounty2) || bounty3.name === previousBounty)
     }
     saveBounties();
 }
@@ -156,6 +157,7 @@ function loadBounties() {
     bounty2 = JSON.parse(localStorage.getItem("bounty2"))
     bounty3 = JSON.parse(localStorage.getItem("bounty3"))
     currentBounty = JSON.parse(localStorage.getItem("currentBounty"))
+    bountyList = JSON.parse(localStorage.getItem("bountyList"))
 }
 
 
@@ -505,6 +507,10 @@ toggleMusic.addEventListener('mousedown', async () => {
     
 })
 
+const startBounty = new Audio("audio/startbounty.mp3")
+const spawnBountySfx = new Audio("audio/spawnbounty.mp3")
+const bountyHit = new Audio("audio/bountyhit.mp3")
+const claimBounty = new Audio("audio/claimbounty.mp3")
 
 
 const tutorialButton = document.getElementById("tutorial")
@@ -1674,11 +1680,12 @@ function moleHit(mole) {
     mole.state = "dying";
     if(mole.type == "bounty") {
         clearTimeout(mole.saveStreak)
-        score += currentBounty.reward / 5;
+        
+        score += Math.floor((currentBounty.reward * ((currentBounty.hunts / 3) + 1)) / 5);
         ASerendipity = 0;
         streak++;
         bountyClaimable = true;
-        shinyHitSound.cloneNode(true).play();
+        bountyHit.cloneNode(true).play();
         streakIncrease();
         scoreText.style.animation = "none"
         if(currentBounty.name == "Benjamin") {grantAchievement(achievements[56])}
@@ -2203,6 +2210,13 @@ evilbutton.addEventListener("click", () => {
         AOptionsTalked = [];
         AHitMeerkat = false;
         AEasyFarmed = 0;
+        bounty1 = undefined;
+        bounty2 = undefined;
+        bounty3 = undefined;
+        currentBounty = null;
+        bountyList.forEach((bounty) => {
+            bounty.hunts = 0;
+        })
         achievements.forEach((achievement) => {
             achievement.owned = false;
         })
@@ -2212,6 +2226,7 @@ evilbutton.addEventListener("click", () => {
         })
         saveAchievements();
         fixGrayscale();
+        setBounties();
         saveItems();
         saveGlobalStats();
         genderChange();
@@ -2440,14 +2455,14 @@ function spawnMole(mole) {
 function spawnBounty(mole) {
     if(mole.state !== "bury" || mole.cooldown > 0 || globalCooldown > 0) {return;}
     if(currentBounty.img === "midas" || currentBounty.img === "benjamin") {
-        if(Math.random() < goldenMoleChance) {
+        if(Math.random() > goldenMoleChance) {
             return;
         }
     }
     clearTimeout(mole.hideTimer)
     mole.item = null;
     mole.sameHits = 0;
-    shinySound.cloneNode(true).play();
+    spawnBountySfx.cloneNode(true).play();
     clearTimeout(mole.spawningTimer)
     clearTimeout(mole.saveStreak)
     mole.type = "bounty";
@@ -2898,7 +2913,19 @@ const shopDialogue = [
     "* The hell was that for?",
     "* Prices have been raised 500%.",
     "* Is that all you got?",
-    "* Heh, my mom hits me harder than you!"
+    "* Heh, my mom hits me harder than you!",
+    //70
+    "* Lookin' to do some hunting?",
+    "* Pumpernickel is out of this world! Literally! He's an alien disguised as a mole! I wanna study him, so go catch him!",
+    "* Gerald is like a chihuahua. He lures you in with his adorable eyes, and then-CHOMP! We can't let him roam these holes any longer!",
+    "* Fiddlebert, y'know, I don't know if he even did anything. He reminds me of this one video game character... what's 'er face... Sprigagato? Anyways, I want him!",
+    "* Straight out of black-and-white television, Nora's been up to no good. She helped convince the armadillos to join forces with the moles, that nasty little bugger...",
+    "* Maurice is a femboy. I think you understand why I want you to bring him to me.",
+    "* Ah, Sneers, my estranged sister. She turned to crime years ago, just before I opened up this shop. She lurks in the shadows, pulling off heists on nearby campsites.",
+    "* There's a reason they call him Terrible Ted. Do I know it? No. But there's gotta be a reason!",
+    "* Kingfisher is a snake who disguised himself as a mole to better catch his prey. He's bloody adorable, but it's not safe having him out here.",
+    "* King of the Golden Moles, Midas wanders searching for more jewels to add to his exquisite crown. I do a sort of 'catch and release' protocol with him, we need the golden moles.",
+    "* It's Benjamin. Elusive as always. I don't know why he has blue eyes. Get him."
 ]
 const talkButton = document.getElementById("talkbutton")
 const buyButton = document.getElementById("buybutton")
@@ -3432,7 +3459,7 @@ bountyButton.addEventListener('mousedown', () => {
     bountyPageNum = 1;
     currentDialogue = null;
     focusedItem = null;
-    shopPrepText(shopDialogue[Math.floor(Math.random() * 2 + 10)])
+    shopPrepText(shopDialogue[70])
     talkButton.style.display = "none"
     buyButton.style.display = "none"
     leaveButton.style.display = "none"
@@ -3454,6 +3481,15 @@ bountyBackArrow.addEventListener('mousedown', () => {
         leaveButton.style.display = "flex"
     } else {
         bountyPageNum--;
+        if(bountyPageNum == 1) {
+            shopPrepText(shopDialogue[bounty1.dialogue])
+        }
+        if(bountyPageNum == 2) {
+            shopPrepText(shopDialogue[bounty2.dialogue])
+        }
+        if(bountyPageNum == 3) {
+            shopPrepText(shopDialogue[bounty3.dialogue])
+        }
         updateBountyPage();
     }
 })
@@ -3464,26 +3500,37 @@ bountyNextArrow.addEventListener('mousedown', () => {
     } else {
         cantSelect.cloneNode(true).play();
     }
+    if(bountyPageNum == 1) {
+        shopPrepText(shopDialogue[bounty1.dialogue])
+    }
+    if(bountyPageNum == 2) {
+        shopPrepText(shopDialogue[bounty2.dialogue])
+    }
+    if(bountyPageNum == 3) {
+        shopPrepText(shopDialogue[bounty3.dialogue])
+    }
 })
 
 const bountyImg = document.getElementById("bountyimg")
 const bountyName = document.getElementById("bountyname")
 const bountyReward = (document.getElementById("reward")).querySelector("span")
 const bountyClaimButton = document.getElementById("bountyclaim")
-
+let previousBounty = null;
 function updateBountyPage() {
     if(bountyPageNum == 1) {
         bountyImg.src = `images/bounties/${bounty1.img}.png`
         bountyName.textContent = bounty1.name;
-        bountyReward.textContent = `\$${bounty1.reward.toLocaleString()}`
+        bountyReward.textContent = `\$${Math.floor(bounty1.reward * ((bounty1.hunts / 3) + 1)).toLocaleString()}`
         bountyImg.style.backgroundColor = `${bounty1.color}`
         bountyName.style.color = `${bounty1.color}`
         if(bountyClaimable && currentBounty.name == bounty1.name) {
             bountyClaimButton.textContent = "CLAIM"
-        } else if(currentBounty.name == bounty1.name) {
-            bountyClaimButton.textContent = "IN PROGRESS"
         } else if(currentBounty !== null) {
-            bountyClaimButton.textContent = "CAN'T START"
+            if(currentBounty.name == bounty1.name) {
+                bountyClaimButton.textContent = "IN PROGRESS"
+            } else {
+                bountyClaimButton.textContent = "CAN'T START"
+            }    
         } else {
             bountyClaimButton.textContent = "HUNT"
         }
@@ -3491,15 +3538,17 @@ function updateBountyPage() {
     if(bountyPageNum == 2) {
         bountyImg.src = `images/bounties/${bounty2.img}.png`
         bountyName.textContent = bounty2.name;
-        bountyReward.textContent = `\$${bounty2.reward.toLocaleString()}`
+        bountyReward.textContent = `\$${Math.floor(bounty2.reward * ((bounty2.hunts / 3) + 1)).toLocaleString()}`
         bountyImg.style.backgroundColor = `${bounty2.color}`
         bountyName.style.color = `${bounty2.color}`
         if(bountyClaimable && currentBounty.name == bounty2.name) {
             bountyClaimButton.textContent = "CLAIM"
-        } else if(currentBounty.name == bounty2.name) {
-            bountyClaimButton.textContent = "IN PROGRESS"
         } else if(currentBounty !== null) {
-            bountyClaimButton.textContent = "CAN'T START"
+            if(currentBounty.name == bounty2.name) {
+                bountyClaimButton.textContent = "IN PROGRESS"
+            } else {
+                bountyClaimButton.textContent = "CAN'T START"
+            }    
         } else {
             bountyClaimButton.textContent = "HUNT"
         }
@@ -3507,15 +3556,17 @@ function updateBountyPage() {
     if(bountyPageNum == 3) {
         bountyImg.src = `images/bounties/${bounty3.img}.png`
         bountyName.textContent = bounty3.name;
-        bountyReward.textContent = `\$${bounty3.reward.toLocaleString()}`
+        bountyReward.textContent = `\$${Math.floor(bounty3.reward * ((bounty3.hunts / 3) + 1)).toLocaleString()}`
         bountyImg.style.backgroundColor = `${bounty3.color}`
         bountyName.style.color = `${bounty3.color}`
         if(bountyClaimable && currentBounty.name == bounty3.name) {
             bountyClaimButton.textContent = "CLAIM"
-        } else if(currentBounty.name == bounty3.name) {
-            bountyClaimButton.textContent = "IN PROGRESS"
         } else if(currentBounty !== null) {
-            bountyClaimButton.textContent = "CAN'T START"
+            if(currentBounty.name == bounty3.name) {
+                bountyClaimButton.textContent = "IN PROGRESS"
+            } else {
+                bountyClaimButton.textContent = "CAN'T START"
+            }    
         } else {
             bountyClaimButton.textContent = "HUNT"
         }
@@ -3525,39 +3576,57 @@ function updateBountyPage() {
 bountyClaimButton.addEventListener('mousedown', () => {
     if(bountyClaimable && currentBounty.name == bounty1.name && bountyPageNum == 1) {
         ABounties++;
-        cash += currentBounty.reward;
+        cash += currentBounty.reward * ((currentBounty.hunts / 3) + 1);
         shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
         localStorage.setItem("cash", cash)
         bountyClaimable = false;
-        shinyHitSound.cloneNode(true).play();
+        claimBounty.cloneNode(true).play();
         saveGlobalStats();
         updateAchievements();
+        bountyList.forEach((bounty) => {
+            if(bounty.name == currentBounty.name) {
+                bounty.hunts++;
+            }
+        })
+        previousBounty = currentBounty.name;
         currentBounty = null;
         bounty1 = undefined;
         setBounties();
         updateBountyPage();
     } else if(bountyClaimable && currentBounty.name == bounty2.name && bountyPageNum == 2) {
         ABounties++;
-        cash += currentBounty.reward;
+        cash += currentBounty.reward * ((currentBounty.hunts / 3) + 1);
         shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
         localStorage.setItem("cash", cash)
         bountyClaimable = false;
-        shinyHitSound.cloneNode(true).play();
+        claimBounty.cloneNode(true).play();
         saveGlobalStats();
         updateAchievements();
+        bountyList.forEach((bounty) => {
+            if(bounty.name == currentBounty.name) {
+                bounty.hunts++;
+            }
+        })
+        previousBounty = currentBounty.name;
         currentBounty = null;
         bounty2 = undefined;
         setBounties();
         updateBountyPage();
     } else if(bountyClaimable && currentBounty.name == bounty3.name && bountyPageNum == 3) {
         ABounties++;
-        cash += currentBounty.reward;
+        cash += currentBounty.reward * ((currentBounty.hunts / 3) + 1);
         shopCash.textContent = `\$${Math.floor(cash).toLocaleString()}`
         localStorage.setItem("cash", cash)
         bountyClaimable = false;
-        shinyHitSound.cloneNode(true).play();
+        claimBounty.cloneNode(true).play();
         saveGlobalStats();
         updateAchievements();
+        bountyList.forEach((bounty) => {
+            if(bounty.name == currentBounty.name) {
+                bounty.hunts++;
+            }
+        })
+        previousBounty = currentBounty.name;
         currentBounty = null;
         bounty3 = undefined;
         setBounties();
@@ -3565,7 +3634,7 @@ bountyClaimButton.addEventListener('mousedown', () => {
     } else if(currentBounty !== null) {
         cantSelect.cloneNode(true).play();
     } else {
-        shinyHitSound.cloneNode(true).play();
+        startBounty.cloneNode(true).play();
         if(bountyPageNum == 1) {
             currentBounty = bounty1
         }

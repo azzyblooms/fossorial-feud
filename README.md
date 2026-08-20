@@ -3,7 +3,7 @@
 Fossorial Feud is a more fleshed-out version of the classic game of Whack-A-Mole, with many different enemies, mechanics, and items to help you succeed.
 This game runs entirely in your web browser using Github Pages. 
 
-A MESSAGE FROM MEERKAT
+## A MESSAGE FROM MEERKAT
 
 Greetings valued soldier! You have been drafted to go fight against the Mole occupation in FOSSORIA. You will be given a hammer and some payment for your work. Smash 'em dead, and make us some money!!
 

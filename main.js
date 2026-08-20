@@ -116,14 +116,6 @@ let bounty1 = undefined;
 let bounty2 = undefined;
 let bounty3 = undefined;
 
-function saveBounties() {
-    localStorage.setItem("bounty1", JSON.stringify(bounty1))
-    localStorage.setItem("bounty2", JSON.stringify(bounty2))
-    localStorage.setItem("bounty3", JSON.stringify(bounty3))
-    localStorage.setItem("currentBounty", JSON.stringify(currentBounty))
-    localStorage.setItem("bountyList", JSON.stringify(bountyList))
-}
-
 let previousBounty = null;
 function setBounties() {
     if(bounty1 == undefined) {
@@ -141,23 +133,34 @@ function setBounties() {
             bounty3 = bountyList[Math.floor(Math.random() * 10)]
         } while ((bounty3 === bounty1 || bounty3 === bounty2) || bounty3.name === previousBounty)
     }
-    saveBounties();
 }
 loadBounties();
 
 function loadBounties() {
-    const saved = JSON.parse(localStorage.getItem("activeBounties"));
+    console.log(`before load`, JSON.parse(localStorage.getItem("bountyList")))
+    const saved = localStorage.getItem("activeBounties");
 
-    if(saved === null) {
+    if (saved === null) {
         setBounties();
+        saveBounties();
         return;
     }
 
-    bounty1 = JSON.parse(localStorage.getItem("bounty1"))
-    bounty2 = JSON.parse(localStorage.getItem("bounty2"))
-    bounty3 = JSON.parse(localStorage.getItem("bounty3"))
-    currentBounty = JSON.parse(localStorage.getItem("currentBounty"))
-    bountyList = JSON.parse(localStorage.getItem("bountyList"))
+    bounty1 = JSON.parse(localStorage.getItem("bounty1"));
+    bounty2 = JSON.parse(localStorage.getItem("bounty2"));
+    bounty3 = JSON.parse(localStorage.getItem("bounty3"));
+    currentBounty = JSON.parse(localStorage.getItem("currentBounty"));
+    bountyList = JSON.parse(localStorage.getItem("bountyList"));
+    console.log('after load', bountyList)
+}
+
+function saveBounties() {
+    console.trace();
+    localStorage.setItem("bounty1", JSON.stringify(bounty1));
+    localStorage.setItem("bounty2", JSON.stringify(bounty2));
+    localStorage.setItem("bounty3", JSON.stringify(bounty3));
+    localStorage.setItem("currentBounty", JSON.stringify(currentBounty));
+    localStorage.setItem("bountyList", JSON.stringify(bountyList));
 }
 
 
@@ -1173,6 +1176,7 @@ function spawnTutorialSnake() {
         }, 500)
     }, 6000)
 }
+let flawlessCheck = true;
 let tarmadilloTimer = null;
 function spawnTutorialArmadillo() {
     tmoletype = "armadillo"
@@ -1769,6 +1773,7 @@ function moleHit(mole) {
         if(streak > 0) {
             endStreak();
         }
+        flawlessCheck = false;
         if(endless && !timeUp) {
             spit(mole)
         }
@@ -1799,6 +1804,7 @@ function moleHit(mole) {
             if(endless && !timeUp) {
                 spit(mole)
             }
+            flawlessCheck = false;
             ping.cloneNode(true).play();
             bonk.cloneNode(true).play();
             triggerFlashbang();
@@ -1933,6 +1939,7 @@ async function roundcountshow() {
         playLoopingMusic();
     }
     gameOn = false;
+    flawlessCheck = true;
     timer.classList.remove("flashing")
     endless = false;
     timeLeft = 120;
@@ -2047,7 +2054,7 @@ function finishGame() {
         if(difficulty == "easy") {AEasyFarmed++;}
     } else {
         AClassicRoundsPlayed++;
-        if(streaksBroken == 0 && score > 0) {AFlawless = true}
+        if(streaksBroken == 0 && score > 0 && flawlessCheck) {AFlawless = true}
     }
     if(AGoldenGame > goldenMolesHit) {AGoldenGame = goldenMolesHit}
     orchHit.play();
@@ -2227,6 +2234,7 @@ evilbutton.addEventListener("click", () => {
         saveAchievements();
         fixGrayscale();
         setBounties();
+        saveBounties();
         saveItems();
         saveGlobalStats();
         genderChange();
@@ -2441,6 +2449,7 @@ function spawnMole(mole) {
                     if(streak > 0) {
                         endStreak();
                     }
+                    flawlessCheck = false;
                     if(mole.type == "goldmole") {AGoldenMiss = true; updateAchievements();}
                     if(endless && !timeUp) {
                         spit(mole)
@@ -2651,6 +2660,7 @@ function spawnSnake(mole) {
                     if(streak > 0) {
                         endStreak();
                     }
+                    flawlessCheck = false;
                     streakText.textContent = (`STREAK: ${streak}`)
                     if(!timeUp) {
                         spit(mole);
@@ -2697,6 +2707,7 @@ function spit(mole) {
         } else {
             timeLeft -= 15;
             splat.cloneNode(true).play();
+            timer.textContent = `TIME: ${timeLeft}`
         }
         shading.style.animation = "shaderFade 500ms ease forwards"
         shakingElements = Array.from(document.body.querySelectorAll("*"));

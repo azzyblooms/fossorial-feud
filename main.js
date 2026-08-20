@@ -137,21 +137,31 @@ function setBounties() {
 loadBounties();
 
 function loadBounties() {
-    console.log(`before load`, JSON.parse(localStorage.getItem("bountyList")))
-    const saved = localStorage.getItem("activeBounties");
+    console.log("LOAD BOUNTIES STARTED");
 
-    if (saved === null) {
-        setBounties();
-        saveBounties();
-        return;
+    try {
+        const saved = localStorage.getItem("activeBounties");
+
+        console.log("activeBounties:", saved);
+        console.log("stored bountyList:", localStorage.getItem("bountyList"));
+
+        if (saved === null) {
+            console.log("NO ACTIVE BOUNTIES — calling setBounties()");
+            setBounties();
+            return;
+        }
+
+        bounty1 = JSON.parse(localStorage.getItem("bounty1"));
+        bounty2 = JSON.parse(localStorage.getItem("bounty2"));
+        bounty3 = JSON.parse(localStorage.getItem("bounty3"));
+        currentBounty = JSON.parse(localStorage.getItem("currentBounty"));
+        bountyList = JSON.parse(localStorage.getItem("bountyList"));
+
+        console.log("AFTER LOAD:", bountyList);
+
+    } catch (error) {
+        console.error("ERROR LOADING BOUNTIES:", error);
     }
-
-    bounty1 = JSON.parse(localStorage.getItem("bounty1"));
-    bounty2 = JSON.parse(localStorage.getItem("bounty2"));
-    bounty3 = JSON.parse(localStorage.getItem("bounty3"));
-    currentBounty = JSON.parse(localStorage.getItem("currentBounty"));
-    bountyList = JSON.parse(localStorage.getItem("bountyList"));
-    console.log('after load', bountyList)
 }
 
 function saveBounties() {

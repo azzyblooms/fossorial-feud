@@ -124,7 +124,7 @@ function saveBounties() {
     localStorage.setItem("bountyList", JSON.stringify(bountyList))
 }
 
-
+let previousBounty = null;
 function setBounties() {
     if(bounty1 == undefined) {
         do {
@@ -3515,7 +3515,7 @@ const bountyImg = document.getElementById("bountyimg")
 const bountyName = document.getElementById("bountyname")
 const bountyReward = (document.getElementById("reward")).querySelector("span")
 const bountyClaimButton = document.getElementById("bountyclaim")
-let previousBounty = null;
+
 function updateBountyPage() {
     if(bountyPageNum == 1) {
         bountyImg.src = `images/bounties/${bounty1.img}.png`

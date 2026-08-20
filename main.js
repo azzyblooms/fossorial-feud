@@ -133,35 +133,25 @@ function setBounties() {
             bounty3 = bountyList[Math.floor(Math.random() * 10)]
         } while ((bounty3 === bounty1 || bounty3 === bounty2) || bounty3.name === previousBounty)
     }
+    saveBounties();
 }
 loadBounties();
 
 function loadBounties() {
-    console.log("LOAD BOUNTIES STARTED");
+    console.log(`before load`, JSON.parse(localStorage.getItem("bountyList")))
+    const savedBountyList = localStorage.getItem("bountyList");
 
-    try {
-        const saved = localStorage.getItem("activeBounties");
-
-        console.log("activeBounties:", saved);
-        console.log("stored bountyList:", localStorage.getItem("bountyList"));
-
-        if (saved === null) {
-            console.log("NO ACTIVE BOUNTIES — calling setBounties()");
-            setBounties();
-            return;
-        }
-
-        bounty1 = JSON.parse(localStorage.getItem("bounty1"));
-        bounty2 = JSON.parse(localStorage.getItem("bounty2"));
-        bounty3 = JSON.parse(localStorage.getItem("bounty3"));
-        currentBounty = JSON.parse(localStorage.getItem("currentBounty"));
-        bountyList = JSON.parse(localStorage.getItem("bountyList"));
-
-        console.log("AFTER LOAD:", bountyList);
-
-    } catch (error) {
-        console.error("ERROR LOADING BOUNTIES:", error);
+    if (savedBountyList === null) {
+        setBounties();
+        return;
     }
+
+    bounty1 = JSON.parse(localStorage.getItem("bounty1"));
+    bounty2 = JSON.parse(localStorage.getItem("bounty2"));
+    bounty3 = JSON.parse(localStorage.getItem("bounty3"));
+    currentBounty = JSON.parse(localStorage.getItem("currentBounty"));
+    bountyList = JSON.parse(localStorage.getItem("bountyList"));
+    console.log('after load', bountyList)
 }
 
 function saveBounties() {
@@ -2244,7 +2234,6 @@ evilbutton.addEventListener("click", () => {
         saveAchievements();
         fixGrayscale();
         setBounties();
-        saveBounties();
         saveItems();
         saveGlobalStats();
         genderChange();

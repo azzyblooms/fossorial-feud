@@ -138,7 +138,6 @@ function setBounties() {
 loadBounties();
 
 function loadBounties() {
-    console.log(`before load`, JSON.parse(localStorage.getItem("bountyList")))
     const savedBountyList = localStorage.getItem("bountyList");
 
     if (savedBountyList === null) {
@@ -151,11 +150,9 @@ function loadBounties() {
     bounty3 = JSON.parse(localStorage.getItem("bounty3"));
     currentBounty = JSON.parse(localStorage.getItem("currentBounty"));
     bountyList = JSON.parse(localStorage.getItem("bountyList"));
-    console.log('after load', bountyList)
 }
 
 function saveBounties() {
-    console.trace();
     localStorage.setItem("bounty1", JSON.stringify(bounty1));
     localStorage.setItem("bounty2", JSON.stringify(bounty2));
     localStorage.setItem("bounty3", JSON.stringify(bounty3));
@@ -411,6 +408,9 @@ if(localStorage.getItem("showMouseHitboxState") === null) {
 if(localStorage.getItem("musicState") === null) {
     localStorage.setItem("musicState", true)
 }
+if(localStorage.getItem("hrtState") === null) {
+    localStorage.setItem("hrtState", true)
+}
 
 if(localStorage.getItem("difficulty") === null) {
     localStorage.setItem("difficulty", "easy")
@@ -421,6 +421,7 @@ skipIntroState = localStorage.getItem("skipIntroState") === "true"
 brightFlashesState = localStorage.getItem("brightFlashesState") === "true"
 showMouseHitboxState = localStorage.getItem("showMouseHitboxState") === "true"
 musicState = localStorage.getItem("musicState") === "true"
+hrtState = localStorage.getItem("hrtState") === "true"
 if(showMouseHitboxState == true) {cursorhb.style.opacity = "1"} else {cursorhb.style.opacity = "0"}
 
 let moles = [
@@ -439,7 +440,6 @@ const laughs = [
 ]
 const hits = [
     punch,
-    //bonk
 ]
 
 const enemyTypes = [
@@ -453,12 +453,14 @@ const toggleBrightFlashes = document.getElementById("epilepsybutton")
 const toggleSkipIntro = document.getElementById("introbutton")
 const toggleMouseHitbox = document.getElementById("mousehitboxbutton")
 const toggleMusic = document.getElementById("musicbutton")
+const toggleHrt = document.getElementById("hrtbutton")
 
 const settings = [
     {setting: "brightFlashes", isOn: brightFlashesState, button: toggleBrightFlashes},
     {setting: "skipIntro", isOn: skipIntroState, button: toggleSkipIntro},
     {setting: "showMouseHitbox", isOn: showMouseHitboxState, button: toggleMouseHitbox},
-    {setting: "music", isOn: musicState, button: toggleMusic}
+    {setting: "music", isOn: musicState, button: toggleMusic},
+    {setting: "hrt", isOn: hrtState, button: toggleHrt}
 ]
 
 settings.forEach((button) => {
@@ -507,6 +509,16 @@ toggleMusic.addEventListener('mousedown', async () => {
         if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
     })
     if(!settings[3].isOn) {stopLoopingMusic();} else {await setupAudio('audio/mischevious.mp3'); playLoopingMusic();}
+    
+})
+toggleHrt.addEventListener('mousedown', async () => {
+    settings[4].isOn = !settings[4].isOn;
+    localStorage.setItem("hrtState", settings[4].isOn)
+    settings.forEach((button) => {
+        if(button.isOn) {button.button.style.backgroundColor = "green"; button.button.textContent = "ON"}
+        if(!button.isOn) {button.button.style.backgroundColor = "red"; button.button.textContent = "OFF"}
+    })
+    genderChange();
     
 })
 
@@ -1958,6 +1970,7 @@ async function roundcountshow() {
     score = 0;
     streak = 0;
     scoreText.textContent = (`SCORE: ${score}`)
+    streakText.textContent = (`STREAK: ${streak}`)
     armadillosHit = 0;
     totalHits = 0;
     maxStreak = 0;
@@ -2017,6 +2030,7 @@ async function endlessPrep() {
     snakesHit = 0;
     streak = 0;
     score = 0;
+    streakText.textContent = (`STREAK: ${streak}`)
     scoreText.textContent = (`SCORE: ${score}`)
     armadillosHit = 0;
     totalHits = 0;
@@ -2284,7 +2298,6 @@ async function gameStart() {
         const available = moles.filter(mole => mole.state == "bury" && mole.cooldown <= 0 && globalCooldown <= 0);
         if (available.length > 0) {
             const randomMole = available[Math.floor(Math.random() * available.length)];
-            //spawnMole(randomMole)
             const moleType = Math.floor(Math.random() * 24)
             if(moleType >= 0 && moleType <= 14) {
                 spawnMole(randomMole)
@@ -2350,7 +2363,6 @@ async function endlessStart() {
         const available = moles.filter(mole => mole.state == "bury" && mole.cooldown <= 0 && globalCooldown <= 0);
         if (available.length > 0) {
             const randomMole = available[Math.floor(Math.random() * available.length)];
-            //spawnMole(randomMole)
             const moleType = Math.floor(Math.random() * 24)
             if(moleType >= 0 && moleType <= 14) {
                 spawnMole(randomMole)
@@ -2567,8 +2579,6 @@ function spawnArmadillo(mole) {
         mole.item = null;
         moleImg.src = "images/armadillo.png"
     } else if(determineItem == 6) {
-        /*mole.item = "cash"
-        moleImg.src = "images/dolladillo.png"*/
         if(AEconomy) {
             mole.item = "cash"
             moleImg.src = "images/dolladillo.png"
@@ -2597,8 +2607,6 @@ function spawnArmadillo(mole) {
                 mole.item = null;
                 moleImg.src = "images/armadillo.png"
             } else if(determineItem == 6) {
-                /*mole.item = "cash"
-                moleImg.src = "images/dolladillo.png"*/
                 if(AEconomy) {
                     mole.item = "cash"
                     moleImg.src = "images/dolladillo.png"
@@ -4023,7 +4031,7 @@ if(yourItems[7].owned) {
 function genderChange() {
     const girlfilter = document.getElementById("girlfilter")
     const achievementTitle = document.getElementById("achievementtitle")
-    if(yourItems[7].owned) {
+    if(yourItems[7].owned && settings[4].isOn) {
         girlfilter.style.display = "flex"
         startpageelements.forEach((element) => {
             element.style.backgroundColor = "rgb(114, 27, 63)"
@@ -4055,7 +4063,8 @@ function genderChange() {
             element.style = ""
             element.style = ""  
         })
-        settingsMenu.style = ""
+        settingsMenu.style.backgroundColor = ""
+        settingsMenu.style.borderColor = ""
         achievementPopup.style = ""
         settingsButton.style = ""
         scoreText.style = ""

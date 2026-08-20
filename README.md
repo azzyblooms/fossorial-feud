@@ -23,11 +23,13 @@ Kindhearted but misled folks, the Armadillos love to pick up anything they can f
 ## Snakes
 Snakes are evil. They will spit corrosive saliva at your face if left unharmed. Don't let them get away! 
 
+<hr>
+
 P.S.    I run a shop near your post. Check it out! I sell items that will help you, and offer bounties so you can hunt special enemies. I'll also be there in case you need anyone to chat with --- I know the moles aren't much for conversation.
 
 Signed, 
 Meerkat
 
-
+<hr>
 
 NOTE: Multiple assets for this game (sprites for the moles, snakes, armadillos, groundhogs, and meerkat) were taken from flaticon.com. Credit for these assets goes to Magnific.

@@ -26,3 +26,7 @@ P.S.    I run a shop near your post. Check it out! I sell items that will help y
 
 Signed, 
 Meerkat
+
+
+
+NOTE: Multiple assets for this game (sprites for the moles, snakes, armadillos, groundhogs, and meerkat) were taken from flaticon.com. Credit for these assets goes to Magnific.
